@@ -937,7 +937,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   )}
 
                   {/* Note Field — Admin only */}
-                  {viewRole === 'admin' ? (
+                  {viewRole === 'admin' && (
                     <div className="flex flex-col gap-1.5 pt-2">
                       <label className="text-xs font-bold text-[#0d212c]">Note</label>
                       <input
@@ -947,11 +947,6 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                         placeholder="What changed and why"
                         className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] placeholder:text-[#94a3b8] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                       />
-                    </div>
-                  ) : (
-                    <div className="pt-2 text-xs text-[#64748b] italic bg-slate-50 p-3 rounded-xl border border-slate-200">
-                      Evaluator View (Read-Only): Parameter modification and version saving are
-                      restricted to Admin users.
                     </div>
                   )}
                 </div>
