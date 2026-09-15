@@ -1113,14 +1113,9 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                   className="p-3 rounded-2xl bg-[#ddf7f9]/20 border border-[#36c0c9]/40 flex flex-col gap-2 shadow-2xs animate-in fade-in zoom-in-95 duration-200"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="text-[10px] font-extrabold text-[#0d212c] truncate">
-                        {file.sender}
-                      </span>
-                      <span className="px-1.5 py-0.2 rounded-md bg-[#e6f4ea] text-[#137333] text-[9px] font-bold shrink-0">
-                        Uploaded document
-                      </span>
-                    </div>
+                    <span className="text-[10px] font-extrabold text-[#0d212c] truncate">
+                      {file.sender}
+                    </span>
                     <span className="text-[9px] text-[#94a3b8] shrink-0">{file.time}</span>
                   </div>
 

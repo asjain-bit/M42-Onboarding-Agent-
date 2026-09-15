@@ -1,13 +1,14 @@
 /**
  * AgentManagement — Organism
  * Admin dashboard and detail interface for registered system agents, prompt governance, configuration, and version history.
+ * Supports Admin (Full Edit) and Evaluator (Read-Only) view modes.
  * Used in: AgentsScreen
  */
 
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Check, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Check, Search, Info } from 'lucide-react'
 import { StatusChip } from '@/components/atoms/StatusChip'
 import { AgentData, AgentManagementProps, AgentVersionHistoryItem } from './AgentManagement.types'
 
@@ -225,6 +226,9 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
   const [currentPage, setCurrentPage] = useState(1)
   const ITEMS_PER_PAGE = 8
 
+  // View Role State for Prototype Demonstration: 'admin' | 'evaluator'
+  const [viewRole, setViewRole] = useState<'admin' | 'evaluator'>('admin')
+
   const [noteInput, setNoteInput] = useState<string>('')
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
@@ -258,7 +262,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
   }
 
   const handleResetField = (fieldKey: keyof AgentData['config']) => {
-    if (!selectedAgent) return
+    if (!selectedAgent || viewRole === 'evaluator') return
 
     setAgents((prevAgents) =>
       prevAgents.map((agent) => {
@@ -291,7 +295,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
   }
 
   const handleFieldChange = (fieldKey: keyof AgentData['config'], newValue: string) => {
-    if (!selectedAgent) return
+    if (!selectedAgent || viewRole === 'evaluator') return
 
     setAgents((prevAgents) =>
       prevAgents.map((agent) => {
@@ -324,7 +328,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
   }
 
   const handleActivateVersion = (versionId: string) => {
-    if (!selectedAgent) return
+    if (!selectedAgent || viewRole === 'evaluator') return
 
     setAgents((prevAgents) =>
       prevAgents.map((agent) => {
@@ -348,7 +352,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
   }
 
   const handleSaveNewVersion = () => {
-    if (!selectedAgent) return
+    if (!selectedAgent || viewRole === 'evaluator') return
 
     const nextVerNum = selectedAgent.versionHistory.length + 1
     const newVersionLabel = `v${nextVerNum}`
@@ -411,7 +415,9 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
 
           {/* Title & Search Bar Row */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <h2 className="text-xl font-extrabold text-[#0d212c]">Agents</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-extrabold text-[#0d212c]">Agents</h2>
+            </div>
 
             <div className="relative w-full sm:w-72">
               <Search className="w-4 h-4 text-[#64748b] absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -434,7 +440,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
               { key: 'all', label: 'All Agents', count: agents.length },
               {
                 key: 'default',
-                label: 'default',
+                label: 'Default',
                 count: agents.filter((a) => a.status === 'default').length,
               },
               {
@@ -451,9 +457,9 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                     setStatusFilter(chip.key as 'all' | 'default' | 'Modified')
                     setCurrentPage(1)
                   }}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-2 border-0 ${
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-2 ${
                     isSelected
-                      ? 'bg-[#36c0c9] text-white font-bold shadow-xs'
+                      ? 'bg-[#36c0c9] text-white font-bold shadow-xs border border-[#36c0c9]'
                       : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
                   }`}
                 >
@@ -505,7 +511,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                           {agent.status === 'Modified' ? (
                             <StatusChip label="Modified" status="warning" dot={false} />
                           ) : (
-                            <StatusChip label="default" status="info" dot={false} />
+                            <StatusChip label="Default" status="info" dot={false} />
                           )}
                         </td>
                       </tr>
@@ -563,6 +569,35 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
               </div>
             )}
           </div>
+
+          {/* Prototype Role Switcher Bar with Tooltip (For prototype navigation purposes) */}
+          <div className="mt-4 pt-4 border-t border-[#e2e8f0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#f8fafc] p-4 rounded-2xl border border-[#cbd5e1]/60">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-[#0d212c]">Prototype Mode:</span>
+              <span className="text-xs font-medium text-[#64748b]">
+                Currently viewing as{' '}
+                <span className="font-bold text-[#0d212c]">
+                  {viewRole === 'admin' ? 'Admin View (Full Access)' : 'Evaluator View (Read-Only)'}
+                </span>
+              </span>
+              {/* Tooltip Info Icon */}
+              <div className="relative group cursor-pointer">
+                <Info className="w-3.5 h-3.5 text-[#64748b] hover:text-[#0d212c] transition" />
+                <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute left-1/2 -translate-x-1/2 bottom-6 z-50 w-72 bg-[#0d212c] text-white text-[11px] p-3 rounded-xl shadow-xl border border-white/10 leading-relaxed font-normal">
+                  This switch is for displaying the Evaluator view versus the Admin view for
+                  prototype navigation purposes. In live production, role access is controlled via
+                  system authentication.
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setViewRole(viewRole === 'admin' ? 'evaluator' : 'admin')}
+              className="px-4 py-2 rounded-xl bg-[#0d212c] hover:bg-[#153443] text-white text-xs font-bold transition cursor-pointer border-0 shadow-2xs self-start sm:self-auto"
+            >
+              {viewRole === 'admin' ? 'Switch to Evaluator View' : 'Switch to Admin View'}
+            </button>
+          </div>
         </div>
       ) : (
         /* DETAIL VIEW */
@@ -596,7 +631,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
               {selectedAgent.status === 'Modified' ? (
                 <StatusChip label="Modified" status="warning" dot={false} />
               ) : (
-                <StatusChip label="default" status="info" dot={false} />
+                <StatusChip label="Default" status="info" dot={false} />
               )}
             </div>
           </div>
@@ -614,7 +649,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
             </div>
           </div>
 
-          {/* Two Column Layout: Configuration & Version History (Version history height reduced as per content) */}
+          {/* Two Column Layout: Configuration & Version History */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             {/* Left Column: Configuration Form Card */}
             <div className="lg:col-span-2 bg-white border border-[#e2e8f0] rounded-2xl p-6 shadow-xs flex flex-col justify-between gap-6">
@@ -628,9 +663,10 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-bold text-[#0d212c]">Default voice</label>
                       <select
+                        disabled={viewRole === 'evaluator'}
                         value={selectedAgent.config.defaultVoice.value}
                         onChange={(e) => handleFieldChange('defaultVoice', e.target.value)}
-                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] disabled:bg-slate-50 disabled:text-slate-600 disabled:cursor-not-allowed focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                       >
                         <option value="(none)">(none)</option>
                         <option value="en-US-JennyNeural">en-US-JennyNeural</option>
@@ -658,12 +694,13 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                         </label>
                         <input
                           type="text"
+                          disabled={viewRole === 'evaluator'}
                           value={selectedAgent.config.realtimeModelDeployment.value}
                           onChange={(e) =>
                             handleFieldChange('realtimeModelDeployment', e.target.value)
                           }
                           placeholder=""
-                          className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                          className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] disabled:bg-slate-50 disabled:text-slate-600 disabled:cursor-not-allowed focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                         />
                         <p className="text-xs text-[#64748b] mt-0.5">
                           Azure deployment name for Sam&apos;s realtime model. Empty = the
@@ -683,10 +720,11 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                       <label className="text-xs font-bold text-[#0d212c]">Model deployment</label>
                       <input
                         type="text"
+                        disabled={viewRole === 'evaluator'}
                         value={selectedAgent.config.modelDeployment.value}
                         onChange={(e) => handleFieldChange('modelDeployment', e.target.value)}
                         placeholder=""
-                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] disabled:bg-slate-50 disabled:text-slate-600 disabled:cursor-not-allowed focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                       />
                       <p className="text-xs text-[#64748b] mt-0.5">
                         Azure OpenAI chat deployment this agent runs on. Empty = the environment
@@ -706,9 +744,10 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                       <label className="text-xs font-bold text-[#0d212c]">Speaking speed</label>
                       <input
                         type="text"
+                        disabled={viewRole === 'evaluator'}
                         value={selectedAgent.config.speakingSpeed.value}
                         onChange={(e) => handleFieldChange('speakingSpeed', e.target.value)}
-                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] disabled:bg-slate-50 disabled:text-slate-600 disabled:cursor-not-allowed focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                       />
                       <p className="text-xs text-[#64748b] mt-0.5">
                         Multiplier on Sam&apos;s spoken pace (1.0 = normal).
@@ -727,9 +766,10 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                       <label className="text-xs font-bold text-[#0d212c]">Temperature</label>
                       <input
                         type="text"
+                        disabled={viewRole === 'evaluator'}
                         value={selectedAgent.config.temperature.value}
                         onChange={(e) => handleFieldChange('temperature', e.target.value)}
-                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] disabled:bg-slate-50 disabled:text-slate-600 disabled:cursor-not-allowed focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                       />
                       <p className="text-xs text-[#64748b] mt-0.5">
                         Sampling temperature. 0 keeps runs deterministic for identical inputs.
@@ -751,7 +791,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                             <StatusChip label="Modified" status="warning" dot={false} />
                           )}
                         </div>
-                        {selectedAgent.config.turnDetection.isModified && (
+                        {selectedAgent.config.turnDetection.isModified && viewRole === 'admin' && (
                           <button
                             onClick={() => handleResetField('turnDetection')}
                             className="text-xs font-semibold text-[#64748b] hover:text-[#0d212c] transition bg-transparent border-0 cursor-pointer p-0"
@@ -761,9 +801,10 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                         )}
                       </div>
                       <select
+                        disabled={viewRole === 'evaluator'}
                         value={selectedAgent.config.turnDetection.value}
                         onChange={(e) => handleFieldChange('turnDetection', e.target.value)}
-                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] disabled:bg-slate-50 disabled:text-slate-600 disabled:cursor-not-allowed focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                       >
                         <option value="semantic_vad">semantic_vad</option>
                         <option value="server_vad">server_vad</option>
@@ -792,19 +833,21 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                             <StatusChip label="Modified" status="warning" dot={false} />
                           )}
                         </div>
-                        {selectedAgent.config.responseEagerness.isModified && (
-                          <button
-                            onClick={() => handleResetField('responseEagerness')}
-                            className="text-xs font-semibold text-[#64748b] hover:text-[#0d212c] transition bg-transparent border-0 cursor-pointer p-0"
-                          >
-                            Reset
-                          </button>
-                        )}
+                        {selectedAgent.config.responseEagerness.isModified &&
+                          viewRole === 'admin' && (
+                            <button
+                              onClick={() => handleResetField('responseEagerness')}
+                              className="text-xs font-semibold text-[#64748b] hover:text-[#0d212c] transition bg-transparent border-0 cursor-pointer p-0"
+                            >
+                              Reset
+                            </button>
+                          )}
                       </div>
                       <select
+                        disabled={viewRole === 'evaluator'}
                         value={selectedAgent.config.responseEagerness.value}
                         onChange={(e) => handleFieldChange('responseEagerness', e.target.value)}
-                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] disabled:bg-slate-50 disabled:text-slate-600 disabled:cursor-not-allowed focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                       >
                         <option value="low">low</option>
                         <option value="auto">auto</option>
@@ -834,19 +877,21 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                             <StatusChip label="Modified" status="warning" dot={false} />
                           )}
                         </div>
-                        {selectedAgent.config.inputNoiseReduction.isModified && (
-                          <button
-                            onClick={() => handleResetField('inputNoiseReduction')}
-                            className="text-xs font-semibold text-[#64748b] hover:text-[#0d212c] transition bg-transparent border-0 cursor-pointer p-0"
-                          >
-                            Reset
-                          </button>
-                        )}
+                        {selectedAgent.config.inputNoiseReduction.isModified &&
+                          viewRole === 'admin' && (
+                            <button
+                              onClick={() => handleResetField('inputNoiseReduction')}
+                              className="text-xs font-semibold text-[#64748b] hover:text-[#0d212c] transition bg-transparent border-0 cursor-pointer p-0"
+                            >
+                              Reset
+                            </button>
+                          )}
                       </div>
                       <select
+                        disabled={viewRole === 'evaluator'}
                         value={selectedAgent.config.inputNoiseReduction.value}
                         onChange={(e) => handleFieldChange('inputNoiseReduction', e.target.value)}
-                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] disabled:bg-slate-50 disabled:text-slate-600 disabled:cursor-not-allowed focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                       >
                         <option value="far_field">far_field</option>
                         <option value="near_field">near_field</option>
@@ -871,11 +916,12 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                       </label>
                       <input
                         type="text"
+                        disabled={viewRole === 'evaluator'}
                         value={selectedAgent.config.uploadWaitBeforeReminder.value}
                         onChange={(e) =>
                           handleFieldChange('uploadWaitBeforeReminder', e.target.value)
                         }
-                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] disabled:bg-slate-50 disabled:text-slate-600 disabled:cursor-not-allowed focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
                       />
                       <p className="text-xs text-[#64748b] mt-0.5">
                         How long Sam waits after asking for a document before a single gentle
@@ -890,33 +936,46 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                     </div>
                   )}
 
-                  {/* Note Field */}
-                  <div className="flex flex-col gap-1.5 pt-2">
-                    <label className="text-xs font-bold text-[#0d212c]">Note</label>
-                    <input
-                      type="text"
-                      value={noteInput}
-                      onChange={(e) => setNoteInput(e.target.value)}
-                      placeholder="What changed and why"
-                      className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] placeholder:text-[#94a3b8] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
-                    />
-                  </div>
+                  {/* Note Field — Admin only */}
+                  {viewRole === 'admin' ? (
+                    <div className="flex flex-col gap-1.5 pt-2">
+                      <label className="text-xs font-bold text-[#0d212c]">Note</label>
+                      <input
+                        type="text"
+                        value={noteInput}
+                        onChange={(e) => setNoteInput(e.target.value)}
+                        placeholder="What changed and why"
+                        className="w-full rounded-xl border border-[#cbd5e1] bg-white px-3.5 py-2.5 text-xs text-[#0d212c] placeholder:text-[#94a3b8] focus:outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 transition"
+                      />
+                    </div>
+                  ) : (
+                    <div className="pt-2 text-xs text-[#64748b] italic bg-slate-50 p-3 rounded-xl border border-slate-200">
+                      Evaluator View (Read-Only): Parameter modification and version saving are
+                      restricted to Admin users.
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Save Button */}
-              <div className="pt-4">
-                <button
-                  onClick={handleSaveNewVersion}
-                  className="bg-[#0d212c] hover:bg-[#153443] text-white font-bold text-xs px-6 py-3 rounded-xl transition cursor-pointer shadow-2xs border-0"
-                >
-                  Save as new version
-                </button>
-              </div>
+              {/* Save Button — Admin only */}
+              {viewRole === 'admin' && (
+                <div className="pt-4">
+                  <button
+                    onClick={handleSaveNewVersion}
+                    className="bg-[#0d212c] hover:bg-[#153443] text-white font-bold text-xs px-6 py-3 rounded-xl transition cursor-pointer shadow-2xs border-0"
+                  >
+                    Save as new version
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Right Column: Version History Card (Height reduced as per content) */}
-            <div className="lg:col-span-1 bg-white border border-[#e2e8f0] rounded-2xl p-6 shadow-xs flex flex-col gap-4 self-start">
+            {/* Right Column: Version History Card (Top-aligned content for default status) */}
+            <div
+              className={`lg:col-span-1 bg-white border border-[#e2e8f0] rounded-2xl p-6 shadow-xs flex flex-col justify-start gap-4 ${
+                selectedAgent.status === 'default' ? 'h-full' : 'self-start'
+              }`}
+            >
               <h2 className="text-base font-extrabold text-[#0d212c]">Version history</h2>
 
               <div className="flex flex-col gap-4">
@@ -938,7 +997,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                           </span>
                         )}
                       </div>
-                      {!item.isActive && (
+                      {!item.isActive && viewRole === 'admin' && (
                         <button
                           onClick={() => handleActivateVersion(item.id)}
                           className="px-3 py-1 border border-[#cbd5e1] rounded-lg text-xs font-semibold text-[#0d212c] hover:bg-slate-100 transition cursor-pointer bg-white"
