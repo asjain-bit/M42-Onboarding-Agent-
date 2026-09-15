@@ -7,14 +7,11 @@ import {
   Users,
   PhoneCall,
   CheckCircle2,
-  Eye,
   Download,
   Play,
   Pause,
   Copy,
   Check,
-  Paperclip,
-  Upload,
   ArrowRight,
   ShieldCheck,
   FileCheck,
@@ -24,6 +21,8 @@ import {
   Mail,
   FileText,
   MessageSquare,
+  Image as ImageIcon,
+  Paperclip,
 } from 'lucide-react'
 import { StatusChip } from '@/components/atoms/StatusChip'
 
@@ -43,22 +42,31 @@ interface AssessmentDetailScreenProps {
   onStatusChange?: (newStatus: 'ready' | 'finalised' | 'completed') => void
 }
 
-interface AttachedFile {
-  name: string
-  size: string
-  type: string
-  date: string
-}
-
 interface AuditTrailEvent {
   id: string
   title: string
-  category: 'System' | 'Admin' | 'AI Agent' | 'Vendor'
+  category: 'System' | 'Admin' | 'AI Agent' | 'Facility'
   timestamp: string
   actor: string
   details: string
   icon: React.ElementType
-  confidence?: 'High confidence' | 'Medium confidence' | 'Low confidence'
+}
+
+interface SnapshotFile {
+  title: string
+  filename: string
+  size: string
+  tag: 'Before' | 'After'
+}
+
+interface TestcaseItem {
+  id: number
+  category: string
+  title: string
+  expectedBehaviour: string
+  agentComment: string
+  status: 'Pass' | 'Fail'
+  snapshots: SnapshotFile[]
 }
 
 export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
@@ -67,80 +75,48 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   onStatusChange,
 }) => {
   const [activeTab, setActiveTab] = useState<'assessment' | 'audit_trail'>('assessment')
-  const [showAnswerKey, setShowAnswerKey] = useState(false)
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
   const [playbackSpeed, setPlaybackSpeed] = useState('1')
   const [copiedUrl, setCopiedUrl] = useState(false)
+  const [expandedSnapshots, setExpandedSnapshots] = useState<Record<number, boolean>>({})
+
   const [currentStatus, setCurrentStatus] = useState<
     'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready'
   >(assessment.status)
 
   const [toastMessage, setToastMessage] = useState<string | null>(null)
-  const [questionFiles, setQuestionFiles] = useState<Record<number, AttachedFile[]>>({
-    3: [
-      {
-        name: 'ISO_27001_Readiness_Report_2026.pdf',
-        size: '1.4 MB',
-        type: 'PDF',
-        date: '25 Aug 2026',
-      },
-    ],
-  })
 
   // Sample Meeting URL for Dispatch Call
   const meetingUrl = 'https://meet.m42.ae/call/vendor-audit-9823'
 
   const isScheduled = currentStatus === 'scheduled'
 
-  // Dynamic status list based on questionnaire progress and current status
+  // Assessment Lifecycle Data
   const lifecycleSteps = [
-    { title: 'Call dispatched', actor: 'Admin User', time: '1 Sept, 10:30 AM', status: 'DONE' },
+    { title: 'Select dataset & details', actor: 'Admin User', time: '1 Sept, 10:25 AM', status: 'DONE' },
+    { title: 'Call dispatched', actor: 'M42 Dispatcher', time: '1 Sept, 10:30 AM', status: 'DONE' },
     {
-      title: 'Meeting Scheduled',
-      actor: 'System Scheduler',
-      time: '1 Sept, 01:14 PM',
-      status: 'DONE',
+      title: 'Join call room',
+      actor: 'Facilities Admin & Agent Sam',
+      time: isScheduled ? 'Pending' : '1 Sept, 01:15 PM',
+      status: isScheduled ? 'AWAITING' : 'DONE',
       hasMeetingUrl: true,
     },
     {
-      title: 'Participants joined',
-      actor: 'Presight AI',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:15 PM',
+      title: 'Run testcases',
+      actor: 'Facilities Admin',
+      time: isScheduled ? 'Pending' : '1 Sept, 01:18 PM',
       status: isScheduled ? 'AWAITING' : 'DONE',
     },
     {
-      title: 'Assessment call',
+      title: 'Evaluate testcases',
       actor: 'Voice Agent Sam',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:19 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
-    },
-    {
-      title: 'Call ended',
-      actor: 'Voice Agent Sam',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:19 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
-    },
-    {
-      title: 'Transcript composed',
-      actor: 'NLP Pipeline',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:20 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
-    },
-    {
-      title: 'Scoring',
-      actor: 'Evaluation Subagent',
       time: isScheduled ? 'Pending' : '1 Sept, 01:22 PM',
       status: isScheduled ? 'AWAITING' : 'DONE',
     },
     {
-      title: 'Report ready',
-      actor: 'Audit Engine',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:25 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
-    },
-    {
-      title: 'Finalized',
-      actor: 'Admin User',
+      title: 'Conclude assessment',
+      actor: 'Admin & System',
       time:
         !isScheduled && (currentStatus === 'completed' || currentStatus === 'finalised')
           ? '1 Sept, 02:05 PM'
@@ -152,92 +128,133 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
     },
   ]
 
-  // Requirement 2: Audit Trail Timeline Data
+  // Granular Audit Trail Event Data
   const auditEvents: AuditTrailEvent[] = [
     {
-      id: 'aud-8',
-      title: 'Assessment Finalized & Status Updated',
+      id: 'aud-14',
+      title: 'Assessment finalized & completed',
       category: 'Admin',
       timestamp: '1 Sept 2026, 02:05 PM',
       actor: 'Admin User (M42 Compliance)',
-      details:
-        'Reviewed evidence submissions, verified ADX public registry proof, and marked assessment status as Ready.',
+      details: 'Concluded assessment verdict and marked status as completed.',
       icon: ShieldCheck,
-      confidence: 'High confidence',
+    },
+    {
+      id: 'aud-13',
+      title: 'Compliance report generated',
+      category: 'AI Agent',
+      timestamp: '1 Sept 2026, 01:25 PM',
+      actor: 'Audit Engine',
+      details: 'Audit report compiled with 5 passed and 2 failed testcases.',
+      icon: FileCheck,
+    },
+    {
+      id: 'aud-12',
+      title: 'Assessment transcript processed',
+      category: 'AI Agent',
+      timestamp: '1 Sept 2026, 01:20 PM',
+      actor: 'NLP Pipeline',
+      details: 'Call transcript processed into structured dataset. Character count: 4,820 chars.',
+      icon: MessageSquare,
+    },
+    {
+      id: 'aud-11',
+      title: 'Testcase #7 evaluated (Verdict: Pass)',
+      category: 'AI Agent',
+      timestamp: '1 Sept 2026, 01:19 PM',
+      actor: 'AI Verification Agent',
+      details: 'Verified UAE data residency lock in me-central-1 datacenter.',
+      icon: Bot,
+    },
+    {
+      id: 'aud-10',
+      title: 'Screenshot captured (uae_region_locked.png)',
+      category: 'System',
+      timestamp: '1 Sept 2026, 01:18 PM',
+      actor: 'AI Test Runner',
+      details: 'Captured snapshot for Testcase #7 (ID: TC-042).',
+      icon: ImageIcon,
+    },
+    {
+      id: 'aud-9',
+      title: 'Testcase #3 evaluated (Verdict: Fail)',
+      category: 'AI Agent',
+      timestamp: '1 Sept 2026, 01:17 PM',
+      actor: 'AI Verification Agent',
+      details: 'Flagged missing Stage 2 ISO 27001 certificate verification.',
+      icon: Bot,
+    },
+    {
+      id: 'aud-8',
+      title: 'Screenshot captured (iso_stage2_pending.png)',
+      category: 'System',
+      timestamp: '1 Sept 2026, 01:16 PM',
+      actor: 'AI Test Runner',
+      details: 'Captured snapshot for Testcase #3 (ID: TC-039).',
+      icon: ImageIcon,
     },
     {
       id: 'aud-7',
-      title: 'Evidence Document Uploaded',
-      category: 'Vendor',
-      timestamp: '25 Aug 2026, 02:15 PM',
-      actor: 'Presight AI Security Team',
-      details: 'Uploaded ISO_27001_Readiness_Report_2026.pdf (1.4 MB) as evidence for Question 3.',
-      icon: FileCheck,
-      confidence: 'High confidence',
+      title: 'Testcase #1 evaluated (Verdict: Pass)',
+      category: 'AI Agent',
+      timestamp: '1 Sept 2026, 01:16 PM',
+      actor: 'AI Verification Agent',
+      details: 'Confirmed public registry match for Abu Dhabi HQ and ticker PRESIGHT.',
+      icon: Bot,
     },
     {
       id: 'aud-6',
-      title: 'Automated Registry & Research Verification',
-      category: 'AI Agent',
-      timestamp: '1 Sept 2026, 01:22 PM',
-      actor: 'M42 Research Subagent',
-      details:
-        'Matched ADX ticker PRESIGHT against official Abu Dhabi Securities Exchange public registry (4/4 sources verified).',
-      icon: Bot,
-      confidence: 'High confidence',
+      title: 'Screenshot captured (adx_registry_verified.png)',
+      category: 'System',
+      timestamp: '1 Sept 2026, 01:15 PM',
+      actor: 'AI Test Runner',
+      details: 'Captured snapshot for Testcase #1 (ID: TC-035).',
+      icon: ImageIcon,
     },
     {
       id: 'aud-5',
-      title: 'Interview Audio & Transcript Captured',
-      category: 'AI Agent',
-      timestamp: '1 Sept 2026, 01:19 PM',
-      actor: 'Voice Agent Sam',
-      details:
-        'Recorded 3:47 audio interview session and generated text transcript with 7/7 questions evaluated.',
-      icon: PhoneCall,
-      confidence: 'High confidence',
+      title: 'Testcases execution started by Facilities Admin',
+      category: 'Facility',
+      timestamp: '1 Sept 2026, 01:15 PM',
+      actor: 'Facilities Admin',
+      details: 'Facilities team initiated live testcases run in call room session.',
+      icon: User,
     },
     {
       id: 'aud-4',
-      title: 'Assessment Call Connected',
-      category: 'Vendor',
+      title: 'Participants joined call room',
+      category: 'System',
       timestamp: '1 Sept 2026, 01:15 PM',
-      actor: 'Presight AI Representative & AI Agent Sam',
-      details: 'Participants joined audio call room session #9823.',
+      actor: 'Facilities Admin & Agent Sam',
+      details: 'Facilities representative and AI Agent Sam connected to call room.',
       icon: Users,
-      confidence: 'Medium confidence',
     },
     {
       id: 'aud-3',
-      title: 'Meeting Link & Session Token Generated',
+      title: 'Call room session started (#9823)',
       category: 'System',
       timestamp: '1 Sept 2026, 01:14 PM',
       actor: 'M42 System Scheduler',
-      details:
-        'Created meeting URL (https://meet.m42.ae/call/vendor-audit-9823) with secure 256-bit access token.',
+      details: 'Meeting URL created (https://meet.m42.ae/call/vendor-audit-9823).',
       icon: Calendar,
-      confidence: 'High confidence',
     },
     {
       id: 'aud-2',
-      title: 'Email Dispatch Notification Sent',
+      title: 'Call dispatched to facility admin',
       category: 'System',
-      timestamp: '1 Sept 2026, 01:15 PM',
+      timestamp: '1 Sept 2026, 10:30 AM',
       actor: 'M42 Dispatcher',
-      details: 'Dispatched automated call invitation email to recipient@presight.ai.',
+      details: 'Sent automated call invitation email to facility admin.',
       icon: Mail,
-      confidence: 'High confidence',
     },
     {
       id: 'aud-1',
-      title: 'Assessment Created & Dispatched',
+      title: 'Dataset selected & assessment initialized',
       category: 'Admin',
-      timestamp: '1 Sept 2026, 10:30 AM',
+      timestamp: '1 Sept 2026, 10:25 AM',
       actor: 'Admin User (M42 Compliance)',
-      details:
-        'Created Round 1 assessment for Presight AI using Technical Questionnaire compliance template.',
+      details: 'Admin selected Clinical EHR Dataset and initialized assessment setup.',
       icon: Send,
-      confidence: 'High confidence',
     },
   ]
 
@@ -247,165 +264,168 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
     setTimeout(() => setCopiedUrl(false), 2000)
   }
 
-  const handleFileUpload = (questionId: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    const newFile: AttachedFile = {
-      name: file.name,
-      size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-      type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
-      date: 'Today',
-    }
-
-    setQuestionFiles((prev) => ({
-      ...prev,
-      [questionId]: [...(prev[questionId] || []), newFile],
-    }))
-
-    setToastMessage(`Attached ${file.name} to Question ${questionId}`)
-    setTimeout(() => setToastMessage(null), 3000)
-  }
-
   const handleFinalize = () => {
-    const nextStatus = currentStatus === 'awaiting_evidence' ? 'ready' : 'finalised'
+    const nextStatus = currentStatus === 'completed' ? 'finalised' : 'completed'
     setCurrentStatus(nextStatus)
     if (onStatusChange) {
       onStatusChange(nextStatus)
     }
     setToastMessage(
-      `Assessment finalized! Status updated to ${nextStatus === 'ready' ? 'Ready' : 'Finalised'}.`
+      `Assessment finalized! Status updated to ${nextStatus === 'finalised' ? 'Finalised' : 'Completed'}.`
     )
     setTimeout(() => setToastMessage(null), 3500)
   }
 
-  const questions = [
+  const toggleExpandSnapshots = (id: number) => {
+    setExpandedSnapshots((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
+
+  const testcases: TestcaseItem[] = [
     {
       id: 1,
-      category: 'Corporate',
-      question:
-        'State the city and country of your headquarters and any stock exchange you are listed on.',
-      confidence: 'High confidence',
-      confidenceType: 'success' as const,
-      confidenceTooltip:
-        'High confidence: Official Abu Dhabi Securities Exchange public registry matched.',
-      answer:
-        'Presight AI Holding PLC is headquartered in Abu Dhabi, United Arab Emirates, and is listed on the Abu Dhabi Securities Exchange (ADX) under the ticker PRESIGHT.',
-      whyScore: 'Scored on the quality of the answer.',
-      answerNotes:
-        'The answer explicitly names the HQ city (Abu Dhabi), country (United Arab Emirates), and the exchange (Abu Dhabi Securities Exchange) as required by the cue.',
-      requiresEvidence: false,
-      research: {
-        text: 'Presight AI Holding PLC is headquartered in Abu Dhabi, United Arab Emirates, and is listed on the Abu Dhabi Securities Exchange (ADX) under the ticker PRESIGHT.',
-        status: 'PASS',
-        links: [
-          'Presight AI Holding PLC Stock Quote (Abu Dhabi ...',
-          '(PRESIGHT.AD) | Stock Price & Latest News',
-          'Presight AI now listed on the Abu Dhabi Securities Exchange',
-          'PRESIGHT Stock Price and Chart',
-        ],
-      },
+      category: 'Corporate Registration',
+      title: 'Headquarters Location & Stock Exchange Verification',
+      expectedBehaviour:
+        'Must return valid HQ city (Abu Dhabi), country (United Arab Emirates), and registered exchange ticker (ADX: PRESIGHT).',
+      agentComment:
+        'AI evaluation confirmed 100% match with public exchange registry data and HQ corporate address.',
+      status: 'Pass',
+      snapshots: [
+        { title: 'Before Snapshot', filename: 'adx_search_query_init.png', size: '142 KB', tag: 'Before' },
+        { title: 'After Snapshot', filename: 'adx_registry_verified.png', size: '185 KB', tag: 'After' },
+        { title: 'Snapshot 3', filename: 'company_profile.png', size: '128 KB', tag: 'Before' },
+        { title: 'Snapshot 4', filename: 'registry_match.png', size: '210 KB', tag: 'After' },
+        { title: 'Snapshot 5', filename: 'hq_address_match.png', size: '165 KB', tag: 'Before' },
+        { title: 'Snapshot 6', filename: 'exchange_status_ok.png', size: '190 KB', tag: 'After' },
+      ],
     },
     {
       id: 2,
-      category: 'Security',
-      question: 'Describe how you encrypt customer data at rest and in transit.',
-      confidence: 'High confidence',
-      confidenceType: 'success' as const,
-      confidenceTooltip:
-        'High confidence: Explicit technical match for AES-256 and TLS 1.2+ encryption standards.',
-      answer:
-        'Customer data is encrypted at rest with AES-256 and in transit with TLS 1.2 or higher, with managed key rotation.',
-      whyScore: 'Scored on the quality of the answer.',
-      answerNotes:
-        'The answer explicitly names AES-256 for data at rest and TLS 1.2 or higher for data in transit, fully meeting the cue requirements.',
-      requiresEvidence: false,
+      category: 'Data Security',
+      title: 'Customer Data Encryption at Rest and in Transit',
+      expectedBehaviour:
+        'AES-256 for data at rest and TLS 1.2 or higher for data in transit must be explicitly configured.',
+      agentComment:
+        'Cipher suite audit confirmed active AES-256 storage key rotation and TLS 1.3 transport security.',
+      status: 'Pass',
+      snapshots: [
+        { title: 'Before Snapshot', filename: 'tls_handshake_inspection.png', size: '135 KB', tag: 'Before' },
+        { title: 'After Snapshot', filename: 'encryption_policy_active.png', size: '198 KB', tag: 'After' },
+        { title: 'Snapshot 3', filename: 'key_rotation_config.png', size: '115 KB', tag: 'Before' },
+        { title: 'Snapshot 4', filename: 'tls_config.png', size: '176 KB', tag: 'After' },
+        { title: 'Snapshot 5', filename: 'storage_volume_encrypt.png', size: '144 KB', tag: 'Before' },
+        { title: 'Snapshot 6', filename: 'ssl_certificate_chain.png', size: '205 KB', tag: 'After' },
+      ],
     },
     {
       id: 3,
-      category: 'Security',
-      question: 'Provide your current ISO/IEC 27001 certificate.',
-      confidence: 'Low confidence',
-      confidenceType: 'warning' as const,
-      confidenceTooltip:
-        'Low confidence: Stage 1 review uploaded; full Stage 2 certificate pending verification.',
-      answer:
-        'The uploaded document states completion of Stage 1 readiness review for ISO/IEC 27001 with Stage 2 certification audit scheduled. Later the certificate was uploaded and received successfully.',
-      whyScore: 'No valid, authentic document was provided initially, so this scores low.',
-      answerNotes:
-        'The answer confirms that a certificate was uploaded and received successfully, but initially only mentions completion of Stage 1 readiness review.',
-      requiresEvidence: true,
+      category: 'Compliance',
+      title: 'Current ISO/IEC 27001 Certificate Verification',
+      expectedBehaviour:
+        'Active, non-expired Stage 2 ISO/IEC 27001 certificate document must be verified.',
+      agentComment:
+        'Stage 1 readiness document reviewed; Stage 2 certificate verification pending audit completion.',
+      status: 'Fail',
+      snapshots: [
+        { title: 'Before Snapshot', filename: 'iso_stage1_submitted.png', size: '155 KB', tag: 'Before' },
+        { title: 'After Snapshot', filename: 'iso_stage2_pending.png', size: '172 KB', tag: 'After' },
+        { title: 'Snapshot 3', filename: 'accreditation_body_check.png', size: '130 KB', tag: 'Before' },
+        { title: 'Snapshot 4', filename: 'audit_schedule_notice.png', size: '160 KB', tag: 'After' },
+        { title: 'Snapshot 5', filename: 'certificate_expiry_flag.png', size: '140 KB', tag: 'Before' },
+        { title: 'Snapshot 6', filename: 'compliance_gap_summary.png', size: '188 KB', tag: 'After' },
+      ],
     },
     {
       id: 4,
-      category: 'Security',
-      question:
-        'Describe your identity and access management controls (SSO, MFA, least privilege).',
-      confidence: 'Medium confidence',
-      confidenceType: 'warning' as const,
-      confidenceTooltip:
-        'Medium confidence: Partial response; role-based access described without enforced MFA details.',
-      answer: '(not answered)',
-      whyScore: 'Scored on the quality of the answer.',
-      answerNotes:
-        'The answer addresses role-based least-privilege access and access controls but fails to explicitly mention SSO or enforced MFA.',
-      requiresEvidence: true,
+      category: 'Access Control',
+      title: 'Identity & Access Control (SSO, MFA, Least Privilege)',
+      expectedBehaviour:
+        'Enterprise SSO provider integration, mandatory MFA enforcement, and RBAC least privilege required.',
+      agentComment:
+        'RBAC permissions verified, but mandatory MFA enforcement flag was found disabled in identity profile.',
+      status: 'Fail',
+      snapshots: [
+        { title: 'Before Snapshot', filename: 'iam_policy_audit_start.png', size: '124 KB', tag: 'Before' },
+        { title: 'After Snapshot', filename: 'iam_mfa_missing.png', size: '168 KB', tag: 'After' },
+        { title: 'Snapshot 3', filename: 'sso_saml_config.png', size: '150 KB', tag: 'Before' },
+        { title: 'Snapshot 4', filename: 'rbac_matrix_view.png', size: '182 KB', tag: 'After' },
+        { title: 'Snapshot 5', filename: 'mfa_enforce_toggle.png', size: '138 KB', tag: 'Before' },
+        { title: 'Snapshot 6', filename: 'user_permission_log.png', size: '194 KB', tag: 'After' },
+      ],
     },
     {
       id: 5,
       category: 'Resilience',
-      question:
-        'Describe your incident-response process and typical time to notify affected customers.',
-      confidence: 'Medium confidence',
-      confidenceType: 'warning' as const,
-      confidenceTooltip:
-        'Medium confidence: Document confirms IR framework without stated customer SLA window.',
-      answer: '(not answered)',
-      whyScore: 'Scored on the quality of the answer.',
-      answerNotes:
-        'The answer confirms the existence of a documented incident-response process but fails to provide a stated notification window.',
-      requiresEvidence: true,
+      title: 'Incident Response Process & Customer Breach SLA',
+      expectedBehaviour:
+        'Documented IR playbook with customer breach notification SLA within 72 hours.',
+      agentComment:
+        'Dedicated 24/7 SecOps playbook and 72-hour breach notification SLA verified.',
+      status: 'Pass',
+      snapshots: [
+        { title: 'Before Snapshot', filename: 'ir_playbook_scan.png', size: '148 KB', tag: 'Before' },
+        { title: 'After Snapshot', filename: 'ir_sla_verified.png', size: '190 KB', tag: 'After' },
+        { title: 'Snapshot 3', filename: 'secops_escalation_flow.png', size: '136 KB', tag: 'Before' },
+        { title: 'Snapshot 4', filename: 'breach_sla_policy.png', size: '175 KB', tag: 'After' },
+        { title: 'Snapshot 5', filename: 'incident_ticket_template.png', size: '145 KB', tag: 'Before' },
+        { title: 'Snapshot 6', filename: 'customer_notify_trigger.png', size: '202 KB', tag: 'After' },
+      ],
     },
     {
       id: 6,
       category: 'Assurance',
-      question: 'Provide your most recent penetration test summary or SOC 2 Type II report.',
-      confidence: 'Low confidence',
-      confidenceType: 'warning' as const,
-      confidenceTooltip:
-        'Low confidence: Missing mandatory penetration test summary or SOC 2 report attachment.',
-      answer: '(not answered)',
-      whyScore: 'No valid, authentic document was provided, so this scores low.',
-      answerNotes:
-        'The answer is empty and does not provide any information about a recent pen-test summary or SOC 2 Type II report.',
-      requiresEvidence: true,
+      title: 'Penetration Test Summary or SOC 2 Type II Report',
+      expectedBehaviour:
+        'Recent (< 12 months) SOC 2 Type II report or external penetration test summary required.',
+      agentComment:
+        'No valid SOC 2 Type II report or external pen-test executive summary attached within 12-month window.',
+      status: 'Fail',
+      snapshots: [
+        { title: 'Before Snapshot', filename: 'audit_vault_lookup.png', size: '130 KB', tag: 'Before' },
+        { title: 'After Snapshot', filename: 'audit_report_missing.png', size: '162 KB', tag: 'After' },
+        { title: 'Snapshot 3', filename: 'soc2_validity_check.png', size: '142 KB', tag: 'Before' },
+        { title: 'Snapshot 4', filename: 'pentest_summary_null.png', size: '169 KB', tag: 'After' },
+        { title: 'Snapshot 5', filename: 'third_party_auditor_log.png', size: '152 KB', tag: 'Before' },
+        { title: 'Snapshot 6', filename: 'compliance_exception_flag.png', size: '185 KB', tag: 'After' },
+      ],
     },
     {
       id: 7,
-      category: 'Data',
-      question: 'Where is customer data stored, and can data residency be restricted to a region?',
-      confidence: 'Low confidence',
-      confidenceType: 'warning' as const,
-      confidenceTooltip: 'Low confidence: Missing UAE cloud tenant data residency proof.',
-      answer: '(not answered)',
-      whyScore: 'Scored on the quality of the answer.',
-      answerNotes:
-        'Response lacks specific cloud tenant location proof for UAE residency restrictions.',
-      requiresEvidence: true,
+      category: 'Data Residency',
+      title: 'Regional Data Storage & Residency Restriction',
+      expectedBehaviour:
+        'Data storage locked to UAE cloud region (me-central-1 / Abu Dhabi & Dubai datacenters).',
+      agentComment:
+        'Tenant metadata confirmed customer data locked strictly within UAE regional cloud datacenters.',
+      status: 'Pass',
+      snapshots: [
+        { title: 'Before Snapshot', filename: 'tenant_region_check.png', size: '140 KB', tag: 'Before' },
+        { title: 'After Snapshot', filename: 'uae_region_locked.png', size: '192 KB', tag: 'After' },
+        { title: 'Snapshot 3', filename: 'me_central1_datacenter.png', size: '125 KB', tag: 'Before' },
+        { title: 'Snapshot 4', filename: 'residency_isolation_rules.png', size: '180 KB', tag: 'After' },
+        { title: 'Snapshot 5', filename: 'doh_compliance_cert.png', size: '155 KB', tag: 'Before' },
+        { title: 'Snapshot 6', filename: 'datacenter_geo_pin.png', size: '210 KB', tag: 'After' },
+      ],
     },
   ]
+
+  const passedCount = testcases.filter((q) => q.status === 'Pass').length
+  const failedCount = testcases.filter((q) => q.status === 'Fail').length
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-[#0d212c] pb-16 font-sans w-full">
       {/* Toast Notification */}
-      {/* Toast Notification — subtle light semantic styling */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-50 bg-[#f0fdf4] text-[#15803d] text-xs font-semibold px-4 py-3 rounded-xl shadow-md border border-[#bbf7d0] flex items-center gap-2.5 animate-in fade-in slide-in-from-top-3 duration-200">
           <CheckCircle2 className="w-4 h-4 text-[#16a34a]" />
           <span>{toastMessage}</span>
         </div>
-      )}{' '}
-      {/* Breadcrumb Menu (Moved outside of Header Card) */}
+      )}
+
+      {/* Breadcrumb Menu */}
       <div className="w-full px-6 lg:px-10 pt-4 pb-1 text-xs font-medium flex items-center gap-1.5 text-[#64748b]">
         <button onClick={onBack} className="hover:text-[#0d7280] cursor-pointer">
           M42 admin
@@ -417,80 +437,51 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
         <span>/</span>
         <span className="text-[#36c0c9] font-bold">Assessment details</span>
       </div>
-      {/* Header Container Card — Very light shade of light primary color with minimal stroke */}
+
+      {/* Main Header Container Card - Compact Height, Status chip next to Facility Name on left, Round chip on right */}
       <div className="w-full px-6 lg:px-10 pt-3">
-        <div className="bg-[#ddf7f9]/20 rounded-3xl border border-[#36c0c9]/30 p-6 sm:p-8 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex flex-col gap-3">
-            {/* Main Title & Subtitle */}
-            <div className="flex flex-col gap-1">
-              <h1 className="text-2xl font-extrabold tracking-tight text-[#0d212c]">
+        <div className="bg-[#ddf7f9]/20 rounded-3xl border border-[#36c0c9]/30 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-1.5">
+            {/* Top row: Facility Name + Status Chip right next to it */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0d212c]">
                 {assessment.vendor}
               </h1>
-              <h2 className="text-xs font-bold text-[#64748b]">{assessment.questionnaire}</h2>
-            </div>
-
-            {/* Status Chips Row */}
-            <div className="flex items-center gap-2.5 flex-wrap mt-0.5">
               <StatusChip
                 label={
                   currentStatus === 'completed'
                     ? 'Completed'
-                    : currentStatus === 'ready'
-                      ? 'Ready'
-                      : currentStatus === 'scheduled'
-                        ? 'Scheduled'
-                        : currentStatus === 'finalised'
-                          ? 'Finalised'
-                          : 'Awaiting evidence'
+                    : currentStatus === 'finalised'
+                      ? 'Finalised'
+                      : 'Completed'
                 }
                 status={
                   currentStatus === 'completed'
                     ? 'success'
-                    : currentStatus === 'ready'
-                      ? 'info'
-                      : currentStatus === 'scheduled'
-                        ? 'info'
-                        : currentStatus === 'finalised'
-                          ? 'finalised'
-                          : 'warning'
+                    : currentStatus === 'finalised'
+                      ? 'finalised'
+                      : 'success'
                 }
                 dot={false}
               />
-              <span className="text-[#36c0c9]/30 font-bold">|</span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#e0f2fe] text-[#0369a1] text-xs font-bold">
-                <Clock className="w-3.5 h-3.5" />
-                <span>Round 1</span>
-              </span>
-              {!isScheduled && (
-                <>
-                  <span className="text-[#36c0c9]/30 font-bold">|</span>
-                  {(() => {
-                    const scoreLower = (assessment.score || '').toLowerCase()
-                    const isHighScore =
-                      scoreLower.includes('high') ||
-                      currentStatus === 'completed' ||
-                      currentStatus === 'finalised'
-                    const isLowScore = scoreLower.includes('low')
-                    const confidenceLevel = isHighScore ? 'High' : isLowScore ? 'Low' : 'Medium'
-                    const chipStatus = isHighScore ? 'success' : isLowScore ? 'warning' : 'warning'
-
-                    return (
-                      <StatusChip
-                        label={`Overall confidence: ${confidenceLevel}`}
-                        status={chipStatus}
-                        dot={false}
-                      />
-                    )
-                  })()}
-                </>
-              )}
             </div>
+            {/* Dataset Subtitle - font-semibold */}
+            <h2 className="text-xs font-semibold text-[#64748b]">{assessment.questionnaire}</h2>
+          </div>
+
+          {/* Right side: Round chip */}
+          <div className="shrink-0 self-start sm:self-center">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#e0f2fe] text-[#0369a1] text-xs font-bold border border-[#bae6fd]">
+              <Clock className="w-3.5 h-3.5" />
+              <span>Round 1</span>
+            </span>
           </div>
         </div>
       </div>
+
       {/* Main Content Area */}
       <div className="w-full px-6 lg:px-10 mt-6 flex flex-col gap-6">
-        {/* Navigation Tabs Bar — Grey horizontal line spans ONLY both tabs */}
+        {/* Navigation Tabs Bar */}
         <div className="flex items-center justify-between pb-0">
           <div className="flex items-center gap-8 border-b border-[#e2e8f0]">
             <button
@@ -522,19 +513,31 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
           </div>
 
           <div className="flex items-center gap-3 pb-3">
-            <button
-              onClick={() => alert(`Downloading report for ${assessment.vendor}...`)}
-              className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-bold text-xs flex items-center gap-2 shadow-2xs cursor-pointer transition"
-            >
-              <Download className="w-4 h-4 text-[#0d212c]" />
-              <span>Download report</span>
-            </button>
-            <button
-              onClick={handleFinalize}
-              className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2 rounded-xl transition cursor-pointer shadow-2xs border-0"
-            >
-              Finalize
-            </button>
+            {isScheduled ? null : currentStatus === 'finalised' || currentStatus === 'completed' ? (
+              <button
+                onClick={() => alert(`Downloading report for ${assessment.vendor}...`)}
+                className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2 rounded-xl flex items-center gap-2 transition cursor-pointer shadow-2xs border-0"
+              >
+                <Download className="w-4 h-4 text-white" />
+                <span>Download report</span>
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => alert(`Downloading report for ${assessment.vendor}...`)}
+                  className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-bold text-xs flex items-center gap-2 shadow-2xs cursor-pointer transition"
+                >
+                  <Download className="w-4 h-4 text-[#0d212c]" />
+                  <span>Download report</span>
+                </button>
+                <button
+                  onClick={handleFinalize}
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2 rounded-xl transition cursor-pointer shadow-2xs border-0"
+                >
+                  Finalize
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -558,31 +561,22 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-extrabold text-[#0d212c]">
-                    Assessment Audit Trail
+                    Audit Trail
                   </h3>
-                  <p className="text-xs text-[#64748b] mt-0.5">
-                    Complete chronological activity log capturing all system events, AI agent
-                    interactions, and admin actions.
-                  </p>
                 </div>
-                <span className="text-xs font-semibold text-[#0f766e] bg-[#ddf7f9] px-3 py-1 rounded-full">
-                  8 events logged
-                </span>
               </div>
 
               <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#e2e8f0] shadow-xs">
-                <div className="relative pl-2 flex flex-col gap-8">
+                <div className="relative pl-2 flex flex-col gap-7">
                   {auditEvents.map((event, idx) => {
                     const EventIcon = event.icon
                     const isLast = idx === auditEvents.length - 1
                     return (
-                      <div key={event.id} className="relative pl-8 flex flex-col gap-1.5">
-                        {/* Vertical connecting line (only rendered if not the last event) */}
+                      <div key={event.id} className="relative pl-8 flex flex-col gap-1">
                         {!isLast && (
                           <div className="absolute left-[13px] top-7 bottom-0 w-0.5 bg-[#e2e8f0] translate-y-1" />
                         )}
 
-                        {/* Timeline Node Icon Circle (100% Primary Light Color Fill, No Stroke, White Icon) */}
                         <div className="absolute left-0 top-0.5 w-7 h-7 rounded-full bg-[#36c0c9] flex items-center justify-center text-white shadow-2xs z-10">
                           <EventIcon className="w-3.5 h-3.5 text-white" />
                         </div>
@@ -596,7 +590,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                                   ? 'bg-purple-100 text-purple-800'
                                   : event.category === 'AI Agent'
                                     ? 'bg-[#ddf7f9] text-[#0f766e]'
-                                    : event.category === 'Vendor'
+                                    : event.category === 'Facility'
                                       ? 'bg-blue-100 text-blue-800'
                                       : 'bg-slate-100 text-slate-700'
                               }`}
@@ -609,23 +603,6 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                             {event.timestamp}
                           </span>
                         </div>
-
-                        {/* Confidence chip placed BELOW the title (ONLY for Admin, AI Agent, Vendor - NOT System) */}
-                        {event.category !== 'System' && event.confidence && (
-                          <div className="flex items-center mt-0.5">
-                            <StatusChip
-                              label={event.confidence}
-                              status={
-                                event.confidence.startsWith('High')
-                                  ? 'success'
-                                  : event.confidence.startsWith('Low')
-                                    ? 'warning'
-                                    : 'warning'
-                              }
-                              dot={false}
-                            />
-                          </div>
-                        )}
 
                         <p className="text-xs text-[#0d212c] leading-relaxed mt-0.5">
                           {event.details}
@@ -647,7 +624,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
           )
         ) : (
           <>
-            {/* Section 1: Assessment lifecycle (Previous Card Theme with horizontal scroll for all 9 steps) */}
+            {/* Section 1: Assessment lifecycle */}
             <div className="flex flex-col gap-2">
               <h3 className="text-sm font-bold text-[#0d212c]">Assessment lifecycle</h3>
               <div className="w-full overflow-x-auto pb-3.5 pt-1 flex items-center gap-3 subtle-scrollbar group/lifecycle">
@@ -710,30 +687,13 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               </div>
             </div>
 
-            {/* Section 2: Agent confidence evaluation */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-[#0d212c]">Agent confidence evaluation</h3>
-                <span
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                    isScheduled
-                      ? 'bg-[#fef7e0] text-[#b06000]'
-                      : currentStatus === 'completed' || currentStatus === 'finalised'
-                        ? 'bg-[#e6f4ea] text-[#137333]'
-                        : 'bg-[#fef7e0] text-[#b06000]'
-                  }`}
-                >
-                  {isScheduled
-                    ? 'Pending'
-                    : currentStatus === 'completed' || currentStatus === 'finalised'
-                      ? 'Completed'
-                      : 'Draft'}
-                </span>
-              </div>
-
-              <div className="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-xs">
-                {isScheduled ? (
-                  <div className="flex items-center justify-between">
+            {/* Section 2 & 3: Agent evaluation and Assessment audio in SAME ROW (2-column grid) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Agent evaluation card */}
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-bold text-[#0d212c]">Agent evaluation</h3>
+                <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex-1 flex flex-col justify-center min-h-[96px]">
+                  {isScheduled ? (
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                         <Clock className="w-5 h-5" />
@@ -741,128 +701,117 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       <div className="flex flex-col">
                         <span className="text-xs font-bold text-[#0d212c]">Evaluation Pending</span>
                         <span className="text-[11px] text-[#64748b]">
-                          Confidence evaluation and score analytics will be generated automatically
-                          after the assessment meeting completes.
+                          Test cases evaluation will be generated automatically after the assessment meeting completes.
                         </span>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#e2e8f0]">
-                    {/* Column 1: ANSWERS */}
-                    <div className="py-3 md:py-0 md:pr-6 flex flex-col gap-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold uppercase text-[#64748b] tracking-wider flex items-center gap-1.5">
-                          <MessageSquare className="w-3.5 h-3.5" />
-                          ANSWERS
-                        </span>
-                        <StatusChip label="Medium confidence" status="warning" dot={false} />
+                  ) : (
+                    <div className="grid grid-cols-2 divide-x divide-[#e2e8f0]">
+                      {/* Column 1: PASSED TESTCASES */}
+                      <div className="pr-4 flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#137333]" />
+                            PASSED TESTCASES
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e6f4ea] text-[#137333]">
+                            Pass
+                          </span>
+                        </div>
+                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                          {passedCount} / {testcases.length} Passed
+                        </div>
                       </div>
-                      <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
-                        7/7 answered
-                      </div>
-                    </div>
 
-                    {/* Column 2: DOCUMENTS */}
-                    <div className="py-3 md:py-0 md:px-6 flex flex-col gap-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold uppercase text-[#64748b] tracking-wider flex items-center gap-1.5">
-                          <FileText className="w-3.5 h-3.5" />
-                          DOCUMENTS
-                        </span>
-                        <StatusChip label="Low confidence" status="warning" dot={false} />
-                      </div>
-                      <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
-                        3/7 files uploaded
-                      </div>
-                    </div>
-
-                    {/* Column 3: RESEARCH */}
-                    <div className="py-3 md:py-0 md:pl-6 flex flex-col gap-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold uppercase text-[#64748b] tracking-wider flex items-center gap-1.5">
-                          <Bot className="w-3.5 h-3.5" />
-                          EVALUATION
-                        </span>
-                        <StatusChip label="High confidence" status="success" dot={false} />
-                      </div>
-                      <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
-                        4/4 sources verified
+                      {/* Column 2: FAILED TESTCASES */}
+                      <div className="pl-4 flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#c5221f]" />
+                            FAILED TESTCASES
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fce8e6] text-[#c5221f]">
+                            Fail
+                          </span>
+                        </div>
+                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                          {failedCount} / {testcases.length} Failed
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Section 3: Interview audio */}
-            <div className="flex flex-col gap-2">
-              <h3 className="text-sm font-bold text-[#0d212c]">Interview audio</h3>
-              <div className="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-3">
-                {isScheduled ? (
-                  <div className="p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
-                      <PhoneCall className="w-4 h-4" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold text-[#0d212c]">No Audio Recording</span>
-                      <span className="text-[11px] text-[#64748b]">
-                        Meeting has not started yet. Audio recording will be available after the
-                        assessment call.
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex items-center gap-4">
-                    <button
-                      onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-                      className="w-10 h-10 rounded-xl bg-[#0d212c] text-white flex items-center justify-center shadow-xs shrink-0 hover:bg-[#08171f] transition cursor-pointer"
-                    >
-                      {isPlayingAudio ? (
-                        <Pause className="w-4 h-4" />
-                      ) : (
-                        <Play className="w-4 h-4 ml-0.5" />
-                      )}
-                    </button>
-
-                    <div className="flex-1 flex flex-col gap-1">
-                      <div className="h-2 w-full bg-[#e2e8f0] rounded-full overflow-hidden">
-                        <div
-                          className={`h-full bg-[#36c0c9] ${isPlayingAudio ? 'w-1/3 transition-all duration-1000' : 'w-0'}`}
-                        />
+              {/* Assessment audio card */}
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-bold text-[#0d212c]">Assessment audio</h3>
+                <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex-1 flex items-center gap-4 min-h-[96px]">
+                  {isScheduled ? (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
+                        <PhoneCall className="w-4 h-4" />
                       </div>
-                      <div className="flex justify-between text-[11px] text-[#64748b]">
-                        <span>0:00</span>
-                        <span>3:47</span>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-[#0d212c]">No Audio Recording</span>
+                        <span className="text-[11px] text-[#64748b]">
+                          Audio recording will be available after the assessment call completes.
+                        </span>
                       </div>
                     </div>
-
-                    {/* Playback speed dropdown */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <select
-                        value={playbackSpeed}
-                        onChange={(e) => setPlaybackSpeed(e.target.value)}
-                        className="px-2.5 py-1.5 rounded-xl border border-[#cbd5e1] bg-white text-xs font-bold text-[#0d212c] outline-none cursor-pointer"
-                        title="Playback speed"
-                      >
-                        <option value="0.75">0.75x</option>
-                        <option value="1">1.0x</option>
-                        <option value="1.25">1.25x</option>
-                        <option value="1.5">1.5x</option>
-                        <option value="2">2.0x</option>
-                      </select>
-
+                  ) : (
+                    <>
                       <button
-                        onClick={() => alert('Downloading interview audio...')}
-                        className="p-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-100 text-[#0d212c] bg-white transition cursor-pointer flex items-center justify-center"
-                        title="Download interview audio"
-                        aria-label="Download interview audio"
+                        onClick={() => setIsPlayingAudio(!isPlayingAudio)}
+                        className="p-2 text-[#0d212c] hover:text-[#36c0c9] hover:bg-slate-100 rounded-xl transition cursor-pointer shrink-0 flex items-center justify-center"
+                        title={isPlayingAudio ? 'Pause' : 'Play'}
+                        aria-label={isPlayingAudio ? 'Pause audio' : 'Play audio'}
                       >
-                        <Download className="w-4 h-4 text-[#64748b]" />
+                        {isPlayingAudio ? (
+                          <Pause className="w-5 h-5 fill-current text-[#0d212c]" />
+                        ) : (
+                          <Play className="w-5 h-5 ml-0.5 fill-current text-[#0d212c]" />
+                        )}
                       </button>
-                    </div>
-                  </div>
-                )}
+
+                      <div className="flex-1 flex flex-col gap-1">
+                        <div className="h-2 w-full bg-[#e2e8f0] rounded-full overflow-hidden">
+                          <div
+                            className={`h-full bg-[#36c0c9] ${isPlayingAudio ? 'w-1/3 transition-all duration-1000' : 'w-0'}`}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[11px] text-[#64748b] font-medium">
+                          <span>0:00</span>
+                          <span>3:47</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <select
+                          value={playbackSpeed}
+                          onChange={(e) => setPlaybackSpeed(e.target.value)}
+                          className="px-2.5 py-1.5 rounded-xl border border-[#cbd5e1] bg-white text-xs font-bold text-[#0d212c] outline-none cursor-pointer"
+                          title="Playback speed"
+                        >
+                          <option value="0.75">0.75x</option>
+                          <option value="1">1.0x</option>
+                          <option value="1.25">1.25x</option>
+                          <option value="1.5">1.5x</option>
+                          <option value="2">2.0x</option>
+                        </select>
+
+                        <button
+                          onClick={() => alert('Downloading assessment audio...')}
+                          className="p-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-100 text-[#0d212c] bg-white transition cursor-pointer flex items-center justify-center"
+                          title="Download assessment audio"
+                          aria-label="Download assessment audio"
+                        >
+                          <Download className="w-4 h-4 text-[#64748b]" />
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -873,189 +822,136 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                 <p className="text-xs text-[#64748b] leading-relaxed">
                   {isScheduled
                     ? 'No summary generated yet. The meeting has not been started.'
-                    : 'Overall evaluation across 7 questions; 2 mandatory evidence items outstanding.'}
+                    : `Assessment evaluation completed across 7 testcases: ${passedCount} passed, ${failedCount} failed.`}
                 </p>
               </div>
             </div>
 
-            {/* Section 5: Questions */}
-            <div className="flex flex-col gap-2">
+            {/* Section 5: Testcases (7) */}
+            <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-[#0d212c]">Questions</h3>
-                {!isScheduled && (
-                  <button
-                    onClick={() => setShowAnswerKey(!showAnswerKey)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-[#f8fafc] text-[#0d212c] bg-white transition cursor-pointer"
-                  >
-                    {showAnswerKey ? 'Hide answer key' : 'Show answer key'}
-                  </button>
-                )}
+                <h3 className="text-base font-extrabold text-[#0d212c]">
+                  Testcases ({testcases.length})
+                </h3>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-xs">
-                <div className="divide-y divide-[#e2e8f0]/80">
-                  {questions.map((q) => {
-                    const attachmentsForQuestion = questionFiles[q.id] || []
-                    const canUpload =
-                      !isScheduled && currentStatus !== 'completed' && q.requiresEvidence
-                    const shouldShowAttachmentSection =
-                      !isScheduled && (attachmentsForQuestion.length > 0 || canUpload)
+              <div className="flex flex-col gap-4">
+                {testcases.map((q) => {
+                  const isPass = q.status === 'Pass'
+                  const isExpanded = !!expandedSnapshots[q.id]
+                  const visibleSnapshots = isExpanded ? q.snapshots : q.snapshots.slice(0, 4)
+                  const hiddenCount = q.snapshots.length - 4
+                  const formattedIndex = String(q.id).padStart(2, '0')
 
-                    return (
-                      <div key={q.id} className="py-5 first:pt-0 last:pb-0 flex flex-col gap-3">
-                        <div className="flex items-start justify-between gap-4">
-                          <h4 className="font-bold text-[#0d212c] text-sm">
-                            {q.id}. [{q.category}] {q.question}
-                          </h4>
+                  return (
+                    <div
+                      key={q.id}
+                      className="bg-white rounded-2xl border border-[#e2e8f0] p-5 sm:p-6 shadow-2xs flex flex-col gap-4"
+                    >
+                      {/* Top Header Row: Circular index badge + Category & Title + Pass/Fail Pill */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          {/* Circular Index Badge in Primary Light Cyan */}
+                          <div className="w-9 h-9 rounded-full bg-[#ddf7f9] text-[#0d7280] font-extrabold text-xs flex items-center justify-center shrink-0 border border-[#36c0c9]/30">
+                            {formattedIndex}
+                          </div>
 
-                          {!isScheduled && (
-                            <div className="relative group shrink-0">
-                              <div className="cursor-default">
-                                <StatusChip
-                                  label={q.confidence}
-                                  status={q.confidenceType}
-                                  dot={false}
-                                />
-                              </div>
-                              <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute right-0 top-7 z-30 w-64 bg-[#0d212c] text-white text-xs p-3 rounded-xl shadow-xl border border-white/10">
-                                {q.confidenceTooltip}
-                              </div>
-                            </div>
-                          )}
+                          <div className="flex flex-col min-w-0">
+                            <span className="text-[11px] font-bold text-[#64748b]">
+                              {q.category}
+                            </span>
+                            <h4 className="font-extrabold text-[#0d212c] text-sm leading-snug truncate">
+                              {q.title}
+                            </h4>
+                          </div>
                         </div>
 
-                        <div className="text-xs text-[#0d212c] leading-relaxed">
-                          <strong>Answer:</strong>{' '}
-                          <span className={isScheduled ? 'text-[#64748b] italic' : ''}>
-                            {isScheduled
-                              ? 'Meeting not started yet. Question will be answered during the assessment call.'
-                              : q.answer}
+                        {!isScheduled && (
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              isPass
+                                ? 'bg-[#e6f4ea] text-[#137333] border border-[#ceedd5]'
+                                : 'bg-[#fce8e6] text-[#c5221f] border border-[#f8c4b8]'
+                            }`}
+                          >
+                            {isPass ? 'Pass' : 'Fail'}
                           </span>
-                        </div>
-
-                        {!isScheduled && showAnswerKey && (
-                          <>
-                            <div className="text-xs text-[#64748b]">
-                              <strong>Why this score:</strong> {q.whyScore}
-                            </div>
-
-                            <div className="text-xs text-[#64748b]">
-                              <strong>Answer notes:</strong> {q.answerNotes}
-                            </div>
-                          </>
-                        )}
-
-                        {!isScheduled && q.research && (
-                          <div className="p-3.5 rounded-xl bg-[#f0fdf4] border border-[#bbf7d0] text-xs flex flex-col gap-1.5 mt-1">
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-[#0d212c]">
-                                Research: {q.research.text}
-                              </span>
-                              <span className="px-2 py-0.5 rounded bg-[#12b76a] text-white font-bold text-[10px]">
-                                {q.research.status}
-                              </span>
-                            </div>
-
-                            <div className="flex flex-col gap-1 text-[#0f766e]">
-                              {q.research.links.map((link) => (
-                                <a
-                                  key={link}
-                                  href="#"
-                                  className="hover:underline truncate text-[11px]"
-                                >
-                                  {link}
-                                </a>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {shouldShowAttachmentSection && (
-                          <div className="mt-3 p-4 sm:p-5 rounded-2xl bg-[#f8fafc] border border-[#e2e8f0] flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                            {/* Column 1: Attachments (if available) */}
-                            {attachmentsForQuestion.length > 0 && (
-                              <div className="flex flex-col gap-2.5 min-w-0 flex-1">
-                                <div className="flex items-center gap-1.5 text-xs font-bold text-[#0d212c]">
-                                  <Paperclip className="w-4 h-4 text-[#0d7280]" />
-                                  <span>Attachments ({attachmentsForQuestion.length})</span>
-                                </div>
-                                <div className="flex flex-wrap gap-3">
-                                  {attachmentsForQuestion.map((file, idx) => (
-                                    <div
-                                      key={idx}
-                                      className="p-3 rounded-xl border border-[#e2e8f0] bg-white inline-flex items-center justify-between gap-4 text-xs w-full sm:w-auto min-w-[300px] shadow-2xs"
-                                    >
-                                      <div className="flex items-center gap-2.5 min-w-0">
-                                        <div className="px-2.5 py-1 rounded-lg bg-[#eff6ff] text-[#2563eb] font-bold text-[10px] shrink-0">
-                                          {file.type}
-                                        </div>
-                                        <div className="min-w-0">
-                                          <h5 className="font-bold text-xs text-[#0d212c] truncate">
-                                            {file.name}
-                                          </h5>
-                                          <span className="text-[10px] text-[#64748b] block">
-                                            {file.size} • {file.date}
-                                          </span>
-                                        </div>
-                                      </div>
-
-                                      <div className="flex items-center gap-1 shrink-0">
-                                        <button
-                                          onClick={() => alert(`Viewing ${file.name}...`)}
-                                          className="p-1 text-[#64748b] hover:text-[#0d212c] cursor-pointer"
-                                          title="View file"
-                                        >
-                                          <Eye className="w-3.5 h-3.5" />
-                                        </button>
-                                        <button
-                                          onClick={() => alert(`Downloading ${file.name}...`)}
-                                          className="p-1 text-[#64748b] hover:text-[#0d212c] cursor-pointer"
-                                          title="Download file"
-                                        >
-                                          <Download className="w-3.5 h-3.5" />
-                                        </button>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Column 2: Evidence Section (Shown ONLY if evidence is NOT uploaded yet) */}
-                            {attachmentsForQuestion.length === 0 && (
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 flex-1">
-                                <div className="flex flex-col gap-0.5">
-                                  <div className="flex items-center gap-1.5 text-xs font-bold text-[#0d212c] mb-1">
-                                    <ShieldCheck className="w-4 h-4 text-[#0d7280]" />
-                                    <span>Evidence</span>
-                                  </div>
-                                  <span className="text-xs font-bold text-[#0d212c]">
-                                    No evidence uploaded yet
-                                  </span>
-                                  <span className="text-[11px] text-[#64748b]">
-                                    Upload supporting evidence for this answer.
-                                  </span>
-                                </div>
-
-                                {canUpload && (
-                                  <label className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white border border-[#0d7280] text-[#0d7280] hover:bg-[#f0fdfa] font-bold text-xs cursor-pointer transition shadow-2xs shrink-0 self-start sm:self-center">
-                                    <Upload className="w-3.5 h-3.5 text-[#0d7280]" />
-                                    <span>Upload evidence</span>
-                                    <input
-                                      type="file"
-                                      className="hidden"
-                                      onChange={(e) => handleFileUpload(q.id, e)}
-                                    />
-                                  </label>
-                                )}
-                              </div>
-                            )}
-                          </div>
                         )}
                       </div>
-                    )
-                  })}
-                </div>
+
+                      {/* Middle Inner Container Box: Clean inline icons for EXPECTED BEHAVIOUR and AGENT COMMENT */}
+                      <div className="bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 flex flex-col gap-3.5">
+                        {/* EXPECTED BEHAVIOUR Row */}
+                        <div className="flex items-start gap-2.5">
+                          <FileText className="w-4 h-4 text-[#64748b] shrink-0 mt-0.5" />
+                          <div className="flex flex-col gap-0.5 min-w-0">
+                            <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                              EXPECTED BEHAVIOUR
+                            </span>
+                            <p className="text-xs text-[#334155] font-normal leading-relaxed">
+                              {q.expectedBehaviour}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Subtle Horizontal Divider */}
+                        <div className="border-t border-[#e2e8f0]" />
+
+                        {/* AGENT COMMENT Row */}
+                        <div className="flex items-start gap-2.5">
+                          <MessageSquare className="w-4 h-4 text-[#64748b] shrink-0 mt-0.5" />
+                          <div className="flex flex-col gap-0.5 min-w-0">
+                            <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                              AGENT COMMENT
+                            </span>
+                            <p className="text-xs text-[#475569] font-normal leading-relaxed">
+                              {q.agentComment}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bottom Attachment Row: Paperclip Icon + Attached snapshots heading + Compact Pill Cards + Text-only Expander Button */}
+                      {!isScheduled && (
+                        <div className="flex flex-col gap-2 pt-1">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-[#64748b]">
+                            <Paperclip className="w-3.5 h-3.5 text-[#64748b]" />
+                            <span>Attached snapshots ({q.snapshots.length})</span>
+                          </div>
+
+                          <div className="flex items-center gap-2.5 flex-wrap">
+                            {visibleSnapshots.map((snap, idx) => (
+                              <div
+                                key={idx}
+                                className="px-3 py-1.5 rounded-xl border border-[#e2e8f0] bg-white inline-flex items-center gap-2 text-xs shadow-2xs hover:border-[#cbd5e1] transition cursor-pointer"
+                                onClick={() => alert(`Viewing snapshot ${snap.filename}...`)}
+                              >
+                                <ImageIcon className="w-3.5 h-3.5 text-[#36c0c9] shrink-0" />
+                                <span className="font-semibold text-xs text-[#0d212c] truncate max-w-[170px]">
+                                  {snap.filename}
+                                </span>
+                                {snap.tag && (
+                                  <span className="text-[10px] font-medium text-[#64748b] bg-slate-100 px-1.5 py-0.5 rounded">
+                                    ({snap.tag})
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+
+                            {hiddenCount > 0 && (
+                              <button
+                                onClick={() => toggleExpandSnapshots(q.id)}
+                                className="text-[#36c0c9] hover:text-[#0d7280] text-xs font-semibold hover:underline cursor-pointer transition ml-1"
+                              >
+                                {isExpanded ? 'Show less' : `+${hiddenCount}`}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </>

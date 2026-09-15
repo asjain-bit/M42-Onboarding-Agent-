@@ -219,7 +219,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
           className="hover:text-[#36c0c9] cursor-pointer flex items-center gap-1"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Questionnaires</span>
+          <span>Datasets</span>
         </button>
         <span>/</span>
         <span className="text-[#36c0c9] font-bold">{questionnaire.title}</span>
@@ -229,7 +229,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
       <div className="w-full px-6 lg:px-10 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <span className="text-[11px] font-bold tracking-wider text-[#64748b] uppercase">
-            QUESTIONNAIRE
+            DATASET DETAILS
           </span>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-xl lg:text-2xl font-extrabold tracking-tight text-[#0d212c]">
@@ -254,13 +254,13 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-bold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
                 >
                   <Plus className="w-4 h-4 text-[#0d212c]" />
-                  <span>Add question</span>
+                  <span>Add testcase</span>
                 </button>
                 <button
                   onClick={handlePublish}
                   className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0"
                 >
-                  Publish questionnaire
+                  Publish dataset
                 </button>
               </>
             ) : (
@@ -270,13 +270,13 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   className="text-[#36c0c9] hover:text-[#2cb0b9] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer bg-transparent border-0 p-0"
                 >
                   <Pencil className="w-4 h-4 text-[#36c0c9]" />
-                  <span>Edit questionnaire</span>
+                  <span>Edit dataset</span>
                 </button>
                 <button
                   onClick={handlePublish}
                   className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0"
                 >
-                  Publish questionnaire
+                  Publish dataset
                 </button>
               </>
             )
@@ -287,7 +287,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-bold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
               >
                 <Plus className="w-4 h-4 text-[#0d212c]" />
-                <span>Add question</span>
+                <span>Add testcase</span>
               </button>
               <button
                 onClick={handleSaveOrEdit}
@@ -302,16 +302,15 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               className="text-[#36c0c9] hover:text-[#2cb0b9] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer bg-transparent border-0 p-0"
             >
               <Pencil className="w-4 h-4 text-[#36c0c9]" />
-              <span>Edit questionnaire</span>
+              <span>Edit dataset</span>
             </button>
           )}
         </div>
       </div>
 
-      {/* Questions List */}
+      {/* Testcases List */}
       <div className="w-full px-6 lg:px-10 mt-6 flex flex-col gap-5">
         {questions.map((q, idx) => (
-          /* Requirement 3: Subtle grey border for question card in edit mode (no cyan highlight) */
           <div
             key={q.id}
             draggable={isEditing}
@@ -326,24 +325,21 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   : 'border-[#e2e8f0]'
             }`}
           >
-            {/* Question Card Top Bar */}
+            {/* Testcase Card Top Bar */}
             <div className="flex items-center justify-between gap-4 border-b border-[#e2e8f0]/80 pb-3">
               <div className="flex items-center gap-3 min-w-0">
                 {isEditing && (
                   <div className="relative group/drag shrink-0">
                     <div
                       className="p-1.5 rounded-lg text-[#64748b] hover:text-[#0d212c] hover:bg-slate-100 cursor-grab active:cursor-grabbing transition"
-                      title="Drag and drop to change question position"
+                      title="Drag and drop to change testcase position"
                     >
                       <GripVertical className="w-4 h-4 text-[#64748b]" />
-                    </div>
-                    <div className="pointer-events-none opacity-0 group-hover/drag:opacity-100 transition-opacity duration-200 absolute left-8 top-1/2 -translate-y-1/2 z-50 w-56 bg-[#0d212c] text-white text-[11px] px-2.5 py-1.5 rounded-lg shadow-xl border border-white/10 text-center leading-snug font-normal whitespace-normal">
-                      Drag and drop to change the position of this question
                     </div>
                   </div>
                 )}
                 <span className="text-sm font-extrabold text-[#0d212c] tracking-tight">
-                  Question {idx + 1}
+                  Testcase #{idx + 1}
                 </span>
               </div>
 
@@ -351,18 +347,18 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 <button
                   onClick={() => setDeletingQuestionId(q.id)}
                   className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition cursor-pointer"
-                  title="Delete question"
-                  aria-label="Delete question"
+                  title="Delete testcase"
+                  aria-label="Delete testcase"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               )}
             </div>
 
-            {/* Requirement 1: QUESTION Input Field (View-only mode has no focus/click stroke interaction) */}
+            {/* TESTCASE NAME Input Field */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                QUESTION
+                TESTCASE NAME
               </label>
               <input
                 type="text"
@@ -378,10 +374,10 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               />
             </div>
 
-            {/* Requirement 1: RESPONSE CUE Textarea (View-only mode has no focus/click stroke interaction) */}
+            {/* EVALUATION CRITERIA Textarea */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                RESPONSE CUE
+                EVALUATION CRITERIA
               </label>
               <textarea
                 value={q.responseCue}
@@ -416,12 +412,12 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         ))}
       </div>
 
-      {/* Requirement 4: Add New Question Modal Popup */}
+      {/* Add New Testcase Modal Popup */}
       {showAddQuestionModal && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-3 mb-4">
-              <h3 className="text-base font-extrabold text-[#0d212c]">Add new question</h3>
+              <h3 className="text-base font-extrabold text-[#0d212c]">Add new testcase</h3>
               <button
                 onClick={() => setShowAddQuestionModal(false)}
                 className="p-1 rounded-lg text-slate-400 hover:text-[#0d212c] transition cursor-pointer"
@@ -433,7 +429,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             <form onSubmit={handleAddQuestion} className="flex flex-col gap-4">
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Question text <span className="text-red-500 font-bold">*</span>
+                  Testcase name <span className="text-red-500 font-bold">*</span>
                 </label>
                 <input
                   type="text"
@@ -447,7 +443,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
 
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Response cue <span className="text-red-500 font-bold">*</span>
+                  Evaluation criteria <span className="text-red-500 font-bold">*</span>
                 </label>
                 <textarea
                   placeholder="Instructions or cues for the vendor to answer effectively..."

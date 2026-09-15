@@ -32,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'questionnaires', label: 'Questionnaires', icon: FileText },
+    { id: 'questionnaires', label: 'Datasets', icon: FileText },
     { id: 'vendors', label: 'Vendors', icon: Building2 },
     { id: 'agents', label: 'Agents', icon: Bot },
   ]
@@ -66,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className="h-5 w-auto object-contain shrink-0"
                 />
                 <span className="font-extrabold text-xs tracking-tight text-white truncate leading-none">
-                  Tech Due Diligence
+                  Onboarding Agent
                 </span>
               </div>
 

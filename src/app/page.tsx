@@ -56,7 +56,7 @@ export default function HomePage() {
     switch (activeTab) {
       case 'questionnaires':
         return {
-          title: 'Questionnaires',
+          title: 'Datasets',
           subtitle: '',
         }
       case 'vendors':

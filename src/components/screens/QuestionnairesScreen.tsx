@@ -152,6 +152,7 @@ export const QuestionnairesScreen: React.FC = () => {
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [testcasesCountInput, setTestcasesCountInput] = useState<number | ''>(40)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [newQuestionnaireTitle, setNewQuestionnaireTitle] = useState('')
@@ -203,24 +204,26 @@ export const QuestionnairesScreen: React.FC = () => {
 
     setTimeout(() => {
       const extension = uploadedFile.name.split('.').pop()?.toUpperCase() as 'PDF' | 'DOCX' | 'MD'
+      const count = typeof testcasesCountInput === 'number' ? testcasesCountInput : 35
       const newQuestionnaire: Questionnaire = {
         id: `q-${Date.now()}`,
         title,
         description:
-          description || `Custom vendor compliance checklist parsed from ${uploadedFile.name}.`,
+          description || `Custom dataset checklist parsed from ${uploadedFile.name}.`,
         fileType: extension || 'PDF',
-        questionsCount: Math.floor(Math.random() * 20) + 15,
+        questionsCount: count,
         status: 'Draft',
       }
 
       setQuestionnaires([newQuestionnaire, ...questionnaires])
       setTitle('')
       setDescription('')
+      setTestcasesCountInput(40)
       setUploadedFile(null)
       setIsUploading(false)
       setShowUploadModal(false)
       setNewQuestionnaireTitle('')
-      showToast(`Questionnaire "${newQuestionnaire.title}" successfully uploaded & structured!`)
+      showToast(`Dataset "${newQuestionnaire.title}" successfully added & configured!`)
     }, 1500)
   }
 
@@ -230,7 +233,7 @@ export const QuestionnairesScreen: React.FC = () => {
     setQuestionnaires(questionnaires.filter((q) => q.id !== deletingId))
     setDeletingId(null)
     if (target) {
-      showToast(`Removed "${target.title}" template.`)
+      showToast(`Removed "${target.title}" dataset.`)
     }
   }
 
@@ -265,13 +268,13 @@ export const QuestionnairesScreen: React.FC = () => {
       <div className="text-xs font-semibold text-[#64748b] flex items-center gap-1.5">
         <span>M42 admin</span>
         <span>/</span>
-        <span className="text-[#36c0c9] font-bold">Questionnaires</span>
+        <span className="text-[#36c0c9] font-bold">Datasets</span>
       </div>
 
-      {/* Header Bar with Search Bar placed on the LEFT side of Upload questionnaire CTA */}
+      {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-0.5">
-          <h2 className="text-xl font-extrabold text-[#0d212c]">Questionnaires</h2>
+          <h2 className="text-xl font-extrabold text-[#0d212c]">Datasets</h2>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -279,7 +282,7 @@ export const QuestionnairesScreen: React.FC = () => {
             <Search className="w-4 h-4 text-[#64748b] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search questionnaire, description..."
+              placeholder="Search dataset name, description..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value)
@@ -294,15 +297,15 @@ export const QuestionnairesScreen: React.FC = () => {
             className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold py-2.5 px-5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition cursor-pointer border-0 shrink-0"
           >
             <Upload className="w-4 h-4 text-white" />
-            <span>Upload questionnaire</span>
+            <span>Add Dataset</span>
           </button>
         </div>
       </div>
 
-      {/* Sorting Chips: All, Ready, Draft (UI matching Vendors page) */}
+      {/* Sorting Chips: All Datasets, Ready, Draft */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {[
-          { key: 'all', label: 'All Questionnaires', count: questionnaires.length },
+          { key: 'all', label: 'All Datasets', count: questionnaires.length },
           {
             key: 'Ready',
             label: 'Ready',
@@ -341,15 +344,15 @@ export const QuestionnairesScreen: React.FC = () => {
         })}
       </div>
 
-      {/* Questionnaires Directory Table (Requirement 1: Format column removed) */}
+      {/* Datasets Directory Table */}
       <div className="bg-white rounded-2xl border border-[#e2e8f0] shadow-xs overflow-hidden w-full flex flex-col">
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
               <tr className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] text-xs font-bold">
-                <th className="py-3.5 px-4">Title</th>
+                <th className="py-3.5 px-4">Dataset Name</th>
                 <th className="py-3.5 px-4">Description</th>
-                <th className="py-3.5 px-4">Questions</th>
+                <th className="py-3.5 px-4">Testcases</th>
                 <th className="py-3.5 px-4">Status</th>
                 <th className="py-3.5 px-4 text-right">Actions</th>
               </tr>
@@ -361,7 +364,7 @@ export const QuestionnairesScreen: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin text-[#36c0c9] shrink-0" />
                       <span className="font-extrabold">
-                        {newQuestionnaireTitle || 'New Questionnaire'}
+                        {newQuestionnaireTitle || 'New Dataset'}
                       </span>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ddf7f9] text-[#0f766e] flex items-center gap-1 border border-[#36c0c9]/30">
                         <Loader2 className="w-3 h-3 animate-spin" /> Adding item to list...
@@ -369,7 +372,7 @@ export const QuestionnairesScreen: React.FC = () => {
                     </div>
                   </td>
                   <td className="py-3.5 px-4 text-[#64748b] text-xs max-w-sm truncate italic">
-                    Parsing document and structuring questions...
+                    Configuring dataset and testcases...
                   </td>
                   <td className="py-3.5 px-4 text-[#0d212c] font-semibold text-xs">
                     <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
@@ -385,7 +388,7 @@ export const QuestionnairesScreen: React.FC = () => {
               {paginatedQuestionnaires.length === 0 && !isUploading && (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-xs text-[#64748b]">
-                    No matching questionnaires found.
+                    No matching datasets found.
                   </td>
                 </tr>
               )}
@@ -417,7 +420,7 @@ export const QuestionnairesScreen: React.FC = () => {
                   </td>
                   <td
                     className="py-3.5 px-4 text-[#0d212c] font-semibold text-xs"
-                    title={`${item.questionsCount} questions`}
+                    title={`${item.questionsCount} testcases`}
                   >
                     {item.questionsCount}
                   </td>
@@ -428,7 +431,6 @@ export const QuestionnairesScreen: React.FC = () => {
                       dot={false}
                     />
                   </td>
-                  {/* Requirement 4: Delete icon color is red with hover interaction removed */}
                   <td className="py-3.5 px-4 text-right">
                     <div
                       className="flex items-center justify-end gap-1.5"
@@ -445,16 +447,16 @@ export const QuestionnairesScreen: React.FC = () => {
                           })
                         }
                         className="p-1.5 text-[#64748b] hover:text-[#0d212c] hover:bg-slate-100 rounded-lg transition cursor-pointer"
-                        title="Edit questionnaire"
-                        aria-label="Edit questionnaire"
+                        title="Edit dataset"
+                        aria-label="Edit dataset"
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setDeletingId(item.id)}
                         className="p-1.5 text-red-600 cursor-pointer"
-                        title="Delete questionnaire"
-                        aria-label="Delete questionnaire"
+                        title="Delete dataset"
+                        aria-label="Delete dataset"
                       >
                         <Trash2 className="w-4 h-4 text-red-600" />
                       </button>
@@ -515,15 +517,15 @@ export const QuestionnairesScreen: React.FC = () => {
         )}
       </div>
 
-      {/* Upload Questionnaire Popup Modal (Requirement 2: Width increased to max-w-3xl) */}
+      {/* Add Dataset Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-3xl w-full p-8 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-4 mb-6">
               <div>
-                <h3 className="text-lg font-extrabold text-[#0d212c]">Upload questionnaire</h3>
+                <h3 className="text-lg font-extrabold text-[#0d212c]">Add Dataset</h3>
                 <p className="text-xs text-[#64748b] mt-0.5 font-medium">
-                  Upload custom compliance checklist document for AI automated parsing.
+                  Configure new dataset template and set up testcases for automated evaluation.
                 </p>
               </div>
 
@@ -539,10 +541,10 @@ export const QuestionnairesScreen: React.FC = () => {
             <form onSubmit={handleUpload} className="flex flex-col gap-5">
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-2">
-                  Questionnaire title <span className="text-red-500 font-bold">*</span>
+                  Dataset Name <span className="text-red-500 font-bold">*</span>
                 </label>
                 <Input
-                  placeholder="e.g. Technical Questionnaire"
+                  placeholder="e.g. Clinical EHR & Patient Records Dataset"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
@@ -553,7 +555,7 @@ export const QuestionnairesScreen: React.FC = () => {
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-2">Description</label>
                 <Textarea
-                  placeholder="Brief summary of what this questionnaire covers..."
+                  placeholder="Brief summary of what this dataset covers..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
@@ -561,7 +563,23 @@ export const QuestionnairesScreen: React.FC = () => {
                 />
               </div>
 
-              {/* Requirement 3: Info icon color uses text color (#64748b) */}
+              <div>
+                <label className="block text-xs font-bold text-[#0d212c] mb-2">
+                  Number of testcases <span className="text-red-500 font-bold">*</span>
+                </label>
+                <Input
+                  type="number"
+                  placeholder="e.g. 40"
+                  value={testcasesCountInput}
+                  onChange={(e) =>
+                    setTestcasesCountInput(e.target.value ? parseInt(e.target.value, 10) : '')
+                  }
+                  required
+                  min={1}
+                  className="w-full text-xs py-3"
+                />
+              </div>
+
               <div>
                 <div className="flex items-center gap-1.5 mb-2">
                   <label className="block text-xs font-bold text-[#0d212c]">
@@ -571,15 +589,14 @@ export const QuestionnairesScreen: React.FC = () => {
                   <div className="relative group cursor-pointer">
                     <Info className="w-3.5 h-3.5 text-[#64748b]" />
                     <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute left-1/2 -translate-x-1/2 bottom-6 z-50 w-64 bg-[#0d212c] text-white text-xs p-2.5 rounded-xl shadow-xl border border-white/10 text-center">
-                      The questionnaire will be created based on the document you will be uploading,
-                      which can be edited later on.
+                      The dataset testcases will be created based on the document you upload.
                     </div>
                   </div>
                 </div>
 
                 {!uploadedFile ? (
-                  <label className="border-2 border-dashed border-[#e2e8f0] hover:border-[#cbd5e1] bg-[#f8fafc] hover:bg-[#f1f5f9] rounded-2xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition text-center min-h-[160px]">
-                    <Upload className="w-8 h-8 text-[#0d212c]" />
+                  <label className="border-2 border-dashed border-[#e2e8f0] hover:border-[#cbd5e1] bg-[#f8fafc] hover:bg-[#f1f5f9] rounded-2xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition text-center min-h-[140px]">
+                    <Upload className="w-7 h-7 text-[#0d212c]" />
                     <span className="text-xs font-bold text-[#0d212c]">
                       Click to choose file or drag and drop
                     </span>
@@ -618,22 +635,6 @@ export const QuestionnairesScreen: React.FC = () => {
                     </button>
                   </div>
                 )}
-
-                <div className="mt-3 p-3.5 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex flex-col gap-2">
-                  <p className="text-[11px] text-[#64748b] leading-relaxed">
-                    <strong>Note:</strong> Please make sure to include all questions in the
-                    specified format along with all response details. Below is the reference
-                    template which you can download.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => showToast('Downloading questionnaire reference template...')}
-                    className="text-[#36c0c9] hover:text-[#2cb0b9] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer bg-transparent border-0 self-start p-0"
-                  >
-                    <Download className="w-3.5 h-3.5 text-[#36c0c9]" />
-                    <span>Download questionnaire template</span>
-                  </button>
-                </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-[#e2e8f0]">
@@ -652,10 +653,10 @@ export const QuestionnairesScreen: React.FC = () => {
                   {isUploading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      <span>Adding & structuring...</span>
+                      <span>Adding dataset...</span>
                     </>
                   ) : (
-                    <span>Upload & structure</span>
+                    <span>Add Dataset</span>
                   )}
                 </button>
               </div>

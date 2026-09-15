@@ -29,17 +29,17 @@ export const DashboardScreen: React.FC = () => {
   const [assessments, setAssessments] = useState<AssessmentRow[]>([
     {
       id: 'ast-1',
-      vendor: 'Presight AI | See the Future Today',
-      questionnaire: 'Technical Questionnaire',
+      vendor: 'Cleveland Clinic Abu Dhabi',
+      questionnaire: 'Clinical EHR & Patient Records Dataset',
       round: 'Round 1',
-      status: 'awaiting_evidence',
+      status: 'completed',
       score: 'Medium',
       createdDate: '1 Sept 2026, 10:30 AM',
     },
     {
       id: 'ast-2',
-      vendor: 'Directus Inc.',
-      questionnaire: 'Data Protection & Privacy',
+      vendor: 'Danat Al Emarat Hospital',
+      questionnaire: 'PACS & Radiology Imaging Dataset',
       round: 'Round 2',
       status: 'completed',
       score: 'High',
@@ -47,8 +47,8 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'ast-3',
-      vendor: 'Pango Group LLC',
-      questionnaire: 'Information Security & Compliance',
+      vendor: 'Healthpoint Hospital',
+      questionnaire: 'Lab Telemetry & Diagnostic Sync Dataset',
       round: 'Initial Review',
       status: 'completed',
       score: 'High',
@@ -56,8 +56,8 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'ast-4',
-      vendor: 'Apex Systems Advisory',
-      questionnaire: 'Technical Questionnaire',
+      vendor: 'Sheikh Shakhbout Medical City (SSMC)',
+      questionnaire: 'Pharmacy & Medication Inventory Dataset',
       round: 'Stage 2 Audit',
       status: 'scheduled',
       score: '-',
@@ -65,8 +65,8 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'ast-5',
-      vendor: 'Delphi AI Technologies',
-      questionnaire: 'SOC 2 Type II Vendor Risk Assessment',
+      vendor: 'Moorfields Eye Hospital Abu Dhabi',
+      questionnaire: 'SOC 2 Type II Facility Security Dataset',
       round: 'Round 1 - Technical',
       status: 'finalised',
       score: 'High',
@@ -74,17 +74,17 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'ast-6',
-      vendor: 'BioHealth Analytics',
-      questionnaire: 'HIPAA & Healthcare Data Compliance',
+      vendor: 'Imperial College London Diabetes Centre',
+      questionnaire: 'HIPAA & Healthcare Data Compliance Dataset',
       round: 'Follow-up Audit',
-      status: 'awaiting_evidence',
+      status: 'completed',
       score: 'Low',
       createdDate: '12 Aug 2026, 03:45 PM',
     },
     {
       id: 'ast-7',
-      vendor: 'CloudScale AI Systems',
-      questionnaire: 'Third-Party Software Supply Chain Security',
+      vendor: 'Al Rahba Hospital',
+      questionnaire: 'Third-Party Cloud API Integration Dataset',
       round: 'Round 3',
       status: 'completed',
       score: 'High',
@@ -92,8 +92,8 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'ast-8',
-      vendor: 'CyberGuard Solutions',
-      questionnaire: 'ISO 27001 ISMS Security Checklist',
+      vendor: 'Amana Healthcare Rehabilitation',
+      questionnaire: 'ISO 27001 ISMS Healthcare Checklist',
       round: 'Annual Re-evaluation',
       status: 'completed',
       score: 'High',
@@ -101,8 +101,8 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'ast-9',
-      vendor: 'HealthCloud Telemetry',
-      questionnaire: 'Cloud Infrastructure Audit Questionnaire',
+      vendor: 'M42 Genomic Sciences Center',
+      questionnaire: 'Cloud Infrastructure Audit Dataset',
       round: 'Stage 1 Discovery',
       status: 'finalised',
       score: 'High',
@@ -110,8 +110,8 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'ast-10',
-      vendor: 'PharmaTech Analytics',
-      questionnaire: 'Clinical AI Safety & Ethics Questionnaire',
+      vendor: 'Capital Health Screening Centre',
+      questionnaire: 'Clinical AI Safety & Ethics Dataset',
       round: 'Pre-onboarding',
       status: 'completed',
       score: 'Medium',
@@ -119,17 +119,17 @@ export const DashboardScreen: React.FC = () => {
     },
     {
       id: 'ast-11',
-      vendor: 'MedSec Audit Co',
-      questionnaire: 'UAE DOH Health Data Residency Compliance',
+      vendor: 'Medica Diagnostic Center',
+      questionnaire: 'UAE DOH Health Data Residency Dataset',
       round: 'Round 2 - Compliance',
-      status: 'awaiting_evidence',
+      status: 'scheduled',
       score: 'Low',
       createdDate: '28 Jul 2026, 04:15 PM',
     },
     {
       id: 'ast-12',
-      vendor: 'Global Diagnostics IT',
-      questionnaire: 'Business Continuity & Disaster Recovery Audit',
+      vendor: 'Global Health Telemetry Unit',
+      questionnaire: 'Business Continuity & Disaster Recovery Dataset',
       round: 'Final Review',
       status: 'finalised',
       score: 'High',
@@ -144,11 +144,6 @@ export const DashboardScreen: React.FC = () => {
   // Filter chips click options
   const filterOptions = [
     { key: 'all', label: 'All assessments', count: assessments.length },
-    {
-      key: 'awaiting_evidence',
-      label: 'Awaiting evidence',
-      count: assessments.filter((a) => a.status === 'awaiting_evidence').length,
-    },
     { key: 'completed', label: 'Completed', count: completedAssessments },
     { key: 'finalised', label: 'Finalised', count: finalizedAssessments },
     {
@@ -213,13 +208,13 @@ export const DashboardScreen: React.FC = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* KPI Card 1: Total Vendors */}
+        {/* KPI Card 1: Total Facilities */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col justify-between gap-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <Users className="w-5 h-5 text-[#0d212c] shrink-0" />
               <h3 className="font-bold text-xs sm:text-sm text-[#0d212c] truncate">
-                Total Vendors
+                Total Facilities
               </h3>
             </div>
             <div className="text-2xl font-extrabold text-[#36c0c9] shrink-0">12</div>
@@ -228,31 +223,31 @@ export const DashboardScreen: React.FC = () => {
           <div className="grid grid-cols-3 divide-x divide-[#e2e8f0] pt-3 border-t border-[#e2e8f0]">
             <div className="flex flex-col gap-0.5 pr-2">
               <span className="text-lg font-bold text-[#0d212c]">7</span>
-              <span className="text-[11px] text-[#64748b] font-medium">High confidence</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Completed</span>
             </div>
             <div className="flex flex-col gap-0.5 px-3">
-              <span className="text-lg font-bold text-[#0d212c]">2</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Medium confidence</span>
+              <span className="text-lg font-bold text-[#0d212c]">3</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Finalised</span>
             </div>
             <div className="flex flex-col gap-0.5 pl-3">
-              <span className="text-lg font-bold text-[#0d212c]">3</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Low confidence</span>
+              <span className="text-lg font-bold text-[#0d212c]">2</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Scheduled</span>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5 pt-1 text-[11px] text-[#64748b]">
             <Info className="w-3.5 h-3.5 text-[#36c0c9] shrink-0" />
-            <span>Breakdown by Overall Assessment Score</span>
+            <span>Breakdown by Assessment Status</span>
           </div>
         </div>
 
-        {/* KPI Card 2: Average Rounds per Vendor */}
+        {/* KPI Card 2: Average Rounds per Facility */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col justify-between gap-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <RefreshCw className="w-5 h-5 text-[#0d212c] shrink-0" />
               <h3 className="font-bold text-xs sm:text-sm text-[#0d212c] truncate">
-                Average Rounds per Vendor
+                Average Rounds per Facility
               </h3>
             </div>
             <div className="text-2xl font-extrabold text-[#36c0c9] shrink-0">2</div>
@@ -308,7 +303,7 @@ export const DashboardScreen: React.FC = () => {
 
           <div className="flex items-center gap-1.5 pt-1 text-[11px] text-[#64748b]">
             <Info className="w-3.5 h-3.5 text-[#36c0c9] shrink-0" />
-            <span>Breakdown by Ageing Bucket for Awaiting Evidence status</span>
+            <span>Breakdown by Ageing Bucket</span>
           </div>
         </div>
       </div>
@@ -318,7 +313,7 @@ export const DashboardScreen: React.FC = () => {
         <h2 className="text-xl font-extrabold text-[#0d212c]">Assessments</h2>
         <div className="w-full sm:w-80 shrink-0">
           <SearchBar
-            placeholder="Search vendor name, questionnaire..."
+            placeholder="Search facility name, dataset..."
             onSearch={handleSearchChange}
           />
         </div>
@@ -357,18 +352,17 @@ export const DashboardScreen: React.FC = () => {
           <table className="w-full text-left text-sm border-collapse">
             <thead>
               <tr className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] text-xs font-bold">
-                <th className="py-3.5 px-4">Vendor</th>
-                <th className="py-3.5 px-4">Questionnaire</th>
+                <th className="py-3.5 px-4">Facilities</th>
+                <th className="py-3.5 px-4">Dataset</th>
                 <th className="py-3.5 px-4">Round</th>
                 <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4">Confidence Level</th>
                 <th className="py-3.5 px-4">Created date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#e2e8f0]/60">
               {paginatedAssessments.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-[#64748b] text-sm">
+                  <td colSpan={5} className="py-8 text-center text-[#64748b] text-sm">
                     No assessments matching search criteria.
                   </td>
                 </tr>
@@ -406,46 +400,21 @@ export const DashboardScreen: React.FC = () => {
                     <td className="py-3.5 px-4">
                       <StatusChip
                         label={
-                          row.status === 'awaiting_evidence'
-                            ? 'Awaiting evidence'
-                            : row.status === 'ready'
-                              ? 'Ready'
-                              : row.status === 'scheduled'
-                                ? 'Scheduled'
-                                : row.status === 'finalised'
-                                  ? 'Finalised'
-                                  : 'Completed'
+                          row.status === 'scheduled'
+                            ? 'Scheduled'
+                            : row.status === 'finalised'
+                              ? 'Finalised'
+                              : 'Completed'
                         }
                         status={
-                          row.status === 'awaiting_evidence'
-                            ? 'warning'
-                            : row.status === 'ready'
-                              ? 'info'
-                              : row.status === 'scheduled'
-                                ? 'info'
-                                : row.status === 'finalised'
-                                  ? 'finalised'
-                                  : 'success'
+                          row.status === 'scheduled'
+                            ? 'info'
+                            : row.status === 'finalised'
+                              ? 'finalised'
+                              : 'success'
                         }
                         dot={false}
                       />
-                    </td>
-                    <td className="py-3.5 px-4">
-                      {row.score === '-' ? (
-                        <span className="text-[#64748b] font-[#64748b] text-xs pl-2.5">-</span>
-                      ) : (
-                        <StatusChip
-                          label={row.score}
-                          status={
-                            row.score === 'High'
-                              ? 'success'
-                              : row.score === 'Medium'
-                                ? 'warning'
-                                : 'warning'
-                          }
-                          dot={false}
-                        />
-                      )}
                     </td>
                     <td className="py-3.5 px-4 text-[#64748b] text-xs font-medium">
                       {row.createdDate}

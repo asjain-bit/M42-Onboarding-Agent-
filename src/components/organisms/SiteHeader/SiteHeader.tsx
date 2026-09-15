@@ -9,7 +9,7 @@ import React from 'react'
 import { SiteHeaderProps } from './SiteHeader.types'
 
 export const SiteHeader: React.FC<SiteHeaderProps> = ({
-  title = 'Tech Due Diligence',
+  title = 'Onboarding Agent',
   subtitle,
   className = '',
 }) => {
