@@ -6,12 +6,7 @@
 'use client'
 
 import React from 'react'
-
-export interface SiteHeaderProps {
-  title?: string
-  subtitle?: string
-  className?: string
-}
+import { SiteHeaderProps } from './SiteHeader.types'
 
 export const SiteHeader: React.FC<SiteHeaderProps> = ({
   title = 'Tech Due Diligence',

@@ -1,0 +1,22 @@
+/**
+ * AgentsScreen — Screen
+ * Admin Agents page displaying prompt core, configuration, versioning, and statuses for M42 due-diligence agents.
+ * Used in: HomePage
+ */
+
+'use client'
+
+import React from 'react'
+import { AgentManagement } from '@/components/organisms/AgentManagement'
+
+export interface AgentsScreenProps {
+  className?: string
+}
+
+export const AgentsScreen: React.FC<AgentsScreenProps> = ({ className = '' }) => {
+  return (
+    <div className={`w-full py-2 ${className}`}>
+      <AgentManagement />
+    </div>
+  )
+}

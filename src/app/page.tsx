@@ -5,13 +5,14 @@ import { LoginScreen } from '@/components/screens/LoginScreen'
 import { DashboardScreen } from '@/components/screens/DashboardScreen'
 import { QuestionnairesScreen } from '@/components/screens/QuestionnairesScreen'
 import { VendorsScreen } from '@/components/screens/VendorsScreen'
+import { AgentsScreen } from '@/components/screens/AgentsScreen'
 import { Sidebar } from '@/components/organisms/Sidebar'
 import { SiteHeader } from '@/components/organisms/SiteHeader'
 
 export default function HomePage() {
   // Default to false so the user lands on the SSO Login Screen first
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'questionnaires' | 'vendors'>(
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'questionnaires' | 'vendors' | 'agents'>(
     'dashboard'
   )
   const [userEmail, setUserEmail] = useState('zaid.alali@m42.ae')
@@ -45,18 +46,23 @@ export default function HomePage() {
       case 'questionnaires':
         return {
           title: 'Questionnaires',
-          subtitle: '', // Subheading removed per user request
+          subtitle: '',
         }
       case 'vendors':
         return {
-          title: 'Vendors', // Renamed per Requirement 1
-          subtitle: '', // Subheading removed per user request
+          title: 'Vendors',
+          subtitle: '',
+        }
+      case 'agents':
+        return {
+          title: 'Agents',
+          subtitle: '',
         }
       case 'dashboard':
       default:
         return {
           title: 'Dashboard',
-          subtitle: '', // Subheading removed per user request
+          subtitle: '',
         }
     }
   }
@@ -68,7 +74,9 @@ export default function HomePage() {
       {/* Expandable/Collapsible Left Navigation Sidebar */}
       <Sidebar
         activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab as 'dashboard' | 'questionnaires' | 'vendors')}
+        onTabChange={(tab) =>
+          setActiveTab(tab as 'dashboard' | 'questionnaires' | 'vendors' | 'agents')
+        }
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         userName={formattedName}
@@ -90,6 +98,7 @@ export default function HomePage() {
           {activeTab === 'dashboard' && <DashboardScreen />}
           {activeTab === 'questionnaires' && <QuestionnairesScreen />}
           {activeTab === 'vendors' && <VendorsScreen />}
+          {activeTab === 'agents' && <AgentsScreen />}
         </main>
       </div>
     </div>

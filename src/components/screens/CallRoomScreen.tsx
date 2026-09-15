@@ -18,6 +18,7 @@ import {
   Calendar,
   Clock,
   Check,
+  Download,
 } from 'lucide-react'
 import { VendorDispatchData } from './ConfigureVendorCallScreen'
 
@@ -1138,8 +1139,28 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                         <span className="text-[10px] text-[#64748b]">{file.size}</span>
                       </div>
                     </div>
-                    <div className="w-5 h-5 rounded-full bg-[#137333]/10 text-[#137333] flex items-center justify-center shrink-0">
-                      <Check className="w-3 h-3 text-[#137333]" />
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const element = document.createElement('a')
+                          const fileBlob = new Blob([`Sample content for ${file.name}`], {
+                            type: 'text/plain',
+                          })
+                          element.href = URL.createObjectURL(fileBlob)
+                          element.download = file.name
+                          document.body.appendChild(element)
+                          element.click()
+                          document.body.removeChild(element)
+                        }}
+                        title={`Download ${file.name}`}
+                        className="p-1 rounded text-[#64748b] border-0 bg-transparent cursor-pointer flex items-center justify-center shrink-0 outline-none focus:outline-none active:bg-transparent"
+                      >
+                        <Download className="w-3.5 h-3.5 fill-none stroke-current" />
+                      </button>
+                      <div className="w-5 h-5 rounded-full bg-[#137333]/10 text-[#137333] flex items-center justify-center shrink-0">
+                        <Check className="w-3 h-3 text-[#137333]" />
+                      </div>
                     </div>
                   </div>
                 </div>
