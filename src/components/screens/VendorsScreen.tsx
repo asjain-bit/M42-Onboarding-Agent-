@@ -95,6 +95,9 @@ export const VendorsScreen: React.FC = () => {
   const [editRecipientInput, setEditRecipientInput] = useState('')
   const [editRecipientError, setEditRecipientError] = useState<string | null>(null)
 
+  // Recipients column expand/collapse toggle state
+  const [expandedRecipients, setExpandedRecipients] = useState<Record<string, boolean>>({})
+
   const worldCountryOptions = [
     { name: 'United Arab Emirates', flag: '🇦🇪' },
     { name: 'United States', flag: '🇺🇸' },
@@ -160,7 +163,13 @@ export const VendorsScreen: React.FC = () => {
       flag: '🇦🇪',
       status: 'Activated',
       score: '94.0',
-      recipients: ['compliance@presight.ai', 'security@presight.ai', 'audit@presight.ai'],
+      recipients: [
+        'compliance@presight.ai',
+        'security@presight.ai',
+        'audit@presight.ai',
+        'legal@presight.ai',
+        'dpo@presight.ai',
+      ],
     },
     {
       id: 'v-2',
@@ -196,7 +205,13 @@ export const VendorsScreen: React.FC = () => {
       flag: '🇬🇧',
       status: 'Activated',
       score: '76.0',
-      recipients: ['contact@apexsystems.com', 'legal@apexsystems.com', 'info@apexsystems.com'],
+      recipients: [
+        'contact@apexsystems.com',
+        'legal@apexsystems.com',
+        'info@apexsystems.com',
+        'privacy@apexsystems.com',
+        'compliance@apexsystems.com',
+      ],
     },
     {
       id: 'v-5',
@@ -714,12 +729,15 @@ export const VendorsScreen: React.FC = () => {
                       )}
                     </td>
 
-                    <td className="py-4 px-5 text-xs">
+                    <td className="py-4 px-5 text-xs" onClick={(e) => e.stopPropagation()}>
                       {!vendor.recipients || vendor.recipients.length === 0 ? (
                         <span className="text-[#64748b] font-medium">-</span>
                       ) : (
                         <div className="flex flex-wrap items-center gap-1.5 min-w-[320px] max-w-[380px]">
-                          {vendor.recipients.map((recEmail, idx) => (
+                          {(expandedRecipients[vendor.id]
+                            ? vendor.recipients
+                            : vendor.recipients.slice(0, 3)
+                          ).map((recEmail, idx) => (
                             <span
                               key={idx}
                               className="inline-block bg-[#f1f5f9] text-[#0d212c] font-medium px-2 py-0.5 rounded-md text-[11px] border border-[#e2e8f0] truncate max-w-[180px]"
@@ -728,6 +746,21 @@ export const VendorsScreen: React.FC = () => {
                               {recEmail}
                             </span>
                           ))}
+                          {vendor.recipients.length > 3 && !expandedRecipients[vendor.id] && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setExpandedRecipients((prev) => ({
+                                  ...prev,
+                                  [vendor.id]: true,
+                                }))
+                              }}
+                              className="inline-block bg-transparent border-0 text-[#64748b] hover:text-[#0d212c] font-bold text-[11px] px-1 py-0.5 transition cursor-pointer shrink-0"
+                              title="Click to view all recipients"
+                            >
+                              +{vendor.recipients.length - 3}
+                            </button>
+                          )}
                         </div>
                       )}
                     </td>

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
   Upload,
   Trash2,
@@ -13,6 +13,7 @@ import {
   Download,
   AlertTriangle,
   Loader2,
+  Search,
 } from 'lucide-react'
 import { Input } from '@/components/atoms/Input'
 import { Textarea } from '@/components/atoms/Textarea'
@@ -32,6 +33,8 @@ export const QuestionnairesScreen: React.FC = () => {
   const [selectedQuestionnaire, setSelectedQuestionnaire] =
     useState<QuestionnaireDetailData | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'Ready' | 'Draft'>('all')
   const ITEMS_PER_PAGE = 8
 
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([
@@ -155,10 +158,29 @@ export const QuestionnairesScreen: React.FC = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
+  // Filtered Questionnaires (Search & Status Filter)
+  const filteredQuestionnaires = useMemo(() => {
+    return questionnaires.filter((q) => {
+      const matchesStatus = statusFilter === 'all' || q.status === statusFilter
+      const query = searchTerm.toLowerCase().trim()
+      const matchesSearch =
+        !query ||
+        q.title.toLowerCase().includes(query) ||
+        q.description.toLowerCase().includes(query) ||
+        q.fileType.toLowerCase().includes(query) ||
+        q.status.toLowerCase().includes(query) ||
+        q.questionsCount.toString().includes(query)
+      return matchesStatus && matchesSearch
+    })
+  }, [questionnaires, searchTerm, statusFilter])
+
   // Pagination math (8 items per page)
-  const totalPages = Math.ceil(questionnaires.length / ITEMS_PER_PAGE) || 1
+  const totalPages = Math.ceil(filteredQuestionnaires.length / ITEMS_PER_PAGE) || 1
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const paginatedQuestionnaires = questionnaires.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  const paginatedQuestionnaires = filteredQuestionnaires.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE
+  )
 
   // Single document file selection handler
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,19 +268,77 @@ export const QuestionnairesScreen: React.FC = () => {
         <span className="text-[#36c0c9] font-bold">Questionnaires</span>
       </div>
 
-      {/* Header Bar */}
+      {/* Header Bar with Search Bar placed on the LEFT side of Upload questionnaire CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-0.5">
           <h2 className="text-xl font-extrabold text-[#0d212c]">Questionnaires</h2>
         </div>
 
-        <button
-          onClick={() => setShowUploadModal(true)}
-          className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold py-2.5 px-5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition cursor-pointer border-0"
-        >
-          <Upload className="w-4 h-4 text-white" />
-          <span>Upload questionnaire</span>
-        </button>
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-72">
+            <Search className="w-4 h-4 text-[#64748b] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search questionnaire, description..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+                setCurrentPage(1)
+              }}
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-medium text-[#0d212c] outline-none focus:border-[#cbd5e1] shadow-xs"
+            />
+          </div>
+
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold py-2.5 px-5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition cursor-pointer border-0 shrink-0"
+          >
+            <Upload className="w-4 h-4 text-white" />
+            <span>Upload questionnaire</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Sorting Chips: All, Ready, Draft (UI matching Vendors page) */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {[
+          { key: 'all', label: 'All Questionnaires', count: questionnaires.length },
+          {
+            key: 'Ready',
+            label: 'Ready',
+            count: questionnaires.filter((q) => q.status === 'Ready').length,
+          },
+          {
+            key: 'Draft',
+            label: 'Draft',
+            count: questionnaires.filter((q) => q.status === 'Draft').length,
+          },
+        ].map((chip) => {
+          const isSelected = statusFilter === chip.key
+          return (
+            <button
+              key={chip.key}
+              onClick={() => {
+                setStatusFilter(chip.key as 'all' | 'Ready' | 'Draft')
+                setCurrentPage(1)
+              }}
+              className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-2 ${
+                isSelected
+                  ? 'bg-[#36c0c9] text-white font-bold shadow-xs border border-[#36c0c9]'
+                  : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
+              }`}
+            >
+              <span>{chip.label}</span>
+              <span
+                className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                  isSelected ? 'bg-white/25 text-white' : 'bg-[#f1f5f9] text-[#64748b]'
+                }`}
+              >
+                {chip.count}
+              </span>
+            </button>
+          )
+        })}
       </div>
 
       {/* Questionnaires Directory Table (Requirement 1: Format column removed) */}
@@ -299,6 +379,13 @@ export const QuestionnairesScreen: React.FC = () => {
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <Loader2 className="w-4 h-4 animate-spin text-[#36c0c9] ml-auto" />
+                  </td>
+                </tr>
+              )}
+              {paginatedQuestionnaires.length === 0 && !isUploading && (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-xs text-[#64748b]">
+                    No matching questionnaires found.
                   </td>
                 </tr>
               )}
@@ -380,7 +467,7 @@ export const QuestionnairesScreen: React.FC = () => {
         </div>
 
         {/* Table Pagination Footer */}
-        {questionnaires.length > 0 && (
+        {filteredQuestionnaires.length > 0 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[#e2e8f0] bg-[#f8fafc]">
             <div className="text-xs text-[#64748b] font-medium">
               Showing page <span className="font-semibold text-[#0d212c]">{currentPage}</span> of{' '}

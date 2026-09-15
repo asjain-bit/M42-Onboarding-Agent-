@@ -8,6 +8,7 @@ import { VendorsScreen } from '@/components/screens/VendorsScreen'
 import { AgentsScreen } from '@/components/screens/AgentsScreen'
 import { Sidebar } from '@/components/organisms/Sidebar'
 import { SiteHeader } from '@/components/organisms/SiteHeader'
+import { PageSkeletonLoader } from '@/components/molecules/PageSkeletonLoader'
 
 export default function HomePage() {
   // Default to false so the user lands on the SSO Login Screen first
@@ -15,10 +16,20 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'questionnaires' | 'vendors' | 'agents'>(
     'dashboard'
   )
+  const [isPageLoading, setIsPageLoading] = useState(false)
   const [userEmail, setUserEmail] = useState('zaid.alali@m42.ae')
 
   // Expandable/Collapsible Sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+
+  const handleTabChange = (tab: 'dashboard' | 'questionnaires' | 'vendors' | 'agents') => {
+    if (tab === activeTab && !isPageLoading) return
+    setIsPageLoading(true)
+    setActiveTab(tab)
+    setTimeout(() => {
+      setIsPageLoading(false)
+    }, 1000)
+  }
 
   const handleLogin = (email: string) => {
     setUserEmail(email)
@@ -75,7 +86,7 @@ export default function HomePage() {
       <Sidebar
         activeTab={activeTab}
         onTabChange={(tab) =>
-          setActiveTab(tab as 'dashboard' | 'questionnaires' | 'vendors' | 'agents')
+          handleTabChange(tab as 'dashboard' | 'questionnaires' | 'vendors' | 'agents')
         }
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -95,10 +106,16 @@ export default function HomePage() {
 
         {/* Main Full-Width Content Area */}
         <main className="flex-1 w-full">
-          {activeTab === 'dashboard' && <DashboardScreen />}
-          {activeTab === 'questionnaires' && <QuestionnairesScreen />}
-          {activeTab === 'vendors' && <VendorsScreen />}
-          {activeTab === 'agents' && <AgentsScreen />}
+          {isPageLoading ? (
+            <PageSkeletonLoader />
+          ) : (
+            <>
+              {activeTab === 'dashboard' && <DashboardScreen />}
+              {activeTab === 'questionnaires' && <QuestionnairesScreen />}
+              {activeTab === 'vendors' && <VendorsScreen />}
+              {activeTab === 'agents' && <AgentsScreen />}
+            </>
+          )}
         </main>
       </div>
     </div>
