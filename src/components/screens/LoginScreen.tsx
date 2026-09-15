@@ -47,36 +47,35 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
               alt="M42 logo"
               className="h-8 w-auto object-contain shrink-0"
             />
-            <span className="font-semibold text-xl text-[#0d212c] tracking-tight">
+            <span className="font-bold text-xl text-[#0d212c] tracking-tight">
               Onboarding Agent
             </span>
           </div>
 
           <div>
-            <p className="text-slate-600 text-base leading-relaxed font-normal">
-              M42 Onboarding Agent gives facility compliance and audit teams an automated, auditable view
-              of every facility evaluation.
-            </p>
+            <h2 className="text-xl lg:text-2xl font-bold text-[#0d212c] leading-snug tracking-tight mb-2">
+              Smarter evaluations. Clear verdicts.
+            </h2>
           </div>
 
           {/* Feature points */}
           <div className="space-y-6 pt-2">
             <div className="flex items-start gap-3.5">
-              <ShieldCheck className="w-6 h-6 text-[#0f766e] shrink-0 mt-0.5" />
+              <Users className="w-6 h-6 text-[#0f766e] shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-bold text-[#0d212c] text-sm">Trusted & secure</h3>
+                <h3 className="font-bold text-[#0d212c] text-sm">Collaborative Evaluations</h3>
                 <p className="text-slate-600 text-xs mt-0.5 leading-relaxed">
-                  Enterprise-grade security with Single Sign-On and role-based access.
+                  Facilitators and evaluators work together to run test cases.
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3.5">
-              <Users className="w-6 h-6 text-[#0f766e] shrink-0 mt-0.5" />
+              <ShieldCheck className="w-6 h-6 text-[#0f766e] shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-bold text-[#0d212c] text-sm">Collaborative</h3>
+                <h3 className="font-bold text-[#0d212c] text-sm">AI-Powered Analysis</h3>
                 <p className="text-slate-600 text-xs mt-0.5 leading-relaxed">
-                  Align procurement, compliance and vendors in one unified workspace.
+                  Automatically capture snapshots, analyze results, and generate verdicts.
                 </p>
               </div>
             </div>
@@ -84,9 +83,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             <div className="flex items-start gap-3.5">
               <PieChart className="w-6 h-6 text-[#0f766e] shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-bold text-[#0d212c] text-sm">Actionable insights</h3>
+                <h3 className="font-bold text-[#0d212c] text-sm">Clear & Auditable Results</h3>
                 <p className="text-slate-600 text-xs mt-0.5 leading-relaxed">
-                  Get real-time visibility and make confident, data-driven decisions.
+                  Track test case outcomes and get a final verdict for every dataset.
                 </p>
               </div>
             </div>

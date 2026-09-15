@@ -10,11 +10,13 @@ export interface QuestionItem {
   responseCue: string
   researchNeeded: boolean
   attachmentRequired: boolean
+  includedInAssessment?: boolean
 }
 
 export interface QuestionnaireDetailData {
   id: string
   title: string
+  description?: string
   status: 'Ready' | 'Draft' | 'Processing'
   questionsCount: number
   initialEditMode?: boolean
@@ -56,6 +58,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         'Specify whether workflows are clinical, decision-support, operational, or administrative. State whether outputs influence patient care directly or indirectly.',
       researchNeeded: true,
       attachmentRequired: true,
+      includedInAssessment: true,
     },
     {
       id: 2,
@@ -65,6 +68,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         'Provide documentation or summary of hazard analysis, risk register, or failure-mode analysis related to patient harm.',
       researchNeeded: false,
       attachmentRequired: true,
+      includedInAssessment: true,
     },
     {
       id: 3,
@@ -74,6 +78,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         'Specify encryption algorithms (e.g. AES-256, TLS 1.3), key rotation policies, and HSM backing.',
       researchNeeded: true,
       attachmentRequired: true,
+      includedInAssessment: true,
     },
     {
       id: 4,
@@ -82,6 +87,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         'Attach executive summary or auditor attestation statement covering the last 12 months.',
       researchNeeded: false,
       attachmentRequired: true,
+      includedInAssessment: true,
     },
     {
       id: 5,
@@ -90,6 +96,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         'Detail tenant deployment architecture, backup locations, and compliance with UAE Health Data Law.',
       researchNeeded: true,
       attachmentRequired: false,
+      includedInAssessment: true,
     },
     {
       id: 6,
@@ -99,6 +106,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         'Provide notification timeline (e.g., within 24 hours), triage workflows, and root cause analysis format.',
       researchNeeded: true,
       attachmentRequired: true,
+      includedInAssessment: true,
     },
   ])
 
@@ -134,6 +142,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         'Provide explicit operational proof and supporting compliance evidence.',
       researchNeeded: newResearchNeeded,
       attachmentRequired: newAttachmentRequired,
+      includedInAssessment: true,
     }
 
     setQuestions([...questions, newQuestionObj])
@@ -243,6 +252,11 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               {status === 'Draft' ? 'Draft' : 'Ready'}
             </span>
           </div>
+          {questionnaire.description && (
+            <p className="text-xs text-[#64748b] font-medium mt-0.5 max-w-3xl">
+              {questionnaire.description}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-4 shrink-0">
@@ -343,22 +357,39 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 </span>
               </div>
 
-              {isEditing && (
-                <button
-                  onClick={() => setDeletingQuestionId(q.id)}
-                  className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition cursor-pointer"
-                  title="Delete testcase"
-                  aria-label="Delete testcase"
+              {/* Top Checkbox: Include during assessment */}
+              <div className="flex items-center gap-4">
+                <div
+                  className="flex items-center gap-2"
+                  title="When enabled, this testcase will be automatically evaluated during live assessment calls."
                 >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
+                  <Checkbox
+                    label="Include during assessment"
+                    checked={q.includedInAssessment ?? true}
+                    disabled={!isEditing}
+                    onChange={(e) =>
+                      handleQuestionChange(q.id, 'includedInAssessment', e.target.checked)
+                    }
+                  />
+                </div>
+
+                {isEditing && (
+                  <button
+                    onClick={() => setDeletingQuestionId(q.id)}
+                    className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition cursor-pointer"
+                    title="Delete testcase"
+                    aria-label="Delete testcase"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
             </div>
 
-            {/* TESTCASE NAME Input Field */}
+            {/* TESTCASE Input Field */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                TESTCASE NAME
+                TESTCASE
               </label>
               <input
                 type="text"

@@ -40,108 +40,108 @@ export const QuestionnairesScreen: React.FC = () => {
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([
     {
       id: 'q-1',
-      title: 'Technical Questionnaire',
+      title: 'Clinical EHR & Patient Records Dataset',
       description:
-        'Core architectural, clinical risk, and technical data pipeline compliance questionnaire.',
+        'Core clinical workflows, EHR data structures, patient record privacy, and interoperability testcases.',
       fileType: 'PDF',
       questionsCount: 62,
       status: 'Ready',
     },
     {
       id: 'q-2',
-      title: 'Data Protection & Privacy',
+      title: 'PACS & Radiology Imaging Dataset',
       description:
-        'Comprehensive 45-question audit covering ISMS policies, encryption controls, access management, and incident response.',
+        'Diagnostic imaging storage, DICOM protocol compliance, PACS server security, and image archive retention.',
       fileType: 'PDF',
       questionsCount: 45,
       status: 'Ready',
     },
     {
       id: 'q-3',
-      title: 'Presight Technical & Compliance',
+      title: 'Lab Telemetry & Diagnostic Sync Dataset',
       description:
-        'Presight AI platform-specific integration safety, API authorization, and model governance audit.',
+        'Real-time laboratory telemetry, HL7/FHIR diagnostic syncing, and automated lab instrument integration testcases.',
       fileType: 'DOCX',
       questionsCount: 50,
       status: 'Draft',
     },
     {
       id: 'q-4',
-      title: 'Information Security & Compliance',
+      title: 'Pharmacy & Medication Inventory Dataset',
       description:
-        'Trust Services Criteria evaluation for security, availability, processing integrity, confidentiality, and privacy.',
+        'Closed-loop medication administration, automated dispensing system security, and e-prescription integrity dataset.',
       fileType: 'DOCX',
       questionsCount: 38,
       status: 'Ready',
     },
     {
       id: 'q-5',
-      title: 'SOC 2 Type II Vendor Risk Assessment',
+      title: 'SOC 2 Type II Facility Security Dataset',
       description:
-        'SOC 2 Type II controls auditing third-party hosting, access controls, and data residency.',
+        'Evaluation of security, availability, processing integrity, confidentiality, and physical facility controls.',
       fileType: 'PDF',
       questionsCount: 32,
       status: 'Ready',
     },
     {
       id: 'q-6',
-      title: 'HIPAA & Healthcare Data Compliance Checklist',
+      title: 'HIPAA & Healthcare Data Compliance Dataset',
       description:
-        'PHI safeguarding, EHR system integrations, BAA agreements, and UAE DOH data residency verification.',
+        'PHI safeguarding, EHR system integrations, BAA agreements, and UAE DOH health data residency verification.',
       fileType: 'PDF',
       questionsCount: 29,
       status: 'Draft',
     },
     {
       id: 'q-7',
-      title: 'Third-Party Software Supply Chain Security',
+      title: 'Third-Party Cloud API Integration Dataset',
       description:
-        'SaaS dependency scanning, SBOM verification, open-source license compliance, and vulnerability disclosure policies.',
+        'SaaS API endpoint security, OAuth2 token rotation, payload encryption, and webhook reliability testcases.',
       fileType: 'MD',
       questionsCount: 20,
       status: 'Ready',
     },
     {
       id: 'q-8',
-      title: 'ISO 27001 ISMS Security Checklist',
+      title: 'ISO 27001 ISMS Healthcare Dataset',
       description:
-        'Information Security Management System policies and annual audit verification checklist.',
+        'Information Security Management System policies, risk assessment register, and healthcare facility security controls.',
       fileType: 'PDF',
       questionsCount: 40,
       status: 'Ready',
     },
     {
       id: 'q-9',
-      title: 'Cloud Infrastructure Audit Questionnaire',
+      title: 'Cloud Infrastructure Audit Dataset',
       description:
-        'Multi-cloud tenant isolation, IAM role hierarchy, and automated vulnerability remediation audit.',
+        'Multi-cloud tenant isolation, IAM role hierarchy, and automated vulnerability remediation dataset.',
       fileType: 'PDF',
       questionsCount: 35,
       status: 'Draft',
     },
     {
       id: 'q-10',
-      title: 'Clinical AI Safety & Ethics Questionnaire',
+      title: 'Clinical AI Safety & Ethics Dataset',
       description:
-        'Algorithmic bias testing, patient safety monitoring, and diagnostic model performance auditing.',
+        'Diagnostic AI model bias testing, clinical decision support safety monitoring, and model performance auditing.',
       fileType: 'DOCX',
       questionsCount: 48,
       status: 'Ready',
     },
     {
       id: 'q-11',
-      title: 'UAE DOH Health Data Residency Compliance',
+      title: 'UAE DOH Health Data Residency Dataset',
       description:
-        'Verification of data residency, local cloud node hosting, and UAE Ministry of Health compliance.',
+        'Verification of in-country UAE cloud node hosting, data isolation, and Ministry of Health compliance.',
       fileType: 'PDF',
       questionsCount: 25,
       status: 'Ready',
     },
     {
       id: 'q-12',
-      title: 'Business Continuity & Disaster Recovery Audit',
+      title: 'Business Continuity & Disaster Recovery Dataset',
       description:
-        'RTO/RPO targets, failover drills, offsite backup verification, and incident management procedures.',
+        'RTO/RPO targets, facility failover drills, offsite encrypted backup verification, and incident playbook dataset.',
       fileType: 'PDF',
       questionsCount: 30,
       status: 'Ready',
@@ -399,6 +399,7 @@ export const QuestionnairesScreen: React.FC = () => {
                     setSelectedQuestionnaire({
                       id: item.id,
                       title: item.title,
+                      description: item.description,
                       status: item.status,
                       questionsCount: item.questionsCount,
                       initialEditMode: false,
@@ -441,6 +442,7 @@ export const QuestionnairesScreen: React.FC = () => {
                           setSelectedQuestionnaire({
                             id: item.id,
                             title: item.title,
+                            description: item.description,
                             status: item.status,
                             questionsCount: item.questionsCount,
                             initialEditMode: true,

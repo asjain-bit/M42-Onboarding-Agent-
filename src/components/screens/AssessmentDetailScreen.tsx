@@ -687,19 +687,19 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               </div>
             </div>
 
-            {/* Section 2 & 3: Agent evaluation and Assessment audio in SAME ROW (2-column grid) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Agent evaluation card */}
-              <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-bold text-[#0d212c]">Agent evaluation</h3>
-                <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex-1 flex flex-col justify-center min-h-[96px]">
+            {/* Section 2 & 3: Agent Verdict and Assessment audio STACKED FULL WIDTH */}
+            <div className="flex flex-col gap-6 w-full">
+              {/* Agent Verdict card */}
+              <div className="flex flex-col gap-2 w-full">
+                <h3 className="text-sm font-bold text-[#0d212c]">Agent Verdict</h3>
+                <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs w-full flex flex-col justify-center min-h-[96px]">
                   {isScheduled ? (
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
                         <Clock className="w-5 h-5" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs font-bold text-[#0d212c]">Evaluation Pending</span>
+                        <span className="text-xs font-bold text-[#0d212c]">Verdict Pending</span>
                         <span className="text-[11px] text-[#64748b]">
                           Test cases evaluation will be generated automatically after the assessment meeting completes.
                         </span>
@@ -744,9 +744,9 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               </div>
 
               {/* Assessment audio card */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 w-full">
                 <h3 className="text-sm font-bold text-[#0d212c]">Assessment audio</h3>
-                <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex-1 flex items-center gap-4 min-h-[96px]">
+                <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] shadow-xs w-full flex items-center gap-4 min-h-[96px]">
                   {isScheduled ? (
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center shrink-0">
@@ -879,41 +879,40 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         )}
                       </div>
 
-                      {/* Middle Inner Container Box: Clean inline icons for EXPECTED BEHAVIOUR and AGENT COMMENT */}
-                      <div className="bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 flex flex-col gap-3.5">
-                        {/* EXPECTED BEHAVIOUR Row */}
-                        <div className="flex items-start gap-2.5">
-                          <FileText className="w-4 h-4 text-[#64748b] shrink-0 mt-0.5" />
-                          <div className="flex flex-col gap-0.5 min-w-0">
-                            <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                      {/* Middle Area: EXPECTED BEHAVIOUR (and AGENT COMMENT only when evaluated) */}
+                      <div className="flex flex-col gap-3.5 py-1">
+                        {/* EXPECTED BEHAVIOUR */}
+                        <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                          <div className="flex items-center gap-2 text-[#0d7280]">
+                            <FileText className="w-3.5 h-3.5 text-[#36c0c9]" />
+                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748b]">
                               EXPECTED BEHAVIOUR
                             </span>
-                            <p className="text-xs text-[#334155] font-normal leading-relaxed">
-                              {q.expectedBehaviour}
-                            </p>
                           </div>
+                          <p className="text-xs text-[#1e293b] font-medium leading-relaxed pl-5">
+                            {q.expectedBehaviour}
+                          </p>
                         </div>
 
-                        {/* Subtle Horizontal Divider */}
-                        <div className="border-t border-[#e2e8f0]" />
-
-                        {/* AGENT COMMENT Row */}
-                        <div className="flex items-start gap-2.5">
-                          <MessageSquare className="w-4 h-4 text-[#64748b] shrink-0 mt-0.5" />
-                          <div className="flex flex-col gap-0.5 min-w-0">
-                            <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                              AGENT COMMENT
-                            </span>
-                            <p className="text-xs text-[#475569] font-normal leading-relaxed">
+                        {/* AGENT COMMENT - Only rendered when assessment is completed or finalised (NOT scheduled) */}
+                        {!isScheduled && (
+                          <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-[#ddf7f9]/30 border border-[#36c0c9]/30">
+                            <div className="flex items-center gap-2 text-[#0f766e]">
+                              <MessageSquare className="w-3.5 h-3.5 text-[#0d7280]" />
+                              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0f766e]">
+                                AGENT COMMENT
+                              </span>
+                            </div>
+                            <p className="text-xs text-[#0d212c] font-medium leading-relaxed pl-5">
                               {q.agentComment}
                             </p>
                           </div>
-                        </div>
+                        )}
                       </div>
 
-                      {/* Bottom Attachment Row: Paperclip Icon + Attached snapshots heading + Compact Pill Cards + Text-only Expander Button */}
+                      {/* Bottom Attachment Row: Wrapped in Light Grey Container Box (Only rendered when evaluated) */}
                       {!isScheduled && (
-                        <div className="flex flex-col gap-2 pt-1">
+                        <div className="bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-4 flex flex-col gap-2.5">
                           <div className="flex items-center gap-1.5 text-xs font-bold text-[#64748b]">
                             <Paperclip className="w-3.5 h-3.5 text-[#64748b]" />
                             <span>Attached snapshots ({q.snapshots.length})</span>

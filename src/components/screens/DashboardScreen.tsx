@@ -13,6 +13,7 @@ interface AssessmentRow {
   round: string
   status: 'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready'
   score: string
+  passRate: string
   createdDate: string
 }
 
@@ -34,6 +35,7 @@ export const DashboardScreen: React.FC = () => {
       round: 'Round 1',
       status: 'completed',
       score: 'Medium',
+      passRate: '85%',
       createdDate: '1 Sept 2026, 10:30 AM',
     },
     {
@@ -42,7 +44,8 @@ export const DashboardScreen: React.FC = () => {
       questionnaire: 'PACS & Radiology Imaging Dataset',
       round: 'Round 2',
       status: 'completed',
-      score: 'High',
+      score: 'Low',
+      passRate: '30%',
       createdDate: '28 Aug 2026, 02:15 PM',
     },
     {
@@ -52,6 +55,7 @@ export const DashboardScreen: React.FC = () => {
       round: 'Initial Review',
       status: 'completed',
       score: 'High',
+      passRate: '92%',
       createdDate: '24 Aug 2026, 11:45 AM',
     },
     {
@@ -61,6 +65,7 @@ export const DashboardScreen: React.FC = () => {
       round: 'Stage 2 Audit',
       status: 'scheduled',
       score: '-',
+      passRate: '-',
       createdDate: '20 Aug 2026, 04:20 PM',
     },
     {
@@ -69,7 +74,8 @@ export const DashboardScreen: React.FC = () => {
       questionnaire: 'SOC 2 Type II Facility Security Dataset',
       round: 'Round 1 - Technical',
       status: 'finalised',
-      score: 'High',
+      score: 'Low',
+      passRate: '20%',
       createdDate: '15 Aug 2026, 09:10 AM',
     },
     {
@@ -78,7 +84,8 @@ export const DashboardScreen: React.FC = () => {
       questionnaire: 'HIPAA & Healthcare Data Compliance Dataset',
       round: 'Follow-up Audit',
       status: 'completed',
-      score: 'Low',
+      score: 'Medium',
+      passRate: '57%',
       createdDate: '12 Aug 2026, 03:45 PM',
     },
     {
@@ -88,6 +95,7 @@ export const DashboardScreen: React.FC = () => {
       round: 'Round 3',
       status: 'completed',
       score: 'High',
+      passRate: '80%',
       createdDate: '10 Aug 2026, 01:25 PM',
     },
     {
@@ -96,7 +104,8 @@ export const DashboardScreen: React.FC = () => {
       questionnaire: 'ISO 27001 ISMS Healthcare Checklist',
       round: 'Annual Re-evaluation',
       status: 'completed',
-      score: 'High',
+      score: 'Low',
+      passRate: '35%',
       createdDate: '08 Aug 2026, 11:10 AM',
     },
     {
@@ -106,6 +115,7 @@ export const DashboardScreen: React.FC = () => {
       round: 'Stage 1 Discovery',
       status: 'finalised',
       score: 'High',
+      passRate: '86%',
       createdDate: '05 Aug 2026, 05:50 PM',
     },
     {
@@ -114,7 +124,8 @@ export const DashboardScreen: React.FC = () => {
       questionnaire: 'Clinical AI Safety & Ethics Dataset',
       round: 'Pre-onboarding',
       status: 'completed',
-      score: 'Medium',
+      score: 'Low',
+      passRate: '25%',
       createdDate: '01 Aug 2026, 09:30 AM',
     },
     {
@@ -123,7 +134,8 @@ export const DashboardScreen: React.FC = () => {
       questionnaire: 'UAE DOH Health Data Residency Dataset',
       round: 'Round 2 - Compliance',
       status: 'scheduled',
-      score: 'Low',
+      score: '-',
+      passRate: '-',
       createdDate: '28 Jul 2026, 04:15 PM',
     },
     {
@@ -132,7 +144,8 @@ export const DashboardScreen: React.FC = () => {
       questionnaire: 'Business Continuity & Disaster Recovery Dataset',
       round: 'Final Review',
       status: 'finalised',
-      score: 'High',
+      score: 'Medium',
+      passRate: '65%',
       createdDate: '25 Jul 2026, 02:00 PM',
     },
   ])
@@ -208,36 +221,36 @@ export const DashboardScreen: React.FC = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* KPI Card 1: Total Facilities */}
+        {/* KPI Card 1: Facilities by Pass Rate */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col justify-between gap-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <Users className="w-5 h-5 text-[#0d212c] shrink-0" />
               <h3 className="font-bold text-xs sm:text-sm text-[#0d212c] truncate">
-                Total Facilities
+                Facilities by Pass Rate
               </h3>
             </div>
-            <div className="text-2xl font-extrabold text-[#36c0c9] shrink-0">12</div>
+            <div className="text-2xl font-extrabold text-[#36c0c9] shrink-0">20</div>
           </div>
 
           <div className="grid grid-cols-3 divide-x divide-[#e2e8f0] pt-3 border-t border-[#e2e8f0]">
             <div className="flex flex-col gap-0.5 pr-2">
-              <span className="text-lg font-bold text-[#0d212c]">7</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Completed</span>
+              <span className="text-lg font-bold text-[#137333]">8</span>
+              <span className="text-[11px] text-[#64748b] font-medium">High Pass Rate</span>
             </div>
             <div className="flex flex-col gap-0.5 px-3">
-              <span className="text-lg font-bold text-[#0d212c]">3</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Finalised</span>
+              <span className="text-lg font-bold text-[#b45309]">7</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Medium Pass Rate</span>
             </div>
             <div className="flex flex-col gap-0.5 pl-3">
-              <span className="text-lg font-bold text-[#0d212c]">2</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Scheduled</span>
+              <span className="text-lg font-bold text-[#c5221f]">5</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Low Pass Rate</span>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5 pt-1 text-[11px] text-[#64748b]">
             <Info className="w-3.5 h-3.5 text-[#36c0c9] shrink-0" />
-            <span>Breakdown by Assessment Status</span>
+            <span>Grouped by testcases pass rate percentage</span>
           </div>
         </div>
 
@@ -274,36 +287,36 @@ export const DashboardScreen: React.FC = () => {
           </div>
         </div>
 
-        {/* KPI Card 3: Evidence backlog by age */}
+        {/* KPI Card 3: Sessions Conducted & Planned */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col justify-between gap-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <Folder className="w-5 h-5 text-[#0d212c] shrink-0" />
               <h3 className="font-bold text-xs sm:text-sm text-[#0d212c] truncate">
-                Evidence backlog by age
+                Sessions Conducted & Planned
               </h3>
             </div>
-            <div className="text-2xl font-extrabold text-[#36c0c9] shrink-0">75</div>
+            <div className="text-2xl font-extrabold text-[#36c0c9] shrink-0">65</div>
           </div>
 
           <div className="grid grid-cols-3 divide-x divide-[#e2e8f0] pt-3 border-t border-[#e2e8f0]">
             <div className="flex flex-col gap-0.5 pr-2">
-              <span className="text-lg font-bold text-[#0d212c]">33</span>
-              <span className="text-[11px] text-[#64748b] font-medium">0–14 days</span>
+              <span className="text-lg font-bold text-[#0d212c]">12</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Last Week</span>
             </div>
             <div className="flex flex-col gap-0.5 px-3">
-              <span className="text-lg font-bold text-[#0d212c]">8</span>
-              <span className="text-[11px] text-[#64748b] font-medium">15–30 days</span>
+              <span className="text-lg font-bold text-[#36c0c9]">8</span>
+              <span className="text-[11px] text-[#64748b] font-medium">This Week</span>
             </div>
             <div className="flex flex-col gap-0.5 pl-3">
-              <span className="text-lg font-bold text-[#0d212c]">34</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Over 30 days</span>
+              <span className="text-lg font-bold text-[#0d212c]">45</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Last Month</span>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5 pt-1 text-[11px] text-[#64748b]">
             <Info className="w-3.5 h-3.5 text-[#36c0c9] shrink-0" />
-            <span>Breakdown by Ageing Bucket</span>
+            <span>Calendar week: Monday – Sunday</span>
           </div>
         </div>
       </div>
@@ -356,13 +369,14 @@ export const DashboardScreen: React.FC = () => {
                 <th className="py-3.5 px-4">Dataset</th>
                 <th className="py-3.5 px-4">Round</th>
                 <th className="py-3.5 px-4">Status</th>
+                <th className="py-3.5 px-4">Total Pass %</th>
                 <th className="py-3.5 px-4">Created date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#e2e8f0]/60">
               {paginatedAssessments.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-[#64748b] text-sm">
+                  <td colSpan={6} className="py-8 text-center text-[#64748b] text-sm">
                     No assessments matching search criteria.
                   </td>
                 </tr>
@@ -415,6 +429,29 @@ export const DashboardScreen: React.FC = () => {
                         }
                         dot={false}
                       />
+                    </td>
+                    <td className="py-3.5 px-4 text-[#0d212c] text-xs font-extrabold">
+                      {row.passRate !== '-' ? (
+                        (() => {
+                          const val = parseInt(row.passRate.replace('%', ''), 10)
+                          const colorClass =
+                            val >= 80
+                              ? 'bg-[#e6f4ea] text-[#137333] border border-[#ceedd5]'
+                              : val >= 50
+                                ? 'bg-[#fef7e0] text-[#b06000] border border-[#fde68a]'
+                                : 'bg-[#fce8e6] text-[#c5221f] border border-[#f8c4b8]'
+
+                          return (
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-bold text-xs ${colorClass}`}
+                            >
+                              {row.passRate}
+                            </span>
+                          )
+                        })()
+                      ) : (
+                        <span className="text-[#64748b] font-normal">-</span>
+                      )}
                     </td>
                     <td className="py-3.5 px-4 text-[#64748b] text-xs font-medium">
                       {row.createdDate}
