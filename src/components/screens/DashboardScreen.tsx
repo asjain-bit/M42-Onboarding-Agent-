@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Users, RefreshCw, Folder, Info } from 'lucide-react'
+import React, { useState, useMemo, useEffect } from 'react'
+import { ChevronLeft, ChevronRight, Users, RefreshCw, Folder, Info, Calendar as CalendarIcon, AlertTriangle as AlertTriangleIcon, X } from 'lucide-react'
 import { StatusChip } from '@/components/atoms/StatusChip'
 import { SearchBar } from '@/components/molecules/SearchBar'
 import { AssessmentDetailScreen, AssessmentDetailData } from './AssessmentDetailScreen'
@@ -27,8 +27,22 @@ export const DashboardScreen: React.FC = () => {
   const [rescheduleTarget, setRescheduleTarget] = useState<AssessmentRow | null>(null)
   const [rescheduleDate, setRescheduleDate] = useState('2026-09-25')
   const [rescheduleTime, setRescheduleTime] = useState('14:30')
+  const [rescheduleReason, setRescheduleReason] = useState('')
   const [cancelTarget, setCancelTarget] = useState<AssessmentRow | null>(null)
+  const [cancelReason, setCancelReason] = useState('')
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  // Lock background scroll when modals are open
+  useEffect(() => {
+    if (rescheduleTarget || cancelTarget) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [rescheduleTarget, cancelTarget])
 
   // Show 8 rows per page consistently across all tables
   const [currentPage, setCurrentPage] = useState(1)
@@ -584,49 +598,77 @@ export const DashboardScreen: React.FC = () => {
         )}
       </div>
 
-      {/* Reschedule Assessment Modal */}
+      {/* Reschedule Meeting Modal — Centered layout, icon top, title next line, mandatory asterisks, subtle grey focus, proper padding */}
       {rescheduleTarget && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-6 w-full max-w-md flex flex-col gap-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex flex-col gap-1">
-              <h3 className="text-lg font-extrabold text-[#0d212c]">Reschedule Assessment</h3>
-              <p className="text-xs text-[#64748b]">
-                Select a new date and time for <strong className="text-[#0d212c]">{rescheduleTarget.vendor}</strong>.
-              </p>
+          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-8 sm:p-10 w-full max-w-xl flex flex-col items-center gap-6 animate-in fade-in zoom-in-95 duration-150 relative">
+            <button
+              onClick={() => setRescheduleTarget(null)}
+              className="absolute top-6 right-6 p-1.5 rounded-lg text-[#64748b] hover:text-[#0d212c] hover:bg-slate-100 transition cursor-pointer bg-transparent border-0 outline-none"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4 fill-none stroke-current" style={{ fill: 'none', stroke: 'currentColor' }} />
+            </button>
+
+            {/* Centered Icon and Title */}
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-14 h-14 rounded-2xl bg-[#ddf7f9] text-[#0d7280] flex items-center justify-center border border-[#36c0c9]/30 shadow-2xs">
+                <CalendarIcon className="w-7 h-7 text-[#0d7280]" />
+              </div>
+              <h3 className="text-xl font-extrabold text-[#0d212c]">Reschedule meeting</h3>
             </div>
 
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-[#64748b]">NEW DATE</label>
-                <input
-                  type="date"
-                  value={rescheduleDate}
-                  onChange={(e) => setRescheduleDate(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-[#36c0c9]"
-                />
+            <div className="flex flex-col gap-4 w-full text-left">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-[#0d212c]">
+                    New date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={rescheduleDate}
+                    onChange={(e) => setRescheduleDate(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-[#0d212c]">
+                    New time <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    value={rescheduleTime}
+                    onChange={(e) => setRescheduleTime(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
+                  />
+                </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold text-[#64748b]">NEW TIME</label>
+                <label className="text-xs font-semibold text-[#0d212c]">
+                  Reason <span className="text-red-500">*</span>
+                </label>
                 <input
-                  type="time"
-                  value={rescheduleTime}
-                  onChange={(e) => setRescheduleTime(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-[#36c0c9]"
+                  type="text"
+                  placeholder="e.g. Schedule conflict requested by facility"
+                  value={rescheduleReason}
+                  onChange={(e) => setRescheduleReason(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-normal outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#e2e8f0]">
+            <div className="flex items-center gap-3 pt-3 border-t border-[#e2e8f0] w-full">
               <button
                 onClick={() => setRescheduleTarget(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-100 cursor-pointer"
+                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer bg-transparent transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmReschedule}
-                className="px-5 py-2 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs"
+                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
               >
                 Confirm Reschedule
               </button>
@@ -635,28 +677,52 @@ export const DashboardScreen: React.FC = () => {
         </div>
       )}
 
-      {/* Cancel Assessment Modal */}
+      {/* Cancel Assessment Modal — Center-aligned matching delete popup reference, long height reason, subtle grey focus */}
       {cancelTarget && (
-        <div className="fixed inset-0 z-50 bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-6 w-full max-w-md flex flex-col gap-5 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex flex-col gap-2">
-              <h3 className="text-lg font-extrabold text-[#0d212c]">Cancel Assessment</h3>
-              <p className="text-xs text-[#64748b] leading-relaxed">
-                Are you sure you want to cancel the scheduled assessment for{' '}
-                <strong className="text-[#0d212c]">{cancelTarget.vendor}</strong>? This will update the status to Cancelled.
+        <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-8 sm:p-10 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150 text-center flex flex-col items-center gap-5 relative">
+            <button
+              onClick={() => setCancelTarget(null)}
+              className="absolute top-6 right-6 p-1.5 rounded-lg text-[#64748b] hover:text-[#0d212c] hover:bg-slate-100 transition cursor-pointer bg-transparent border-0 outline-none"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4 fill-none stroke-current" style={{ fill: 'none', stroke: 'currentColor' }} />
+            </button>
+
+            <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center border border-red-100 shadow-2xs">
+              <AlertTriangleIcon className="w-7 h-7" />
+            </div>
+
+            <div className="flex flex-col gap-1 text-center">
+              <h3 className="text-xl font-extrabold text-[#0d212c]">Cancel meeting</h3>
+              <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
+                Are you sure you want to cancel the meeting?
               </p>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#e2e8f0]">
+            <div className="flex flex-col gap-1.5 w-full text-left">
+              <label className="text-xs font-semibold text-[#0d212c]">
+                Reason <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Describe the reason for cancelling this meeting..."
+                rows={4}
+                className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-normal outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white resize-none transition min-h-[110px]"
+              />
+            </div>
+
+            <div className="flex items-center justify-center gap-3 w-full pt-1">
               <button
                 onClick={() => setCancelTarget(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-100 cursor-pointer"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
               >
                 Keep Assessment
               </button>
               <button
                 onClick={handleConfirmCancel}
-                className="px-5 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 transition cursor-pointer shadow-2xs"
+                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
               >
                 Confirm Cancel
               </button>

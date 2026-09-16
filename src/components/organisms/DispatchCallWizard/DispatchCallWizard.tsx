@@ -7,7 +7,19 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Check, ChevronDown, Clock, ShieldCheck, ArrowRight, Volume2 } from 'lucide-react'
+import {
+  Check,
+  ChevronDown,
+  Clock,
+  ShieldCheck,
+  ArrowRight,
+  Volume2,
+  ExternalLink,
+  X,
+  Search,
+  Eye,
+  FileText,
+} from 'lucide-react'
 import { Button } from '@/components/atoms/Button'
 import { CountryFlag } from '@/components/atoms/CountryFlag'
 
@@ -21,6 +33,73 @@ export interface VendorDispatchData {
   email?: string
   recipients?: string[]
 }
+
+interface TestcasePreviewItem {
+  id: number
+  code: string
+  title: string
+  responseCue: string
+  type: 'Problems' | 'Active' | 'Sensitive Info' | 'Meds Dispensing' | 'Lab Results'
+}
+
+const sampleDatasetTestcases: TestcasePreviewItem[] = [
+  {
+    id: 1,
+    code: 'TC-FH-01',
+    title: 'Describe the primary clinical or operational use cases supported by your solution.',
+    responseCue:
+      'Specify whether workflows are clinical, decision-support, operational, or administrative. State whether outputs influence patient care directly or indirectly.',
+    type: 'Problems',
+  },
+  {
+    id: 2,
+    code: 'TC-FH-02',
+    title: 'Has your organization performed a patient safety or clinical risk assessment for this product?',
+    responseCue:
+      'Provide documentation or summary of hazard analysis, risk register, or failure-mode analysis related to patient harm.',
+    type: 'Active',
+  },
+  {
+    id: 3,
+    code: 'TC-SEC-01',
+    title: 'Describe how customer data is encrypted in transit and at rest across cloud tenants.',
+    responseCue:
+      'Specify encryption algorithms (e.g. AES-256, TLS 1.3), key rotation policies, and HSM backing.',
+    type: 'Sensitive Info',
+  },
+  {
+    id: 4,
+    code: 'TC-SEC-02',
+    title: 'Provide proof of SOC 2 Type II or ISO/IEC 27001 certification compliance.',
+    responseCue:
+      'Attach executive summary or auditor attestation statement covering the last 12 months.',
+    type: 'Sensitive Info',
+  },
+  {
+    id: 5,
+    code: 'TC-MED-01',
+    title: 'Verify automated medication dispensing log formats and barcode scanning integration.',
+    responseCue:
+      'Detail system capability to capture dose, unit, barcode timestamp, and nurse override authorization.',
+    type: 'Meds Dispensing',
+  },
+  {
+    id: 6,
+    code: 'TC-LAB-01',
+    title: 'Validate laboratory test reports (ORU-Laboratory) and critical value alert flags.',
+    responseCue:
+      'Hold laboratory test reports organized by category, normal ranges, and abnormal/critical flags.',
+    type: 'Lab Results',
+  },
+  {
+    id: 7,
+    code: 'TC-UAE-01',
+    title: 'Can customer data be strictly isolated within United Arab Emirates cloud regions?',
+    responseCue:
+      'Detail tenant deployment architecture, backup locations, and compliance with UAE Health Data Law.',
+    type: 'Active',
+  },
+]
 
 interface DispatchCallWizardProps {
   vendor: VendorDispatchData
@@ -38,6 +117,29 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
   // Step 1 states
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState('Technical Questionnaire')
   const [roundLabel, setRoundLabel] = useState('Round 1')
+  const [isDatasetDropdownOpen, setIsDatasetDropdownOpen] = useState(false)
+  const [showDatasetPreviewModal, setShowDatasetPreviewModal] = useState(false)
+  const [datasetSearchQuery, setDatasetSearchQuery] = useState('')
+
+  // Checkboxes for testcases inclusion (mapping id -> boolean)
+  const [testcaseInclusions, setTestcaseInclusions] = useState<Record<number, boolean>>({
+    1: true,
+    2: true,
+    3: true,
+    4: true,
+    5: true,
+    6: true,
+    7: true,
+  })
+
+  const toggleTestcaseInclusion = (id: number) => {
+    setTestcaseInclusions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
+
+  const includedCount = Object.values(testcaseInclusions).filter(Boolean).length
 
   // Step 2 states (Configure Agent)
   const [selectedVoice, setSelectedVoice] = useState('Marin')
@@ -46,10 +148,10 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
   const [timezone, setTimezone] = useState('Asia/Calcutta - GMT+5:30')
 
   const questionnaireOptions = [
-    'Technical Questionnaire',
-    'Data Protection & Privacy',
-    'Presight Technical & Compliance',
-    'Information Security & Compliance',
+    { title: 'Technical Questionnaire', testcases: 62, duration: '135–205 min' },
+    { title: 'Data Protection & Privacy', testcases: 48, duration: '100–160 min' },
+    { title: 'Presight Technical & Compliance', testcases: 74, duration: '150–220 min' },
+    { title: 'Information Security & Compliance', testcases: 55, duration: '120–180 min' },
   ]
 
   const voiceOptions = [
@@ -214,26 +316,75 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   </div>
                 </div>
 
-                {/* DATASET SELECT DROPDOWN */}
+                {/* DATASET SELECT CUSTOM LIGHT DROPDOWN WITH OPEN PREVIEW */}
                 <div className="flex flex-col gap-2">
-                  <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                    DATASET
-                  </span>
-                  <div className="relative">
-                    <select
-                      value={selectedQuestionnaire}
-                      onChange={(e) => setSelectedQuestionnaire(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-xs font-semibold text-[#0d212c] appearance-none outline-none focus:border-[#36c0c9]"
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                      DATASET
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowDatasetPreviewModal(true)}
+                      className="text-xs font-bold text-[#36c0c9] hover:text-[#0d7280] flex items-center gap-1 cursor-pointer bg-transparent border-0 transition"
                     >
-                      {questionnaireOptions.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-[#64748b] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      <span>Open preview</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-                  <span className="text-[11px] text-[#64748b] pl-1">62 testcases</span>
+
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsDatasetDropdownOpen(!isDatasetDropdownOpen)}
+                      className={`w-full px-4 py-3 rounded-xl border bg-white text-xs font-semibold text-[#0d212c] flex items-center justify-between shadow-2xs transition cursor-pointer outline-none ${
+                        isDatasetDropdownOpen
+                          ? 'border-slate-400 bg-slate-50/50 ring-1 ring-slate-300'
+                          : 'border-[#cbd5e1] hover:border-slate-400 focus:border-slate-400 focus:bg-slate-50/30'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <FileText className="w-4 h-4 text-[#64748b] shrink-0" />
+                        <span className="truncate">{selectedQuestionnaire}</span>
+                      </div>
+                      <ChevronDown
+                        className={`w-4 h-4 text-[#64748b] shrink-0 transition-transform duration-200 ${
+                          isDatasetDropdownOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
+
+                    {/* Custom Dropdown Menu Options Popup in Light Mode */}
+                    {isDatasetDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#e2e8f0] shadow-xl rounded-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-1">
+                        {questionnaireOptions.map((opt) => (
+                          <div
+                            key={opt.title}
+                            onClick={() => {
+                              setSelectedQuestionnaire(opt.title)
+                              setIsDatasetDropdownOpen(false)
+                            }}
+                            className={`px-3.5 py-2.5 rounded-xl cursor-pointer transition flex items-center justify-between ${
+                              selectedQuestionnaire === opt.title
+                                ? 'bg-[#ddf7f9]/40 border border-[#36c0c9]/40 text-[#0d212c]'
+                                : 'hover:bg-slate-50 text-[#0d212c]'
+                            }`}
+                          >
+                            <div className="flex flex-col">
+                              <span className="text-xs font-bold">{opt.title}</span>
+                              <span className="text-[10px] text-[#64748b]">{opt.duration}</span>
+                            </div>
+                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-[#64748b]">
+                              {opt.testcases} testcases
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] text-[#64748b] pl-1">
+                    <span>62 testcases in selected dataset</span>
+                    <span className="text-[#36c0c9] font-bold">{includedCount} included for assessment</span>
+                  </div>
                 </div>
 
                 {/* Estimated duration box */}
@@ -552,6 +703,159 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* DATASET DETAILS PREVIEW LARGE MODAL OVERLAY */}
+      {showDatasetPreviewModal && (
+        <div className="fixed inset-0 z-[100] bg-[#0d212c]/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl border border-[#e2e8f0] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 my-auto">
+            {/* Modal Header */}
+            <div className="bg-white px-6 py-5 border-b border-[#e2e8f0] flex items-center justify-between shrink-0">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-extrabold text-[#0d212c]">
+                    {selectedQuestionnaire}
+                  </h2>
+                  <span className="px-3 py-1 rounded-xl bg-[#ddf7f9] text-[#0d7280] font-bold text-xs border border-[#36c0c9]/30">
+                    62 testcases
+                  </span>
+                </div>
+                <p className="text-xs text-[#64748b]">
+                  Preview dataset specifications and configure testcase inclusion for this assessment.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDatasetPreviewModal(false)}
+                className="p-2 rounded-xl border border-[#e2e8f0] text-[#64748b] hover:text-[#0d212c] hover:bg-slate-50 transition cursor-pointer"
+                title="Close preview"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Subheader Bar */}
+            <div className="bg-[#f8fafc] px-6 py-3 border-b border-[#e2e8f0] flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-[#0d212c]">
+                  Included in Assessment: <span className="text-[#36c0c9]">{includedCount} / 7 testcases</span>
+                </span>
+                <span className="text-xs text-[#64748b]">|</span>
+                <span className="text-xs text-[#64748b]">
+                  Estimated Duration: <strong className="text-[#0d212c]">135–205 min</strong>
+                </span>
+              </div>
+
+              {/* Search filter */}
+              <div className="relative w-64">
+                <Search className="w-3.5 h-3.5 text-[#94a3b8] absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search testcases..."
+                  value={datasetSearchQuery}
+                  onChange={(e) => setDatasetSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] bg-white outline-none focus:border-[#36c0c9]"
+                />
+              </div>
+            </div>
+
+            {/* Testcases List Table */}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+              {sampleDatasetTestcases
+                .filter(
+                  (tc) =>
+                    tc.title.toLowerCase().includes(datasetSearchQuery.toLowerCase()) ||
+                    tc.code.toLowerCase().includes(datasetSearchQuery.toLowerCase())
+                )
+                .map((tc) => {
+                  const isIncluded = !!testcaseInclusions[tc.id]
+
+                  return (
+                    <div
+                      key={tc.id}
+                      className={`p-4 rounded-2xl border transition flex items-start justify-between gap-4 ${
+                        isIncluded
+                          ? 'bg-white border-[#e2e8f0] shadow-2xs'
+                          : 'bg-slate-50/70 border-slate-200 opacity-75'
+                      }`}
+                    >
+                      {/* Left side: Testcase metadata (Read-only / Non-editable) */}
+                      <div className="flex flex-col gap-2 min-w-0 flex-1">
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <span className="text-xs font-extrabold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                            {tc.code}
+                          </span>
+                          <span
+                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                              tc.type === 'Problems'
+                                ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                : tc.type === 'Sensitive Info'
+                                  ? 'bg-purple-50 text-purple-800 border-purple-200'
+                                  : tc.type === 'Meds Dispensing'
+                                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                    : 'bg-blue-50 text-blue-800 border-blue-200'
+                            }`}
+                          >
+                            {tc.type}
+                          </span>
+                        </div>
+
+                        {/* Title & Description (Non-editable text) */}
+                        <div className="flex flex-col gap-1">
+                          <h4 className="text-xs font-extrabold text-[#0d212c]">
+                            {tc.title}
+                          </h4>
+                          <p className="text-[11px] text-[#64748b] leading-relaxed">
+                            {tc.responseCue}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right side: Inclusion Checkbox (Editable toggle) */}
+                      <div className="flex items-center justify-end shrink-0 pl-4 pt-1">
+                        <label className="flex items-center gap-2.5 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 border border-[#cbd5e1] px-3.5 py-2 rounded-xl transition">
+                          <span
+                            className={`text-xs font-bold ${
+                              isIncluded ? 'text-[#0d7280]' : 'text-[#64748b]'
+                            }`}
+                          >
+                            {isIncluded ? 'Included' : 'Excluded'}
+                          </span>
+                          <input
+                            type="checkbox"
+                            checked={isIncluded}
+                            onChange={() => toggleTestcaseInclusion(tc.id)}
+                            className="w-4 h-4 rounded border-[#cbd5e1] text-[#36c0c9] focus:ring-[#36c0c9] cursor-pointer"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  )
+                })}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-[#f8fafc] px-6 py-4 border-t border-[#e2e8f0] flex items-center justify-between shrink-0">
+              <span className="text-xs text-[#64748b] font-medium">
+                <strong className="text-[#0d212c] font-bold">{includedCount}</strong> testcases selected to run in this assessment call.
+              </span>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowDatasetPreviewModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-200/60 cursor-pointer"
+                >
+                  Close Preview
+                </button>
+                <button
+                  onClick={() => setShowDatasetPreviewModal(false)}
+                  className="px-6 py-2 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs"
+                >
+                  Save &amp; Apply Selection
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

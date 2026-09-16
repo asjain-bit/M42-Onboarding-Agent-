@@ -16,9 +16,15 @@ import {
   ChevronUp,
   X,
   AlertTriangle,
+  ExternalLink,
+  Search,
+  FileText,
+  Calendar,
+  XCircle,
 } from 'lucide-react'
 import { Button } from '@/components/atoms/Button'
 import { CountryFlag } from '@/components/atoms/CountryFlag'
+import { Checkbox } from '@/components/atoms/Checkbox'
 import { CallRoomScreen } from './CallRoomScreen'
 
 export interface VendorDispatchData {
@@ -31,6 +37,73 @@ export interface VendorDispatchData {
   email: string
   recipients?: string[]
 }
+
+interface TestcasePreviewItem {
+  id: number
+  code: string
+  title: string
+  responseCue: string
+  type: 'Problems' | 'Active' | 'Sensitive Info' | 'Meds Dispensing' | 'Lab Results'
+}
+
+const sampleDatasetTestcases: TestcasePreviewItem[] = [
+  {
+    id: 1,
+    code: 'TC-FH-01',
+    title: 'Describe the primary clinical or operational use cases supported by your solution.',
+    responseCue:
+      'Specify whether workflows are clinical, decision-support, operational, or administrative. State whether outputs influence patient care directly or indirectly.',
+    type: 'Problems',
+  },
+  {
+    id: 2,
+    code: 'TC-FH-02',
+    title: 'Has your organization performed a patient safety or clinical risk assessment for this product?',
+    responseCue:
+      'Provide documentation or summary of hazard analysis, risk register, or failure-mode analysis related to patient harm.',
+    type: 'Active',
+  },
+  {
+    id: 3,
+    code: 'TC-SEC-01',
+    title: 'Describe how customer data is encrypted in transit and at rest across cloud tenants.',
+    responseCue:
+      'Specify encryption algorithms (e.g. AES-256, TLS 1.3), key rotation policies, and HSM backing.',
+    type: 'Sensitive Info',
+  },
+  {
+    id: 4,
+    code: 'TC-SEC-02',
+    title: 'Provide proof of SOC 2 Type II or ISO/IEC 27001 certification compliance.',
+    responseCue:
+      'Attach executive summary or auditor attestation statement covering the last 12 months.',
+    type: 'Sensitive Info',
+  },
+  {
+    id: 5,
+    code: 'TC-MED-01',
+    title: 'Verify automated medication dispensing log formats and barcode scanning integration.',
+    responseCue:
+      'Detail system capability to capture dose, unit, barcode timestamp, and nurse override authorization.',
+    type: 'Meds Dispensing',
+  },
+  {
+    id: 6,
+    code: 'TC-LAB-01',
+    title: 'Validate laboratory test reports (ORU-Laboratory) and critical value alert flags.',
+    responseCue:
+      'Hold laboratory test reports organized by category, normal ranges, and abnormal/critical flags.',
+    type: 'Lab Results',
+  },
+  {
+    id: 7,
+    code: 'TC-UAE-01',
+    title: 'Can customer data be strictly isolated within United Arab Emirates cloud regions?',
+    responseCue:
+      'Detail tenant deployment architecture, backup locations, and compliance with UAE Health Data Law.',
+    type: 'Active',
+  },
+]
 
 interface ConfigureVendorCallScreenProps {
   vendor: VendorDispatchData
@@ -54,6 +127,51 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
   // Step 1 states (empty by default)
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState('')
   const [roundLabel, setRoundLabel] = useState('')
+  const [isDatasetDropdownOpen, setIsDatasetDropdownOpen] = useState(false)
+  const [showDatasetPreviewModal, setShowDatasetPreviewModal] = useState(false)
+  const [datasetSearchQuery, setDatasetSearchQuery] = useState('')
+
+  // Reschedule & Cancel Assessment Modal States for Dispatched Call
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false)
+  const [rescheduleDate, setRescheduleDate] = useState('2026-09-24')
+  const [rescheduleTime, setRescheduleTime] = useState('14:30')
+  const [rescheduleReason, setRescheduleReason] = useState('')
+
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [cancelReason, setCancelReason] = useState('')
+  const [isMeetingCancelled, setIsMeetingCancelled] = useState(false)
+
+  // Body scroll lock effect when any modal is open
+  React.useEffect(() => {
+    if (showDatasetPreviewModal || showRescheduleModal || showCancelModal) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [showDatasetPreviewModal, showRescheduleModal, showCancelModal])
+
+  // Checkboxes for testcases inclusion (mapping id -> boolean)
+  const [testcaseInclusions, setTestcaseInclusions] = useState<Record<number, boolean>>({
+    1: true,
+    2: true,
+    3: true,
+    4: true,
+    5: true,
+    6: true,
+    7: true,
+  })
+
+  const toggleTestcaseInclusion = (id: number) => {
+    setTestcaseInclusions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
+
+  const includedCount = Object.values(testcaseInclusions).filter(Boolean).length
 
   // Estimated duration is auto-populated and non-editable
   const estimatedDuration = '60-120 minutes'
@@ -351,8 +469,154 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
     )
   }
 
+  const renderScheduleAndCancelModals = () => (
+    <>
+      {/* Reschedule Meeting Modal — Centered layout, icon top, title next line, mandatory asterisks, subtle grey focus, proper padding */}
+      {showRescheduleModal && (
+        <div className="fixed inset-0 z-[100] bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-8 sm:p-10 w-full max-w-xl flex flex-col items-center gap-6 animate-in fade-in zoom-in-95 duration-150 relative">
+            <button
+              onClick={() => setShowRescheduleModal(false)}
+              className="absolute top-6 right-6 p-1.5 rounded-lg text-[#64748b] hover:text-[#0d212c] hover:bg-slate-100 transition cursor-pointer bg-transparent border-0 outline-none"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4 fill-none stroke-current" style={{ fill: 'none', stroke: 'currentColor' }} />
+            </button>
+
+            {/* Centered Icon and Title */}
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-14 h-14 rounded-2xl bg-[#ddf7f9] text-[#0d7280] flex items-center justify-center border border-[#36c0c9]/30 shadow-2xs">
+                <Calendar className="w-7 h-7 text-[#0d7280]" />
+              </div>
+              <h3 className="text-xl font-extrabold text-[#0d212c]">Reschedule meeting</h3>
+            </div>
+
+            <div className="flex flex-col gap-4 w-full text-left">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-[#0d212c]">
+                    New date <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={rescheduleDate}
+                    onChange={(e) => setRescheduleDate(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold text-[#0d212c]">
+                    New time <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="time"
+                    value={rescheduleTime}
+                    onChange={(e) => setRescheduleTime(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#0d212c]">
+                  Reason <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Schedule conflict requested by facility"
+                  value={rescheduleReason}
+                  onChange={(e) => setRescheduleReason(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-normal outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 pt-3 border-t border-[#e2e8f0] w-full">
+              <button
+                onClick={() => setShowRescheduleModal(false)}
+                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer bg-transparent transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowRescheduleModal(false)
+                  setScheduleDate(rescheduleDate)
+                  setStartTime(rescheduleTime)
+                }}
+                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
+              >
+                Confirm Reschedule
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Meeting Modal — Center-aligned matching delete popup reference, long height reason, subtle grey focus */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-[100] bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-8 sm:p-10 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150 text-center flex flex-col items-center gap-5 relative">
+            <button
+              onClick={() => setShowCancelModal(false)}
+              className="absolute top-6 right-6 p-1.5 rounded-lg text-[#64748b] hover:text-[#0d212c] hover:bg-slate-100 transition cursor-pointer bg-transparent border-0 outline-none"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4 fill-none stroke-current" style={{ fill: 'none', stroke: 'currentColor' }} />
+            </button>
+
+            <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center border border-red-100 shadow-2xs">
+              <AlertTriangle className="w-7 h-7" />
+            </div>
+
+            <div className="flex flex-col gap-1 text-center">
+              <h3 className="text-xl font-extrabold text-[#0d212c]">Cancel meeting</h3>
+              <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
+                Are you sure you want to cancel the meeting?
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5 w-full text-left">
+              <label className="text-xs font-semibold text-[#0d212c]">
+                Reason <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Describe the reason for cancelling this meeting..."
+                rows={4}
+                className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-normal outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white resize-none transition min-h-[110px]"
+              />
+            </div>
+
+            <div className="flex items-center justify-center gap-3 w-full pt-1">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
+              >
+                Keep Assessment
+              </button>
+              <button
+                onClick={() => {
+                  setShowCancelModal(false)
+                  setIsMeetingCancelled(true)
+                }}
+                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
+              >
+                Confirm Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+
   // SCREEN 2: Assessment Dispatched View
   if (isDispatched) {
+    const isScheduledLater = timing === 'later'
+
     return (
       <div className="min-h-screen bg-[#f8fafc] text-[#0d212c] pb-16 font-sans w-full flex flex-col items-center">
         <div className="w-full px-6 lg:px-10 pt-4 pb-2 text-xs font-semibold flex items-center gap-1.5 text-[#64748b]">
@@ -366,7 +630,9 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           <span>/</span>
           <span>{vendor.name}</span>
           <span>/</span>
-          <span className="text-[#36c0c9] font-bold">Call scheduled</span>
+          <span className="text-[#36c0c9] font-bold">
+            {isScheduledLater ? 'Call scheduled' : 'Call dispatched'}
+          </span>
         </div>
 
         <div className="w-full max-w-2xl px-6 mt-8 flex flex-col gap-6">
@@ -377,10 +643,71 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
             <div className="flex flex-col">
               <h1 className="text-2xl font-extrabold tracking-tight text-[#0d212c]">
-                Call scheduled
+                {isScheduledLater ? 'Call scheduled' : 'Call dispatched'}
               </h1>
             </div>
           </div>
+
+          {/* Meeting Summary Section with Tertiary Text+Icon Buttons on Right Side — ONLY shown for Schedule for later */}
+          {isScheduledLater && (
+            <div className="flex flex-col gap-2 w-full">
+              <h3 className="text-sm font-bold text-[#0d212c]">Meeting summary</h3>
+              <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-[#0d212c]">Scheduled Session Details</span>
+                    {isMeetingCancelled && (
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fce8e6] text-[#c5221f]">
+                        Cancelled
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-xs text-[#64748b]">
+                    Scheduled Date &amp; Time:{' '}
+                    <strong className={isMeetingCancelled ? 'text-[#64748b] line-through' : 'text-[#0d212c]'}>
+                      {scheduleDate}, {startTime} - {endTime}
+                    </strong>
+                  </span>
+                  {!isMeetingCancelled && (
+                    <div className="flex items-center gap-2 mt-1 text-xs text-[#36c0c9] font-medium">
+                      <span className="truncate">{callJoinLink}</span>
+                      <button
+                        onClick={handleCopyLink}
+                        className="p-1 hover:bg-slate-100 rounded text-slate-500 cursor-pointer shrink-0"
+                        title="Copy meeting link"
+                      >
+                        {copiedLink ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Tertiary text only buttons with icons: Cancel on left, Reschedule on right */}
+                {!isMeetingCancelled && (
+                  <div className="flex items-center gap-4 shrink-0 self-start sm:self-center">
+                    <button
+                      onClick={() => setShowCancelModal(true)}
+                      className="flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 bg-transparent border-0 cursor-pointer p-0 transition"
+                    >
+                      <XCircle className="w-4 h-4 text-rose-600" />
+                      <span>Cancel meeting</span>
+                    </button>
+                    <button
+                      onClick={() => setShowRescheduleModal(true)}
+                      className="flex items-center gap-1.5 text-xs font-bold text-[#0d7280] hover:text-[#09515b] bg-transparent border-0 cursor-pointer p-0 transition"
+                    >
+                      <Calendar className="w-4 h-4 text-[#0d7280]" />
+                      <span>Reschedule meeting</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="bg-white p-8 rounded-3xl border border-[#e2e8f0] shadow-xs flex flex-col gap-6">
             <div className="flex flex-col gap-2">
@@ -457,19 +784,18 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-              <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                WHAT HAPPENS NEXT
-              </span>
+            <div className="flex flex-col gap-3 pt-4 border-t border-[#e2e8f0]">
+              <span className="text-xs font-bold text-[#0d212c]">What to do next</span>
 
-              <div className="flex flex-col gap-3 text-xs text-[#0d212c]">
+              <div className="flex flex-col gap-3 text-xs">
                 <div className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full border border-[#cbd5e1] bg-[#f8fafc] text-[#64748b] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                     1
                   </div>
                   <p className="leading-relaxed text-[#64748b]">
-                    Share the link with the facility team. No account needed, they join with their
-                    name.
+                    {isScheduledLater
+                      ? 'The vendor will receive an email invitation with the meeting details and link.'
+                      : 'Share the join link with the vendor contacts above. They can join from any browser.'}
                   </p>
                 </div>
 
@@ -522,6 +848,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             </div>
           </div>
         </div>
+
+        {renderScheduleAndCancelModals()}
       </div>
     )
   }
@@ -701,32 +1029,88 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 </div>
               </div>
 
-              {/* DATASET SELECT DROPDOWN */}
+              {/* DATASET SELECT CUSTOM LIGHT DROPDOWN WITH OPEN PREVIEW */}
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                  DATASET <span className="text-red-500 font-bold">*</span>
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                    DATASET <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  {selectedQuestionnaire && (
+                    <button
+                      type="button"
+                      onClick={() => setShowDatasetPreviewModal(true)}
+                      className="text-xs font-bold text-[#36c0c9] hover:text-[#0d7280] flex items-center gap-1 cursor-pointer bg-transparent border-0 transition"
+                    >
+                      <span>Open preview</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
                 <div className="relative">
-                  <select
-                    value={selectedQuestionnaire}
-                    onChange={(e) => setSelectedQuestionnaire(e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl border border-[#e2e8f0] bg-white text-xs font-semibold appearance-none outline-none focus:border-[#cbd5e1] ${
-                      selectedQuestionnaire ? 'text-[#0d212c]' : 'text-[#94a3b8]'
+                  <button
+                    type="button"
+                    onClick={() => setIsDatasetDropdownOpen(!isDatasetDropdownOpen)}
+                    className={`w-full px-4 py-3 rounded-xl border bg-white text-xs font-semibold text-[#0d212c] flex items-center justify-between shadow-2xs transition cursor-pointer outline-none ${
+                      isDatasetDropdownOpen
+                        ? 'border-slate-400 bg-slate-50/50 ring-1 ring-slate-300'
+                        : 'border-[#cbd5e1] hover:border-slate-400 focus:border-slate-400 focus:bg-slate-50/30'
                     }`}
                   >
-                    <option value="" disabled className="text-[#94a3b8]">
-                      Select dataset...
-                    </option>
-                    {datasetOptions.map((opt) => (
-                      <option key={opt} value={opt} className="text-[#0d212c]">
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-[#64748b] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <div className="flex items-center gap-2 truncate">
+                      <FileText className="w-4 h-4 text-[#64748b] shrink-0" />
+                      <span className={selectedQuestionnaire ? 'text-[#0d212c] font-bold' : 'text-[#94a3b8]'}>
+                        {selectedQuestionnaire || 'Select dataset...'}
+                      </span>
+                    </div>
+                    <ChevronDown
+                      className={`w-4 h-4 text-[#64748b] shrink-0 transition-transform duration-200 ${
+                        isDatasetDropdownOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+
+                  {/* Custom Dropdown Menu Options Popup in Light Mode */}
+                  {isDatasetDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#e2e8f0] shadow-xl rounded-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-1 max-h-60 overflow-y-auto">
+                      {datasetOptions.map((opt) => (
+                        <div
+                          key={opt}
+                          onClick={() => {
+                            setSelectedQuestionnaire(opt)
+                            setIsDatasetDropdownOpen(false)
+                          }}
+                          className={`px-3.5 py-2.5 rounded-xl cursor-pointer transition flex items-center justify-between ${
+                            selectedQuestionnaire === opt
+                              ? 'bg-[#ddf7f9]/40 border border-[#36c0c9]/40 text-[#0d212c]'
+                              : 'hover:bg-slate-50 text-[#0d212c]'
+                          }`}
+                        >
+                          <span className="text-xs font-bold">{opt}</span>
+                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-[#64748b]">
+                            {opt === 'ADT-Family History'
+                              ? '24 testcases'
+                              : opt === 'ORU-Laboratory'
+                                ? '46 testcases'
+                                : opt === 'ORU-Radiology'
+                                  ? '13 testcases'
+                                  : opt === 'ORU-Clinical Documents'
+                                    ? '9 testcases'
+                                    : opt === 'ORU-Vitals'
+                                      ? '18 testcases'
+                                      : '32 testcases'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
+
                 {selectedQuestionnaire && (
-                  <span className="text-[11px] text-[#64748b] pl-1">Selected dataset configured</span>
+                  <div className="flex items-center justify-between text-[11px] text-[#64748b] pl-1 mt-0.5">
+                    <span>Selected dataset configured</span>
+                    <span className="text-[#64748b] font-semibold">{includedCount} testcases included for assessment</span>
+                  </div>
                 )}
               </div>
 
@@ -1385,6 +1769,161 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           </div>
         </div>
       </div>
+
+      {/* DATASET DETAILS PREVIEW LARGE MODAL OVERLAY */}
+      {showDatasetPreviewModal && (
+        <div className="fixed inset-0 z-[100] bg-[#0d212c]/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl border border-[#e2e8f0] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 my-auto">
+            {/* Modal Header */}
+            <div className="bg-white px-6 py-5 border-b border-[#e2e8f0] flex items-center justify-between shrink-0">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-extrabold text-[#0d212c]">
+                    {selectedQuestionnaire || 'Dataset Details'}
+                  </h2>
+                  <span className="px-3 py-1 rounded-xl bg-[#ddf7f9] text-[#0d7280] font-bold text-xs border border-[#36c0c9]/30">
+                    {selectedQuestionnaire === 'ADT-Family History'
+                      ? '24 testcases'
+                      : selectedQuestionnaire === 'ORU-Laboratory'
+                        ? '46 testcases'
+                        : selectedQuestionnaire === 'ORU-Radiology'
+                          ? '13 testcases'
+                          : selectedQuestionnaire === 'ORU-Clinical Documents'
+                            ? '9 testcases'
+                            : selectedQuestionnaire === 'ORU-Vitals'
+                              ? '18 testcases'
+                              : '32 testcases'}
+                  </span>
+                </div>
+                <p className="text-xs text-[#64748b]">
+                  Preview dataset specifications and configure testcase inclusion for this assessment.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowDatasetPreviewModal(false)}
+                className="p-1.5 rounded-xl border-0 text-[#64748b] hover:text-[#0d212c] transition cursor-pointer bg-transparent outline-none shadow-none focus:outline-none"
+                title="Close preview"
+              >
+                <X className="w-5 h-5 stroke-current bg-transparent fill-none border-0" />
+              </button>
+            </div>
+
+            {/* Modal Subheader Bar */}
+            <div className="bg-[#f8fafc] px-6 py-3 border-b border-[#e2e8f0] flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-[#0d212c]">
+                  Included in Assessment: <span className="text-[#36c0c9]">{includedCount} / 7 testcases</span>
+                </span>
+                <span className="text-xs text-[#64748b]">|</span>
+                <span className="text-xs text-[#64748b]">
+                  Estimated Duration: <strong className="text-[#0d212c]">{estimatedDuration}</strong>
+                </span>
+              </div>
+
+              {/* Search filter */}
+              <div className="relative w-64">
+                <Search className="w-3.5 h-3.5 text-[#94a3b8] absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search testcases..."
+                  value={datasetSearchQuery}
+                  onChange={(e) => setDatasetSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] bg-white outline-none focus:border-[#36c0c9]"
+                />
+              </div>
+            </div>
+
+            {/* Testcases List Table */}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+              {sampleDatasetTestcases
+                .filter(
+                  (tc) =>
+                    tc.title.toLowerCase().includes(datasetSearchQuery.toLowerCase()) ||
+                    tc.code.toLowerCase().includes(datasetSearchQuery.toLowerCase())
+                )
+                .map((tc) => {
+                  const isIncluded = !!testcaseInclusions[tc.id]
+
+                  return (
+                    <div
+                      key={tc.id}
+                      className={`p-4 rounded-2xl border transition flex items-start justify-between gap-4 ${
+                        isIncluded
+                          ? 'bg-white border-[#e2e8f0] shadow-2xs'
+                          : 'bg-slate-50/70 border-slate-200 opacity-75'
+                      }`}
+                    >
+                      {/* Left side: Testcase metadata (Read-only / Non-editable) */}
+                      <div className="flex flex-col gap-2 min-w-0 flex-1">
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <span className="text-xs font-extrabold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                            {tc.code}
+                          </span>
+                          <span
+                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                              tc.type === 'Problems'
+                                ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                : tc.type === 'Sensitive Info'
+                                  ? 'bg-purple-50 text-purple-800 border-purple-200'
+                                  : tc.type === 'Meds Dispensing'
+                                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                    : 'bg-blue-50 text-blue-800 border-blue-200'
+                            }`}
+                          >
+                            {tc.type}
+                          </span>
+                        </div>
+
+                        {/* Title & Description (Non-editable text) */}
+                        <div className="flex flex-col gap-1">
+                          <h4 className="text-xs font-extrabold text-[#0d212c]">
+                            {tc.title}
+                          </h4>
+                          <p className="text-[11px] text-[#64748b] leading-relaxed">
+                            {tc.responseCue}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right side: Inclusion Checkbox (Editable toggle matching Dataset page) */}
+                      <div className="flex items-center justify-end shrink-0 pl-4 pt-1">
+                        <Checkbox
+                          label="Include during assessment"
+                          checked={isIncluded}
+                          onChange={() => toggleTestcaseInclusion(tc.id)}
+                        />
+                      </div>
+                    </div>
+                  )
+                })}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-[#f8fafc] px-6 py-4 border-t border-[#e2e8f0] flex items-center justify-between shrink-0">
+              <span className="text-xs text-[#64748b] font-medium">
+                <strong className="text-[#0d212c] font-bold">{includedCount}</strong> testcases selected to run in this assessment call.
+              </span>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowDatasetPreviewModal(false)}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-200/60 cursor-pointer border-0 bg-transparent"
+                >
+                  Close Preview
+                </button>
+                <button
+                  onClick={() => setShowDatasetPreviewModal(false)}
+                  className="px-6 py-2 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
+                >
+                  Save &amp; Apply Selection
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {renderScheduleAndCancelModals()}
     </div>
   )
 }

@@ -349,9 +349,43 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                     </div>
                   </div>
                 )}
-                <span className="text-sm font-extrabold text-[#0d212c] tracking-tight">
-                  Testcase #{idx + 1}
-                </span>
+                {(() => {
+                  const prefix = questionnaire.title.includes('Family History')
+                    ? 'TC-FH'
+                    : questionnaire.title.includes('Laboratory')
+                      ? 'TC-LAB'
+                      : questionnaire.title.includes('Radiology')
+                        ? 'TC-RAD'
+                        : questionnaire.title.includes('Clinical')
+                          ? 'TC-DOC'
+                          : questionnaire.title.includes('Vitals')
+                            ? 'TC-VIT'
+                            : 'TC'
+                  const codeStr = `${prefix}-${String(idx + 1).padStart(2, '0')}`
+                  const typeStr = idx % 3 === 0 ? 'Problems' : idx % 3 === 1 ? 'Sensitive Info' : 'Meds Dispensing'
+
+                  return (
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <span className="text-sm font-extrabold text-[#0d212c] tracking-tight">
+                        Testcase #{idx + 1}
+                      </span>
+                      <span className="text-xs font-extrabold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                        {codeStr}
+                      </span>
+                      <span
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                          typeStr === 'Problems'
+                            ? 'bg-amber-50 text-amber-800 border-amber-200'
+                            : typeStr === 'Sensitive Info'
+                              ? 'bg-purple-50 text-purple-800 border-purple-200'
+                              : 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                        }`}
+                      >
+                        {typeStr}
+                      </span>
+                    </div>
+                  )
+                })()}
               </div>
 
               {/* Top Checkbox: Include during assessment */}
