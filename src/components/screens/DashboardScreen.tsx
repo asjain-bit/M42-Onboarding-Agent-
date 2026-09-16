@@ -26,8 +26,16 @@ export const DashboardScreen: React.FC = () => {
   // Reschedule & Cancel Modals State
   const [rescheduleTarget, setRescheduleTarget] = useState<AssessmentRow | null>(null)
   const [rescheduleDate, setRescheduleDate] = useState('2026-09-25')
-  const [rescheduleTime, setRescheduleTime] = useState('14:30')
+  const [rescheduleStartTime, setRescheduleStartTime] = useState('14:30')
+  const [rescheduleEndTime, setRescheduleEndTime] = useState('15:30')
   const [rescheduleReason, setRescheduleReason] = useState('')
+  const [rescheduleRecipients, setRescheduleRecipients] = useState<string[]>([
+    'zaid.alali@m42.ae',
+    'audit@facility.ae',
+    'sam.ai@m42.ae',
+  ])
+  const [newRecipientInput, setNewRecipientInput] = useState('')
+  const [recipientError, setRecipientError] = useState<string | null>(null)
   const [cancelTarget, setCancelTarget] = useState<AssessmentRow | null>(null)
   const [cancelReason, setCancelReason] = useState('')
   const [toastMessage, setToastMessage] = useState<string | null>(null)
@@ -235,7 +243,7 @@ export const DashboardScreen: React.FC = () => {
 
   const handleConfirmReschedule = () => {
     if (!rescheduleTarget) return
-    const formattedDateTime = `${rescheduleDate}, ${rescheduleTime}`
+    const formattedDateTime = `${rescheduleDate}, ${rescheduleStartTime} - ${rescheduleEndTime}`
     setAssessments((prev) =>
       prev.map((a) =>
         a.id === rescheduleTarget.id
@@ -281,7 +289,7 @@ export const DashboardScreen: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-6 w-full px-6 lg:px-10 py-4 text-[#0d212c]">
+    <div className="flex flex-col gap-6 w-full px-4 sm:px-6 lg:px-10 py-4 text-[#0d212c]">
       {/* Toast Banner */}
       {toastMessage && (
         <div className="fixed top-5 right-5 z-50 bg-[#f0fdf4] text-[#15803d] text-xs font-semibold px-4 py-3 rounded-xl shadow-md border border-[#bbf7d0] flex items-center gap-2.5 animate-in fade-in duration-200">
@@ -298,7 +306,7 @@ export const DashboardScreen: React.FC = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {/* KPI Card 1: Facilities by Pass Rate */}
         <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col justify-between gap-4">
           <div className="flex items-center justify-between gap-3">
@@ -314,15 +322,15 @@ export const DashboardScreen: React.FC = () => {
           <div className="grid grid-cols-3 divide-x divide-[#e2e8f0] pt-3 border-t border-[#e2e8f0]">
             <div className="flex flex-col gap-0.5 pr-2">
               <span className="text-lg font-bold text-[#137333]">8</span>
-              <span className="text-[11px] text-[#64748b] font-medium">High Pass Rate</span>
+              <span className="text-[11px] text-[#64748b] font-medium">High (80-100%)</span>
             </div>
             <div className="flex flex-col gap-0.5 px-3">
               <span className="text-lg font-bold text-[#b45309]">7</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Medium Pass Rate</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Medium (60-79%)</span>
             </div>
             <div className="flex flex-col gap-0.5 pl-3">
               <span className="text-lg font-bold text-[#c5221f]">5</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Low Pass Rate</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Low (0-59%)</span>
             </div>
           </div>
 
@@ -379,12 +387,12 @@ export const DashboardScreen: React.FC = () => {
 
           <div className="grid grid-cols-3 divide-x divide-[#e2e8f0] pt-3 border-t border-[#e2e8f0]">
             <div className="flex flex-col gap-0.5 pr-2">
-              <span className="text-lg font-bold text-[#0d212c]">12</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Last Week</span>
-            </div>
-            <div className="flex flex-col gap-0.5 px-3">
               <span className="text-lg font-bold text-[#36c0c9]">8</span>
               <span className="text-[11px] text-[#64748b] font-medium">This Week</span>
+            </div>
+            <div className="flex flex-col gap-0.5 px-3">
+              <span className="text-lg font-bold text-[#0d212c]">12</span>
+              <span className="text-[11px] text-[#64748b] font-medium">Last Week</span>
             </div>
             <div className="flex flex-col gap-0.5 pl-3">
               <span className="text-lg font-bold text-[#0d212c]">45</span>
@@ -516,23 +524,24 @@ export const DashboardScreen: React.FC = () => {
                         dot={false}
                       />
                     </td>
-                    {/* Pass Rate column: NO percentage, chip UI matches status chip, hover tooltip shows concrete reason */}
-                    <td className="py-3.5 px-4 text-[#0d212c] text-xs font-extrabold">
+                    {/* Pass Rate column: Show only color-coded percentage */}
+                    <td className="py-3.5 px-4 text-xs font-extrabold">
                       {row.passRate !== '-' && row.status !== 'cancelled' ? (
                         (() => {
                           const val = parseInt(row.passRate.replace('%', ''), 10)
-                          const level = val >= 80 ? 'High' : val >= 50 ? 'Medium' : 'Low'
-                          const statusType = level === 'High' ? 'success' : level === 'Medium' ? 'warning' : 'error'
-                          const tooltipReason = row.passRateReason || `${level} pass rate based on assessment execution.`
+                          const colorClass =
+                            val >= 80
+                              ? 'text-[#137333]'
+                              : val >= 60
+                                ? 'text-[#b45309]'
+                                : 'text-[#c5221f]'
+                          const tooltipReason =
+                            row.passRateReason || `${row.passRate} pass rate based on assessment execution.`
 
                           return (
-                            <div className="relative group/passrate inline-block" title={tooltipReason}>
-                              <StatusChip
-                                label={level}
-                                status={statusType}
-                                dot={false}
-                              />
-                            </div>
+                            <span className={`font-extrabold text-xs ${colorClass}`} title={tooltipReason}>
+                              {row.passRate}
+                            </span>
                           )
                         })()
                       ) : (
@@ -598,7 +607,7 @@ export const DashboardScreen: React.FC = () => {
         )}
       </div>
 
-      {/* Reschedule Meeting Modal — Centered layout, icon top, title next line, mandatory asterisks, subtle grey focus, proper padding */}
+      {/* Reschedule Meeting Modal */}
       {rescheduleTarget && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-8 sm:p-10 w-full max-w-xl flex flex-col items-center gap-6 animate-in fade-in zoom-in-95 duration-150 relative">
@@ -607,51 +616,141 @@ export const DashboardScreen: React.FC = () => {
               className="absolute top-6 right-6 p-1.5 rounded-lg text-[#64748b] hover:text-[#0d212c] hover:bg-slate-100 transition cursor-pointer bg-transparent border-0 outline-none"
               aria-label="Close"
             >
-              <X className="w-4 h-4 fill-none stroke-current" style={{ fill: 'none', stroke: 'currentColor' }} />
+              <X className="w-4 h-4 fill-none stroke-current" />
             </button>
 
-            {/* Centered Icon and Title */}
-            <div className="flex flex-col items-center text-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-[#ddf7f9] text-[#0d7280] flex items-center justify-center border border-[#36c0c9]/30 shadow-2xs">
-                <CalendarIcon className="w-7 h-7 text-[#0d7280]" />
+            {/* Left-aligned Icon and Title */}
+            <div className="flex items-center gap-3 w-full">
+              <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#0d7280] flex items-center justify-center border border-[#36c0c9]/30 shadow-2xs shrink-0">
+                <CalendarIcon className="w-4.5 h-4.5 text-[#0d7280]" />
               </div>
-              <h3 className="text-xl font-extrabold text-[#0d212c]">Reschedule meeting</h3>
+              <h3 className="text-lg font-bold text-[#0d212c]">Reschedule meeting</h3>
             </div>
 
             <div className="flex flex-col gap-4 w-full text-left">
+              {/* Date selection with past date check */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#0d212c]">
+                  New date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  min={new Date().toISOString().split('T')[0]}
+                  value={rescheduleDate}
+                  onChange={(e) => setRescheduleDate(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
+                />
+              </div>
+
+              {/* Start and End Time selection with validation */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-[#0d212c]">
-                    New date <span className="text-red-500">*</span>
+                    Start time <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="date"
-                    value={rescheduleDate}
-                    onChange={(e) => setRescheduleDate(e.target.value)}
+                    type="time"
+                    value={rescheduleStartTime}
+                    onChange={(e) => setRescheduleStartTime(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-[#0d212c]">
-                    New time <span className="text-red-500">*</span>
+                    End time <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="time"
-                    value={rescheduleTime}
-                    onChange={(e) => setRescheduleTime(e.target.value)}
+                    value={rescheduleEndTime}
+                    onChange={(e) => setRescheduleEndTime(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
                   />
                 </div>
               </div>
+              {rescheduleEndTime <= rescheduleStartTime && (
+                <p className="text-[11px] text-red-500 font-semibold -mt-2">
+                  End time must be after start time.
+                </p>
+              )}
 
+              {/* Mandatory Recipients tag-input matching Add Facility flow (max 5) */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-[#0d212c]">
-                  Reason <span className="text-red-500">*</span>
+                  Recipients <span className="text-red-500">*</span>
                 </label>
                 <input
+                  type="email"
+                  placeholder={
+                    rescheduleRecipients.length >= 5
+                      ? 'Maximum 5 recipients reached'
+                      : 'Enter email and press Enter...'
+                  }
+                  value={newRecipientInput}
+                  disabled={rescheduleRecipients.length >= 5}
+                  onChange={(e) => {
+                    setNewRecipientInput(e.target.value)
+                    if (recipientError) setRecipientError(null)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      const email = newRecipientInput.trim()
+                      if (!email) return
+                      if (rescheduleRecipients.includes(email)) {
+                        setRecipientError('This recipient has already been added.')
+                        return
+                      }
+                      if (rescheduleRecipients.length >= 5) {
+                        setRecipientError('Maximum 5 recipients allowed.')
+                        return
+                      }
+                      setRescheduleRecipients([...rescheduleRecipients, email])
+                      setNewRecipientInput('')
+                    }
+                  }}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-[#0d212c] outline-none transition disabled:bg-slate-100 disabled:opacity-60 disabled:cursor-not-allowed ${
+                    recipientError
+                      ? 'border-red-500'
+                      : 'border-[#cbd5e1] focus:border-slate-400 focus:bg-slate-50/50'
+                  }`}
+                />
+                <div className="flex items-center justify-between text-[11px] text-[#64748b]">
+                  <span>Maximum 5 recipients can be added</span>
+                  <span>{rescheduleRecipients.length}/5</span>
+                </div>
+                {recipientError && (
+                  <span className="text-xs text-red-600 font-medium">{recipientError}</span>
+                )}
+                {rescheduleRecipients.length > 0 && (
+                  <div className="flex items-center gap-2 flex-wrap pt-1">
+                    {rescheduleRecipients.map((email, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 bg-[#f1f5f9] text-[#0d212c] text-xs font-semibold px-3 py-1.5 rounded-xl border border-[#cbd5e1]"
+                      >
+                        {email}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setRescheduleRecipients(rescheduleRecipients.filter((_, i) => i !== idx))
+                          }
+                          className="p-0.5 hover:bg-slate-200 rounded-full text-slate-500 hover:text-red-600 transition cursor-pointer border-0 bg-transparent"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Optional Reason field without asterisk */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#0d212c]">Reason</label>
+                <input
                   type="text"
-                  placeholder="e.g. Schedule conflict requested by facility"
+                  placeholder="e.g. Schedule conflict requested by facility (optional)"
                   value={rescheduleReason}
                   onChange={(e) => setRescheduleReason(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-normal outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
@@ -662,14 +761,20 @@ export const DashboardScreen: React.FC = () => {
             <div className="flex items-center gap-3 pt-3 border-t border-[#e2e8f0] w-full">
               <button
                 onClick={() => setRescheduleTarget(null)}
-                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer bg-transparent transition"
+                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer bg-transparent transition hover:bg-slate-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmReschedule}
-                disabled={!rescheduleDate.trim() || !rescheduleTime.trim() || !rescheduleReason.trim()}
-                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={
+                  !rescheduleDate.trim() ||
+                  !rescheduleStartTime.trim() ||
+                  !rescheduleEndTime.trim() ||
+                  rescheduleEndTime <= rescheduleStartTime ||
+                  rescheduleRecipients.length === 0
+                }
+                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0d7280]"
               >
                 Confirm Reschedule
               </button>
@@ -678,7 +783,7 @@ export const DashboardScreen: React.FC = () => {
         </div>
       )}
 
-      {/* Cancel Assessment Modal — Center-aligned matching delete popup reference, long height reason, subtle grey focus */}
+      {/* Cancel Assessment Modal */}
       {cancelTarget && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-8 sm:p-10 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150 text-center flex flex-col items-center gap-5 relative">
@@ -687,7 +792,7 @@ export const DashboardScreen: React.FC = () => {
               className="absolute top-6 right-6 p-1.5 rounded-lg text-[#64748b] hover:text-[#0d212c] hover:bg-slate-100 transition cursor-pointer bg-transparent border-0 outline-none"
               aria-label="Close"
             >
-              <X className="w-4 h-4 fill-none stroke-current" style={{ fill: 'none', stroke: 'currentColor' }} />
+              <X className="w-4 h-4 fill-none stroke-current" />
             </button>
 
             <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center border border-red-100 shadow-2xs">
@@ -701,14 +806,13 @@ export const DashboardScreen: React.FC = () => {
               </p>
             </div>
 
+            {/* Optional Reason field without asterisk */}
             <div className="flex flex-col gap-1.5 w-full text-left">
-              <label className="text-xs font-semibold text-[#0d212c]">
-                Reason <span className="text-red-500">*</span>
-              </label>
+              <label className="text-xs font-semibold text-[#0d212c]">Reason</label>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Describe the reason for cancelling this meeting..."
+                placeholder="Describe the reason for cancelling this meeting (optional)..."
                 rows={4}
                 className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-normal outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white resize-none transition min-h-[110px]"
               />
@@ -717,14 +821,13 @@ export const DashboardScreen: React.FC = () => {
             <div className="flex items-center justify-center gap-3 w-full pt-1">
               <button
                 onClick={() => setCancelTarget(null)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition hover:bg-slate-50"
               >
                 Keep Assessment
               </button>
               <button
                 onClick={handleConfirmCancel}
-                disabled={!cancelReason.trim()}
-                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs hover:bg-red-700"
               >
                 Confirm Cancel
               </button>

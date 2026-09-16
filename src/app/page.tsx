@@ -22,8 +22,11 @@ export default function HomePage() {
   // Expandable/Collapsible Sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
+  const [customHeaderTitle, setCustomHeaderTitle] = useState<React.ReactNode | null>(null)
+
   const handleTabChange = (tab: 'dashboard' | 'questionnaires' | 'vendors' | 'agents') => {
     if (tab === activeTab && !isPageLoading) return
+    setCustomHeaderTitle(null)
     setIsPageLoading(true)
     setActiveTab(tab)
     setTimeout(() => {
@@ -61,7 +64,7 @@ export default function HomePage() {
         }
       case 'vendors':
         return {
-          title: 'Vendors',
+          title: 'Facilities',
           subtitle: '',
         }
       case 'agents':
@@ -98,11 +101,14 @@ export default function HomePage() {
       {/* Right Main Body Layout Container */}
       <div
         className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
-          sidebarCollapsed ? 'pl-[72px]' : 'pl-[250px]'
+          sidebarCollapsed ? 'pl-[72px]' : 'pl-[72px] md:pl-[250px]'
         }`}
       >
         {/* Top Header Bar */}
-        <SiteHeader title={headerProps.title} subtitle={headerProps.subtitle} />
+        <SiteHeader
+          title={customHeaderTitle || headerProps.title}
+          subtitle={customHeaderTitle ? '' : headerProps.subtitle}
+        />
 
         {/* Main Full-Width Content Area */}
         <main className="flex-1 w-full">
@@ -112,7 +118,7 @@ export default function HomePage() {
             <>
               {activeTab === 'dashboard' && <DashboardScreen />}
               {activeTab === 'questionnaires' && <QuestionnairesScreen />}
-              {activeTab === 'vendors' && <VendorsScreen />}
+              {activeTab === 'vendors' && <VendorsScreen onHeaderChange={setCustomHeaderTitle} />}
               {activeTab === 'agents' && <AgentsScreen />}
             </>
           )}

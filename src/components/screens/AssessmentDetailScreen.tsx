@@ -39,6 +39,7 @@ export interface AssessmentDetailData {
   round: string
   status: 'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready' | 'cancelled'
   score: string
+  passRate?: string
   createdDate: string
 }
 
@@ -106,8 +107,16 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   // Reschedule & Cancel Assessment Modal States
   const [showRescheduleModal, setShowRescheduleModal] = useState(false)
   const [rescheduleDate, setRescheduleDate] = useState('2026-09-24')
-  const [rescheduleTime, setRescheduleTime] = useState('14:30')
+  const [rescheduleStartTime, setRescheduleStartTime] = useState('14:30')
+  const [rescheduleEndTime, setRescheduleEndTime] = useState('15:30')
   const [rescheduleReason, setRescheduleReason] = useState('')
+  const [rescheduleRecipients, setRescheduleRecipients] = useState<string[]>([
+    'zaid.alali@m42.ae',
+    'audit@facility.ae',
+    'sam.ai@m42.ae',
+  ])
+  const [newRecipientInput, setNewRecipientInput] = useState('')
+  const [recipientError, setRecipientError] = useState<string | null>(null)
 
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [cancelReason, setCancelReason] = useState('')
@@ -127,7 +136,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   const handleConfirmReschedule = () => {
     setShowRescheduleModal(false)
     setToastMessage(
-      `Assessment for ${assessment.vendor} rescheduled to ${rescheduleDate} at ${rescheduleTime}.`
+      `Assessment for ${assessment.vendor} rescheduled to ${rescheduleDate} (${rescheduleStartTime} - ${rescheduleEndTime}).`
     )
     setTimeout(() => setToastMessage(null), 3500)
   }
@@ -550,47 +559,81 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
         <span className="text-[#36c0c9] font-bold">Assessment details</span>
       </div>
 
-      {/* Main Header Container Card - Compact Height, Status chip next to Facility Name on left, Round chip on right */}
-      <div className="w-full px-6 lg:px-10 pt-3">
-        <div className="bg-[#ddf7f9]/20 rounded-3xl border border-[#36c0c9]/30 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex flex-col gap-1.5">
-            {/* Top row: Facility Name + Status Chip right next to it */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0d212c]">
-                {assessment.vendor}
-              </h1>
-              <StatusChip
-                label={
-                  currentStatus === 'scheduled'
-                    ? 'Scheduled'
-                    : currentStatus === 'finalised'
-                      ? 'Finalised'
-                      : currentStatus === 'cancelled'
-                        ? 'Cancelled'
-                        : 'Completed'
-                }
-                status={
-                  currentStatus === 'scheduled'
-                    ? 'info'
-                    : currentStatus === 'finalised'
-                      ? 'finalised'
-                      : currentStatus === 'cancelled'
-                        ? 'error'
-                        : 'success'
-                }
-                dot={false}
-              />
-            </div>
-            {/* Dataset Subtitle - font-semibold */}
-            <h2 className="text-xs font-semibold text-[#64748b]">{assessment.questionnaire}</h2>
+      {/* Main Header Container Card matching Image 2 Reference */}
+      <div className="w-full px-4 sm:px-6 lg:px-10 pt-3">
+        <div className="bg-[#f0f9fa]/70 rounded-3xl border border-[#d0f0f4] p-5 sm:p-7 shadow-xs flex flex-col gap-3">
+          {/* Title and Subtitle */}
+          <div className="flex flex-col gap-1">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0d212c]">
+              {assessment.vendor.includes('Presight') ? 'Presight AI | See the Future Today' : assessment.vendor}
+            </h1>
+            <h2 className="text-xs font-semibold text-[#64748b]">
+              {assessment.questionnaire || 'Technical Questionnaire'}
+            </h2>
           </div>
 
-          {/* Right side: Round chip */}
-          <div className="shrink-0 self-start sm:self-center">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#e0f2fe] text-[#0369a1] text-xs font-bold border border-[#bae6fd]">
+          {/* Chips Row matching Image 2 */}
+          <div className="flex items-center gap-3 flex-wrap pt-1">
+            {/* Status Chip */}
+            <span
+              className={`text-xs font-bold px-3 py-1 rounded-full ${
+                currentStatus === 'completed'
+                  ? 'bg-[#e6f4ea] text-[#137333]'
+                  : currentStatus === 'scheduled'
+                    ? 'bg-[#e0f2fe] text-[#0369a1]'
+                    : currentStatus === 'cancelled'
+                      ? 'bg-[#fce8e6] text-[#c5221f]'
+                      : currentStatus === 'finalised'
+                        ? 'bg-[#e6f4ea] text-[#137333]'
+                        : 'bg-[#fef3c7] text-[#92400e]'
+              }`}
+            >
+              {currentStatus === 'scheduled'
+                ? 'Scheduled'
+                : currentStatus === 'finalised'
+                  ? 'Finalised'
+                  : currentStatus === 'cancelled'
+                    ? 'Cancelled'
+                    : currentStatus === 'completed'
+                      ? 'Completed'
+                      : 'Awaiting evidence'}
+            </span>
+
+            <span className="text-[#cbd5e1] font-light">|</span>
+
+            {/* Round Chip */}
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e0f2fe] text-[#0369a1] text-xs font-bold">
               <Clock className="w-3.5 h-3.5" />
               <span>{assessment.round || 'Round 1'}</span>
             </span>
+
+            <span className="text-[#cbd5e1] font-light">|</span>
+
+            {/* Pass percentage Chip */}
+            {currentStatus === 'scheduled' ? (
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-[#64748b]">
+                Pass rate: -
+              </span>
+            ) : (
+              (() => {
+                const passVal =
+                  assessment.passRate && assessment.passRate !== '-'
+                    ? parseInt(assessment.passRate.replace('%', ''), 10)
+                    : Math.round((passedCount / (testcases.length || 1)) * 100)
+                const confStyle =
+                  passVal >= 80
+                    ? 'bg-[#e6f4ea] text-[#137333]'
+                    : passVal >= 60
+                      ? 'bg-[#fef3c7] text-[#92400e]'
+                      : 'bg-[#fce8e6] text-[#c5221f]'
+
+                return (
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${confStyle}`}>
+                    Pass rate: {passVal}%
+                  </span>
+                )
+              })()
+            )}
           </div>
         </div>
       </div>
@@ -750,16 +793,6 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                     <span className="text-xs text-[#64748b]">
                       Scheduled Date &amp; Time: <strong className="text-[#0d212c]">{assessment.createdDate}</strong>
                     </span>
-                    <div className="flex items-center gap-2 mt-1 text-xs text-[#36c0c9] font-medium">
-                      <span className="truncate">{meetingUrl}</span>
-                      <button
-                        onClick={handleCopyMeetingUrl}
-                        className="p-1 hover:bg-slate-100 rounded text-slate-500 cursor-pointer shrink-0"
-                        title="Copy meeting link"
-                      >
-                        {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
                   </div>
 
                   {/* Cancel meeting button on the left and Reschedule meeting button on the right */}
@@ -854,8 +887,11 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             <div className="flex flex-col gap-6 w-full">
               {/* Agent Verdict card */}
               <div className="flex flex-col gap-2 w-full">
-                <h3 className="text-sm font-bold text-[#0d212c]">Agent Verdict</h3>
-                <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs w-full flex flex-col justify-center min-h-[96px]">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-[#0d212c]">Agent Verdict</h3>
+                  <span className="text-[11px] text-[#64748b]">Evaluation Criteria &amp; Verdict Legend</span>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs w-full flex flex-col gap-5">
                   {isScheduled ? (
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
@@ -869,12 +905,11 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       </div>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-3 divide-x divide-[#e2e8f0]">
+                    <div className="grid grid-cols-2 sm:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-[#e2e8f0] gap-4 sm:gap-0">
                       {/* Column 1: PASSED TESTCASES */}
-                      <div className="pr-4 flex flex-col gap-1">
+                      <div className="sm:pr-3 flex flex-col gap-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-[#137333]" />
+                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
                             PASSED
                           </span>
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#e6f4ea] text-[#137333]">
@@ -887,10 +922,9 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       </div>
 
                       {/* Column 2: FAILED TESTCASES */}
-                      <div className="px-4 flex flex-col gap-1">
+                      <div className="pt-3 sm:pt-0 sm:px-3 flex flex-col gap-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider flex items-center gap-1.5">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-[#c5221f]" />
+                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
                             FAILED
                           </span>
                           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#fce8e6] text-[#c5221f]">
@@ -902,34 +936,49 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         </div>
                       </div>
 
-                      {/* Column 3: PASS RATE */}
-                      <div className="pl-4 flex flex-col gap-1">
-                        {(() => {
-                          const ratio = passedCount / testcases.length
-                          const level = ratio >= 0.8 ? 'High' : ratio >= 0.5 ? 'Medium' : 'Low'
-                          const chipBg =
-                            level === 'High'
-                              ? 'bg-[#e6f4ea] text-[#137333]'
-                              : level === 'Medium'
-                                ? 'bg-[#fef7e0] text-[#b06000]'
-                                : 'bg-[#fce8e6] text-[#c5221f]'
+                      {/* Column 3: BLOCKED TESTCASES */}
+                      <div className="pt-3 sm:pt-0 sm:px-3 flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
+                            BLOCKED
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                            Blocked
+                          </span>
+                        </div>
+                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                          0 / {testcases.length}
+                        </div>
+                      </div>
 
-                          return (
-                            <>
-                              <div className="flex items-center justify-between">
-                                <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
-                                  PASS RATE
-                                </span>
-                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${chipBg}`}>
-                                  {level}
-                                </span>
-                              </div>
-                              <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
-                                {level}
-                              </div>
-                            </>
-                          )
-                        })()}
+                      {/* Column 4: SCHEDULED FOR LATER */}
+                      <div className="pt-3 sm:pt-0 sm:px-3 flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
+                            SCHEDULED
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e0f2fe] text-[#0369a1]">
+                            Scheduled for later
+                          </span>
+                        </div>
+                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                          0 / {testcases.length}
+                        </div>
+                      </div>
+
+                      {/* Column 5: NOT APPLICABLE */}
+                      <div className="pt-3 sm:pt-0 sm:pl-3 flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
+                            NOT APPLICABLE
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                            N/A
+                          </span>
+                        </div>
+                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                          0 / {testcases.length}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1054,35 +1103,55 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                 </div>
               </div>
 
-              {/* Sorting Chips: All, Passed, Failed */}
-              <div className="flex items-center gap-2">
-                {[
-                  { key: 'all', label: 'All', count: testcases.length },
-                  { key: 'Pass', label: 'Passed', count: passedCount },
-                  { key: 'Fail', label: 'Failed', count: failedCount },
-                ].map((chip) => {
-                  const isSelected = testcaseStatusFilter === chip.key
-                  return (
-                    <button
-                      key={chip.key}
-                      onClick={() => setTestcaseStatusFilter(chip.key as 'all' | 'Pass' | 'Fail')}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
-                        isSelected
-                          ? 'bg-[#36c0c9] text-white font-bold shadow-2xs border border-[#36c0c9]'
-                          : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
-                      }`}
-                    >
-                      <span>{chip.label}</span>
-                      <span
-                        className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
-                          isSelected ? 'bg-white/25 text-white' : 'bg-[#f1f5f9] text-[#64748b]'
+              {/* Sorting Chips: All, Passed, Failed & Chips Legend */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  {[
+                    { key: 'all', label: 'All', count: testcases.length },
+                    { key: 'Pass', label: 'Passed', count: passedCount },
+                    { key: 'Fail', label: 'Failed', count: failedCount },
+                  ].map((chip) => {
+                    const isSelected = testcaseStatusFilter === chip.key
+                    return (
+                      <button
+                        key={chip.key}
+                        onClick={() => setTestcaseStatusFilter(chip.key as 'all' | 'Pass' | 'Fail')}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+                          isSelected
+                            ? 'bg-[#36c0c9] text-white font-bold shadow-2xs border border-[#36c0c9]'
+                            : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
                         }`}
                       >
-                        {chip.count}
-                      </span>
-                    </button>
-                  )
-                })}
+                        <span>{chip.label}</span>
+                        <span
+                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                            isSelected ? 'bg-white/25 text-white' : 'bg-[#f1f5f9] text-[#64748b]'
+                          }`}
+                        >
+                          {chip.count}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Chips Legend */}
+                <div className="flex items-center gap-3 text-[11px] text-[#64748b] bg-white px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] shadow-2xs self-start sm:self-auto">
+                  <span className="font-bold text-[#0d212c]">Legend:</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-extrabold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
+                      TC-01
+                    </span>
+                    <span>Message Type</span>
+                  </div>
+                  <span className="text-[#cbd5e1]">|</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
+                      Category
+                    </span>
+                    <span>Category Type</span>
+                  </div>
+                </div>
               </div>
 
               {/* Testcase List Cards */}
@@ -1095,8 +1164,13 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                   filteredTestcases.map((q) => {
                     const isPass = q.status === 'Pass'
                     const isExpanded = !!expandedSnapshots[q.id]
-                    const visibleSnapshots = isExpanded ? q.snapshots : q.snapshots.slice(0, 4)
-                    const hiddenCount = q.snapshots.length - 4
+                    const sortedSnapshots = [...q.snapshots].sort((a, b) => {
+                      if (a.tag === 'Before' && b.tag !== 'Before') return -1
+                      if (a.tag !== 'Before' && b.tag === 'Before') return 1
+                      return 0
+                    })
+                    const visibleSnapshots = isExpanded ? sortedSnapshots : sortedSnapshots.slice(0, 4)
+                    const hiddenCount = sortedSnapshots.length - 4
                     const formattedIndex = String(q.id).padStart(2, '0')
 
                     return (
@@ -1258,7 +1332,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
         )}
       </div>
 
-      {/* Reschedule Meeting Modal — Centered layout, icon top, title next line, mandatory asterisks, subtle grey focus, proper padding */}
+      {/* Reschedule Meeting Modal — Centered layout, icon top, title next line, past date disabled, start/end time validation, editable/deletable recipients, optional reason */}
       {showRescheduleModal && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-8 sm:p-10 w-full max-w-xl flex flex-col items-center gap-6 animate-in fade-in zoom-in-95 duration-150 relative">
@@ -1270,48 +1344,136 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               <X className="w-4 h-4 fill-none stroke-current" style={{ fill: 'none', stroke: 'currentColor' }} />
             </button>
 
-            {/* Centered Icon and Title */}
-            <div className="flex flex-col items-center text-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-[#ddf7f9] text-[#0d7280] flex items-center justify-center border border-[#36c0c9]/30 shadow-2xs">
-                <Calendar className="w-7 h-7 text-[#0d7280]" />
+            {/* Left-aligned Icon and Title */}
+            <div className="flex items-center gap-3 w-full">
+              <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#0d7280] flex items-center justify-center border border-[#36c0c9]/30 shadow-2xs shrink-0">
+                <Calendar className="w-4.5 h-4.5 text-[#0d7280]" />
               </div>
-              <h3 className="text-xl font-extrabold text-[#0d212c]">Reschedule meeting</h3>
+              <h3 className="text-lg font-bold text-[#0d212c]">Reschedule meeting</h3>
             </div>
 
             <div className="flex flex-col gap-4 w-full text-left">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#0d212c]">
+                  New date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  min={new Date().toISOString().split('T')[0]}
+                  value={rescheduleDate}
+                  onChange={(e) => setRescheduleDate(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-[#0d212c]">
-                    New date <span className="text-red-500">*</span>
+                    Start time <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="date"
-                    value={rescheduleDate}
-                    onChange={(e) => setRescheduleDate(e.target.value)}
+                    type="time"
+                    value={rescheduleStartTime}
+                    onChange={(e) => setRescheduleStartTime(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-[#0d212c]">
-                    New time <span className="text-red-500">*</span>
+                    End time <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="time"
-                    value={rescheduleTime}
-                    onChange={(e) => setRescheduleTime(e.target.value)}
+                    value={rescheduleEndTime}
+                    onChange={(e) => setRescheduleEndTime(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
                   />
                 </div>
               </div>
+              {rescheduleEndTime <= rescheduleStartTime && (
+                <p className="text-[11px] text-red-500 font-semibold -mt-2">
+                  End time must be after start time.
+                </p>
+              )}
 
+              {/* Mandatory Recipients tag-input matching Add Facility flow (max 5) */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-[#0d212c]">
-                  Reason <span className="text-red-500">*</span>
+                  Recipients <span className="text-red-500">*</span>
                 </label>
                 <input
+                  type="email"
+                  placeholder={
+                    rescheduleRecipients.length >= 5
+                      ? 'Maximum 5 recipients reached'
+                      : 'Enter email and press Enter...'
+                  }
+                  value={newRecipientInput}
+                  disabled={rescheduleRecipients.length >= 5}
+                  onChange={(e) => {
+                    setNewRecipientInput(e.target.value)
+                    if (recipientError) setRecipientError(null)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      const email = newRecipientInput.trim()
+                      if (!email) return
+                      if (rescheduleRecipients.includes(email)) {
+                        setRecipientError('This recipient has already been added.')
+                        return
+                      }
+                      if (rescheduleRecipients.length >= 5) {
+                        setRecipientError('Maximum 5 recipients allowed.')
+                        return
+                      }
+                      setRescheduleRecipients([...rescheduleRecipients, email])
+                      setNewRecipientInput('')
+                    }
+                  }}
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-xs text-[#0d212c] outline-none transition disabled:bg-slate-100 disabled:opacity-60 disabled:cursor-not-allowed ${
+                    recipientError
+                      ? 'border-red-500'
+                      : 'border-[#cbd5e1] focus:border-slate-400 focus:bg-slate-50/50'
+                  }`}
+                />
+                <div className="flex items-center justify-between text-[11px] text-[#64748b]">
+                  <span>Maximum 5 recipients can be added</span>
+                  <span>{rescheduleRecipients.length}/5</span>
+                </div>
+                {recipientError && (
+                  <span className="text-xs text-red-600 font-medium">{recipientError}</span>
+                )}
+                {rescheduleRecipients.length > 0 && (
+                  <div className="flex items-center gap-2 flex-wrap pt-1">
+                    {rescheduleRecipients.map((email, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 bg-[#f1f5f9] text-[#0d212c] text-xs font-semibold px-3 py-1.5 rounded-xl border border-[#cbd5e1]"
+                      >
+                        {email}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setRescheduleRecipients(rescheduleRecipients.filter((_, i) => i !== idx))
+                          }
+                          className="p-0.5 hover:bg-slate-200 rounded-full text-slate-500 hover:text-red-600 transition cursor-pointer border-0 bg-transparent"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Optional Reason field without asterisk */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-[#0d212c]">Reason</label>
+                <input
                   type="text"
-                  placeholder="e.g. Schedule conflict requested by facility"
+                  placeholder="e.g. Schedule conflict requested by facility (optional)"
                   value={rescheduleReason}
                   onChange={(e) => setRescheduleReason(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-normal outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white transition"
@@ -1328,7 +1490,13 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               </button>
               <button
                 onClick={handleConfirmReschedule}
-                disabled={!rescheduleDate.trim() || !rescheduleTime.trim() || !rescheduleReason.trim()}
+                disabled={
+                  !rescheduleDate.trim() ||
+                  !rescheduleStartTime.trim() ||
+                  !rescheduleEndTime.trim() ||
+                  rescheduleEndTime <= rescheduleStartTime ||
+                  rescheduleRecipients.length === 0
+                }
                 className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Confirm Reschedule
@@ -1361,14 +1529,13 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               </p>
             </div>
 
+            {/* Optional Reason field without asterisk */}
             <div className="flex flex-col gap-1.5 w-full text-left">
-              <label className="text-xs font-semibold text-[#0d212c]">
-                Reason <span className="text-red-500">*</span>
-              </label>
+              <label className="text-xs font-semibold text-[#0d212c]">Reason</label>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Describe the reason for cancelling this meeting..."
+                placeholder="Describe the reason for cancelling this meeting (optional)..."
                 rows={4}
                 className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-normal outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white resize-none transition min-h-[110px]"
               />
@@ -1383,8 +1550,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               </button>
               <button
                 onClick={handleConfirmCancel}
-                disabled={!cancelReason.trim()}
-                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
               >
                 Confirm Cancel
               </button>

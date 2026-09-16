@@ -43,7 +43,11 @@ interface SearchVendorResult {
   confidenceType: 'success' | 'warning' | 'error'
 }
 
-export const VendorsScreen: React.FC = () => {
+interface VendorsScreenProps {
+  onHeaderChange?: (header: React.ReactNode | null) => void
+}
+
+export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) => {
   const [activeDispatchVendor, setActiveDispatchVendor] = useState<VendorRow | null>(null)
   const [dispatchSuccessToast, setDispatchSuccessToast] = useState<string | null>(null)
 
@@ -497,13 +501,13 @@ export const VendorsScreen: React.FC = () => {
     setVendors(vendors.map((v) => (v.id === vendor.id ? { ...v, status: newStatus } : v)))
     showToast(
       newStatus === 'Activated'
-        ? `Reactivated vendor ${vendor.name}.`
-        : `Deactivated vendor ${vendor.name}.`
+        ? `Reactivated facility ${vendor.name}.`
+        : `Deactivated facility ${vendor.name}.`
     )
   }
 
   const handleLaunchCall = () => {
-    const vendorName = activeDispatchVendor ? activeDispatchVendor.name : 'Vendor'
+    const vendorName = activeDispatchVendor ? activeDispatchVendor.name : 'Facility'
     setActiveDispatchVendor(null)
     setDispatchSuccessToast(`Voice agent call successfully dispatched to ${vendorName}!`)
     setTimeout(() => {
@@ -528,6 +532,7 @@ export const VendorsScreen: React.FC = () => {
         vendor={dispatchData}
         onBack={() => setActiveDispatchVendor(null)}
         onComplete={handleLaunchCall}
+        onHeaderChange={onHeaderChange}
       />
     )
   }
@@ -1171,11 +1176,6 @@ export const VendorsScreen: React.FC = () => {
             <div className="flex items-center justify-between pb-4 border-b border-[#e2e8f0] mb-5">
               <div>
                 <h3 className="text-lg font-extrabold text-[#0d212c]">Add Facility</h3>
-                <p className="text-xs text-[#64748b] mt-0.5 font-medium">
-                  {onboardingMode === 'find'
-                    ? 'Search public registry for facility metadata or enter details manually.'
-                    : 'Manually register facility profile for risk due diligence.'}
-                </p>
               </div>
 
               <button

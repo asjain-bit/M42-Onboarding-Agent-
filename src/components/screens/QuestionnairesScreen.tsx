@@ -107,7 +107,6 @@ export const QuestionnairesScreen: React.FC = () => {
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [testcasesCountInput, setTestcasesCountInput] = useState<number | ''>(40)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [newQuestionnaireTitle, setNewQuestionnaireTitle] = useState('')
@@ -138,12 +137,39 @@ export const QuestionnairesScreen: React.FC = () => {
     startIndex + ITEMS_PER_PAGE
   )
 
-  // Single document file selection handler
+  // Download reference questionnaire template (Image 3)
+  const handleDownloadTemplate = () => {
+    const csvContent =
+      'Testcase Code,Testcase Title,Category,Type,Expected Behaviour,Agent Evaluation Criteria\n' +
+      'TC-01,"Verify patient medical history ingestion","Clinical","Problems","All active conditions and diagnosis codes should be accurately parsed and filed.","Check that ICD-10/SNOMED codes match source documentation with zero discrepancies."\n' +
+      'TC-02,"Check data encryption at rest and in transit","Security","Sensitive Info","Customer data is encrypted with AES-256 and TLS 1.3 across all endpoints.","Ensure security compliance certificates are attached and validated."\n' +
+      'TC-03,"Validate real-time telemetry streaming","Integration","Meds Dispensing","Medication dispense records stream via HL7/FHIR within 500ms latency.","Verify API payload schema and latency bounds."\n'
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', 'questionnaire_dataset_template.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    showToast('Dataset template downloaded.')
+  }
+
+  // Single Excel document file selection handler (only Excel files, max 25 MB)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
-      if (file.size > 20 * 1024 * 1024) {
-        showToast('File size exceeds maximum limit of 20 MB.')
+      const validExtensions = ['.xlsx', '.xls', '.csv']
+      const isValidExt = validExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))
+
+      if (!isValidExt) {
+        showToast('Only Excel files (.xlsx, .xls, .csv) are allowed.')
+        return
+      }
+
+      if (file.size > 25 * 1024 * 1024) {
+        showToast('File size exceeds maximum limit of 25 MB.')
         return
       }
       setUploadedFile(file)
@@ -158,22 +184,23 @@ export const QuestionnairesScreen: React.FC = () => {
     setNewQuestionnaireTitle(title.trim())
 
     setTimeout(() => {
-      const extension = uploadedFile.name.split('.').pop()?.toUpperCase() as 'PDF' | 'DOCX' | 'MD'
-      const count = typeof testcasesCountInput === 'number' ? testcasesCountInput : 35
+      const extension = (uploadedFile.name.split('.').pop()?.toUpperCase() || 'XLSX') as
+        | 'PDF'
+        | 'DOCX'
+        | 'MD'
       const newQuestionnaire: Questionnaire = {
         id: `q-${Date.now()}`,
         title,
         description:
           description || `Custom dataset checklist parsed from ${uploadedFile.name}.`,
-        fileType: extension || 'PDF',
-        questionsCount: count,
+        fileType: extension,
+        questionsCount: 20,
         status: 'Draft',
       }
 
       setQuestionnaires([newQuestionnaire, ...questionnaires])
       setTitle('')
       setDescription('')
-      setTestcasesCountInput(40)
       setUploadedFile(null)
       setIsUploading(false)
       setShowUploadModal(false)
@@ -524,32 +551,15 @@ export const QuestionnairesScreen: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-2">
-                  Number of testcases <span className="text-red-500 font-bold">*</span>
-                </label>
-                <Input
-                  type="number"
-                  placeholder="e.g. 40"
-                  value={testcasesCountInput}
-                  onChange={(e) =>
-                    setTestcasesCountInput(e.target.value ? parseInt(e.target.value, 10) : '')
-                  }
-                  required
-                  min={1}
-                  className="w-full text-xs py-3"
-                />
-              </div>
-
-              <div>
                 <div className="flex items-center gap-1.5 mb-2">
                   <label className="block text-xs font-bold text-[#0d212c]">
-                    Document upload (PDF, DOCX, MD - Max 1 file, up to 20 MB){' '}
+                    Document upload (Excel .xlsx, .xls, .csv - Max 1 file, up to 25 MB){' '}
                     <span className="text-red-500 font-bold">*</span>
                   </label>
                   <div className="relative group cursor-pointer">
                     <Info className="w-3.5 h-3.5 text-[#64748b]" />
                     <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute left-1/2 -translate-x-1/2 bottom-6 z-50 w-64 bg-[#0d212c] text-white text-xs p-2.5 rounded-xl shadow-xl border border-white/10 text-center">
-                      The dataset testcases will be created based on the document you upload.
+                      The dataset testcases will be created based on the Excel template you upload.
                     </div>
                   </div>
                 </div>
@@ -561,11 +571,11 @@ export const QuestionnairesScreen: React.FC = () => {
                       Click to choose file or drag and drop
                     </span>
                     <span className="text-[11px] text-[#64748b]">
-                      Supported formats: PDF, DOCX, MD (Maximum file size: 20 MB)
+                      Supported formats: Excel (.xlsx, .xls, .csv) (Maximum file size: 25 MB)
                     </span>
                     <input
                       type="file"
-                      accept=".pdf,.docx,.md"
+                      accept=".xlsx,.xls,.csv"
                       onChange={handleFileChange}
                       className="hidden"
                       required
@@ -580,7 +590,7 @@ export const QuestionnairesScreen: React.FC = () => {
                           {uploadedFile.name}
                         </p>
                         <span className="text-[10px] text-[#64748b]">
-                          {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB (Max 20 MB)
+                          {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB (Max 25 MB)
                         </span>
                       </div>
                     </div>
@@ -595,6 +605,23 @@ export const QuestionnairesScreen: React.FC = () => {
                     </button>
                   </div>
                 )}
+              </div>
+
+              {/* Reference Template Download Note Box */}
+              <div className="p-4 rounded-2xl border border-[#e2e8f0] bg-[#f8fafc]/60 flex flex-col gap-2.5 shadow-2xs">
+                <p className="text-xs text-[#64748b] leading-relaxed">
+                  <strong className="text-[#0d212c]">Note:</strong> Please make sure to include all
+                  questions in the specified format along with all response details. Below is the
+                  reference template which you can download.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleDownloadTemplate}
+                  className="text-xs font-bold text-[#0d7280] hover:text-[#09515b] flex items-center gap-1.5 w-fit cursor-pointer bg-transparent border-0 p-0 transition"
+                >
+                  <Download className="w-4 h-4 text-[#0d7280]" />
+                  <span>Download dataset template</span>
+                </button>
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t border-[#e2e8f0]">

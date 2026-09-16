@@ -6,7 +6,7 @@ export interface NavLink {
 }
 
 export interface SiteHeaderProps {
-  title?: string
+  title?: React.ReactNode
   subtitle?: string
   links?: NavLink[]
   activeTab?: string

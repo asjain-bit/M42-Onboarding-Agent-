@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Fraunces } from 'next/font/google'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import { GlobalTooltip } from '@/components/atoms/GlobalTooltip'
 import './globals.css'
 
 const inter = Inter({
@@ -36,7 +37,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/favicon-square.png" />
       </head>
       <body className="bg-bg-default text-text-primary antialiased min-h-screen">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <GlobalTooltip />
+        </ThemeProvider>
       </body>
     </html>
   )

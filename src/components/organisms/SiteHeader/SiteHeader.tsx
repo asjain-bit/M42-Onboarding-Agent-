@@ -23,7 +23,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
         .join(' ')}
     >
       <div className="flex flex-col">
-        <h1 className="font-extrabold text-xl lg:text-2xl tracking-tight text-[#0d212c]">
+        <h1 className="font-extrabold text-xl lg:text-2xl tracking-tight text-[#0d212c] flex items-center">
           {title}
         </h1>
         {subtitle ? (

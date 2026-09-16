@@ -11,6 +11,8 @@ export interface QuestionItem {
   researchNeeded: boolean
   attachmentRequired: boolean
   includedInAssessment?: boolean
+  messageType?: string
+  categoryType?: string
 }
 
 export interface QuestionnaireDetailData {
@@ -45,6 +47,8 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
   const [showAddQuestionModal, setShowAddQuestionModal] = useState(false)
   const [newQuestionText, setNewQuestionText] = useState('')
   const [newResponseCue, setNewResponseCue] = useState('')
+  const [newMessageType, setNewMessageType] = useState('')
+  const [newCategoryType, setNewCategoryType] = useState('')
   const [newResearchNeeded, setNewResearchNeeded] = useState(false)
   const [newAttachmentRequired, setNewAttachmentRequired] = useState(false)
 
@@ -121,14 +125,23 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
     if (deletingQuestionId !== null) {
       setQuestions(questions.filter((q) => q.id !== deletingQuestionId))
       setDeletingQuestionId(null)
-      showToast('Question deleted successfully.')
+      showToast('Testcase deleted successfully.')
     }
+  }
+
+  // Select All Testcases state & handler
+  const allIncluded =
+    questions.length > 0 && questions.every((q) => q.includedInAssessment !== false)
+
+  const handleToggleSelectAll = () => {
+    const nextVal = !allIncluded
+    setQuestions(questions.map((q) => ({ ...q, includedInAssessment: nextVal })))
   }
 
   // Requirement 4: Add New Question Handler
   const handleAddQuestion = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newQuestionText.trim() || !newResponseCue.trim()) return
+    if (!newQuestionText.trim() || !newResponseCue.trim() || !newMessageType.trim() || !newCategoryType.trim()) return
 
     const maxId = questions.reduce(
       (max, q) => (typeof q.id === 'number' && q.id > max ? q.id : max),
@@ -143,15 +156,19 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
       researchNeeded: newResearchNeeded,
       attachmentRequired: newAttachmentRequired,
       includedInAssessment: true,
+      messageType: newMessageType.trim(),
+      categoryType: newCategoryType.trim(),
     }
 
     setQuestions([...questions, newQuestionObj])
     setNewQuestionText('')
     setNewResponseCue('')
+    setNewMessageType('')
+    setNewCategoryType('')
     setNewResearchNeeded(false)
     setNewAttachmentRequired(false)
     setShowAddQuestionModal(false)
-    showToast('New question added successfully!')
+    showToast('New testcase added successfully!')
   }
 
   // Google Forms style drag and drop reordering
@@ -192,7 +209,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
   const handleSaveOrEdit = () => {
     if (isEditing) {
       setIsEditing(false)
-      showToast('Questionnaire changes saved successfully.')
+      showToast('Dataset changes saved successfully.')
     } else {
       setIsEditing(true)
     }
@@ -201,7 +218,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
   const handlePublish = () => {
     setStatus('Ready')
     setIsEditing(false)
-    showToast('Questionnaire published successfully!')
+    showToast('Dataset published successfully!')
   }
 
   const showToast = (msg: string) => {
@@ -321,6 +338,45 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
 
       {/* Testcases List */}
       <div className="w-full px-6 lg:px-10 mt-6 flex flex-col gap-5">
+        {/* Top Controls: Select All Action & Chips Legend */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+          <button
+            type="button"
+            onClick={handleToggleSelectAll}
+            disabled={!isEditing}
+            className="bg-transparent border-0 p-0 shadow-none outline-none flex items-center gap-2.5 text-xs font-bold text-[#0d212c] hover:text-[#0d7280] transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 select-none"
+          >
+            <div
+              className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
+                allIncluded
+                  ? 'border-[#36c0c9] bg-[#36c0c9] text-white'
+                  : 'border-[#cbd5e1] bg-white'
+              }`}
+            >
+              {allIncluded && <Check className="w-3 h-3 text-white stroke-[3]" />}
+            </div>
+            <span>Select all testcase during assessment</span>
+          </button>
+
+          {/* Chips Legend */}
+          <div className="flex items-center gap-3 text-[11px] text-[#64748b] bg-white px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] shadow-2xs self-start sm:self-auto">
+            <span className="font-bold text-[#0d212c]">Legend:</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-extrabold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
+                TC-01
+              </span>
+              <span>Message Type</span>
+            </div>
+            <span className="text-[#cbd5e1]">|</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
+                Category
+              </span>
+              <span>Category Type</span>
+            </div>
+          </div>
+        </div>
+
         {questions.map((q, idx) => (
           <div
             key={q.id}
@@ -349,6 +405,21 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                     </div>
                   </div>
                 )}
+
+                {/* Checkbox on LEFT side of Testcase #1 text */}
+                <div
+                  className="flex items-center shrink-0"
+                  title="Include testcase during assessment"
+                >
+                  <Checkbox
+                    checked={q.includedInAssessment ?? true}
+                    disabled={!isEditing}
+                    onChange={(e) =>
+                      handleQuestionChange(q.id, 'includedInAssessment', e.target.checked)
+                    }
+                  />
+                </div>
+
                 {(() => {
                   const prefix = questionnaire.title.includes('Family History')
                     ? 'TC-FH'
@@ -361,8 +432,10 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                           : questionnaire.title.includes('Vitals')
                             ? 'TC-VIT'
                             : 'TC'
-                  const codeStr = `${prefix}-${String(idx + 1).padStart(2, '0')}`
-                  const typeStr = idx % 3 === 0 ? 'Problems' : idx % 3 === 1 ? 'Sensitive Info' : 'Meds Dispensing'
+                  const codeStr = q.messageType
+                    ? `${q.messageType}-${String(idx + 1).padStart(2, '0')}`
+                    : `${prefix}-${String(idx + 1).padStart(2, '0')}`
+                  const typeStr = q.categoryType || (idx % 3 === 0 ? 'Problems' : idx % 3 === 1 ? 'Sensitive Info' : 'Meds Dispensing')
 
                   return (
                     <div className="flex items-center gap-2.5 flex-wrap">
@@ -388,33 +461,17 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 })()}
               </div>
 
-              {/* Top Checkbox: Include during assessment */}
-              <div className="flex items-center gap-4">
-                <div
-                  className="flex items-center gap-2"
-                  title="When enabled, this testcase will be automatically evaluated during live assessment calls."
+              {/* Right action: Delete button when editing */}
+              {isEditing && (
+                <button
+                  onClick={() => setDeletingQuestionId(q.id)}
+                  className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition cursor-pointer"
+                  title="Delete testcase"
+                  aria-label="Delete testcase"
                 >
-                  <Checkbox
-                    label="Include during assessment"
-                    checked={q.includedInAssessment ?? true}
-                    disabled={!isEditing}
-                    onChange={(e) =>
-                      handleQuestionChange(q.id, 'includedInAssessment', e.target.checked)
-                    }
-                  />
-                </div>
-
-                {isEditing && (
-                  <button
-                    onClick={() => setDeletingQuestionId(q.id)}
-                    className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition cursor-pointer"
-                    title="Delete testcase"
-                    aria-label="Delete testcase"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
             </div>
 
             {/* TESTCASE Input Field */}
@@ -492,13 +549,42 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   Evaluation criteria <span className="text-red-500 font-bold">*</span>
                 </label>
                 <textarea
-                  placeholder="Instructions or cues for the vendor to answer effectively..."
+                  placeholder="Instructions or cues for the facility to answer effectively..."
                   value={newResponseCue}
                   onChange={(e) => setNewResponseCue(e.target.value)}
                   required
                   rows={3}
                   className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white resize-y"
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
+                    Message type <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. ADT, ORU, SIU..."
+                    value={newMessageType}
+                    onChange={(e) => setNewMessageType(e.target.value)}
+                    required
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
+                    Category type <span className="text-red-500 font-bold">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Problems, Sensitive Info..."
+                    value={newCategoryType}
+                    onChange={(e) => setNewCategoryType(e.target.value)}
+                    required
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-[#e2e8f0]">
@@ -511,10 +597,10 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 </button>
                 <button
                   type="submit"
-                  disabled={!newQuestionText.trim() || !newResponseCue.trim()}
+                  disabled={!newQuestionText.trim() || !newResponseCue.trim() || !newMessageType.trim() || !newCategoryType.trim()}
                   className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold py-2 px-6 rounded-xl text-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition border-0"
                 >
-                  Save question
+                  Add Testcase
                 </button>
               </div>
             </form>
