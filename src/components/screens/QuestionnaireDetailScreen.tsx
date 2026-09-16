@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { GripVertical, Trash2, ArrowLeft, Check, Pencil, Plus, X } from 'lucide-react'
+import { GripVertical, Trash2, ArrowLeft, Check, Pencil, Plus, X, AlertTriangle } from 'lucide-react'
 import { Checkbox } from '@/components/atoms/Checkbox'
 
 export interface QuestionItem {
@@ -522,45 +522,31 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         </div>
       )}
 
-      {/* Confirmation Popup for Deleting Individual Testcase */}
+      {/* Delete Testcase Confirmation Modal Popup (Center Aligned matching Delete Dataset) */}
       {deletingQuestionId !== null && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-lg font-extrabold text-[#0d212c]">Confirm deletion</h3>
-                {/* Status / Type Chips as used in Dashboard & Assessment Details */}
-                <div className="flex items-center gap-1.5">
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-sky-50 text-sky-700 border border-sky-200">
-                    Problems
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e6f4ea] text-[#137333]">
-                    Active
-                  </span>
-                </div>
-              </div>
-              <p className="text-xs text-[#64748b] leading-relaxed">
-                Are you sure you want to remove testcase{' '}
-                <strong className="text-[#0d212c]">
-                  &quot;
-                  {questions.find((q) => q.id === deletingQuestionId)?.question || 'Selected testcase'}
-                  &quot;
-                </strong>{' '}
-                from this dataset?
+          <div className="bg-white rounded-3xl max-w-lg w-full p-8 sm:p-10 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150 text-center flex flex-col items-center gap-4 min-h-[240px] justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center border border-red-100 shadow-2xs">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-xl font-extrabold text-[#0d212c] mb-1.5">Delete Testcase</h3>
+              <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
+                Are you sure you want to remove this testcase from the dataset?
               </p>
             </div>
-            <div className="flex justify-end gap-3 border-t border-[#e2e8f0] pt-3">
+            <div className="flex items-center justify-center gap-3 w-full mt-2">
               <button
                 onClick={() => setDeletingQuestionId(null)}
-                className="px-4 py-2 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] hover:bg-slate-50 cursor-pointer"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteQuestion}
-                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer shadow-2xs border-0"
+                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
               >
-                Delete testcase
+                Delete
               </button>
             </div>
           </div>

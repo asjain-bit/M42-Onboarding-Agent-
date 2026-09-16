@@ -1322,13 +1322,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             <div className="flex items-center gap-3 pt-3 border-t border-[#e2e8f0] w-full">
               <button
                 onClick={() => setShowRescheduleModal(false)}
-                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer bg-transparent transition"
+                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer bg-transparent transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmReschedule}
-                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
+                disabled={!rescheduleDate.trim() || !rescheduleTime.trim() || !rescheduleReason.trim()}
+                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Confirm Reschedule
               </button>
@@ -1376,13 +1377,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             <div className="flex items-center justify-center gap-3 w-full pt-1">
               <button
                 onClick={() => setShowCancelModal(false)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition"
               >
                 Keep Assessment
               </button>
               <button
                 onClick={handleConfirmCancel}
-                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
+                disabled={!cancelReason.trim()}
+                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Confirm Cancel
               </button>

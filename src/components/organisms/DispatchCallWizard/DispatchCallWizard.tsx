@@ -21,6 +21,7 @@ import {
   FileText,
 } from 'lucide-react'
 import { Button } from '@/components/atoms/Button'
+import { Checkbox } from '@/components/atoms/Checkbox'
 import { CountryFlag } from '@/components/atoms/CountryFlag'
 
 export interface VendorDispatchData {
@@ -336,10 +337,10 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                     <button
                       type="button"
                       onClick={() => setIsDatasetDropdownOpen(!isDatasetDropdownOpen)}
-                      className={`w-full px-4 py-3 rounded-xl border bg-white text-xs font-semibold text-[#0d212c] flex items-center justify-between shadow-2xs transition cursor-pointer outline-none ${
+                      className={`w-full px-4 py-2.5 rounded-xl border bg-white text-xs font-semibold text-[#0d212c] flex items-center justify-between transition cursor-pointer outline-none ${
                         isDatasetDropdownOpen
-                          ? 'border-slate-400 bg-slate-50/50 ring-1 ring-slate-300'
-                          : 'border-[#cbd5e1] hover:border-slate-400 focus:border-slate-400 focus:bg-slate-50/30'
+                          ? 'border-slate-400 bg-slate-50/50'
+                          : 'border-[#e2e8f0] hover:border-[#cbd5e1] focus:border-[#cbd5e1]'
                       }`}
                     >
                       <div className="flex items-center gap-2 truncate">
@@ -710,25 +711,15 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
           <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl border border-[#e2e8f0] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 my-auto">
             {/* Modal Header */}
             <div className="bg-white px-6 py-5 border-b border-[#e2e8f0] flex items-center justify-between shrink-0">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-xl font-extrabold text-[#0d212c]">
-                    {selectedQuestionnaire}
-                  </h2>
-                  <span className="px-3 py-1 rounded-xl bg-[#ddf7f9] text-[#0d7280] font-bold text-xs border border-[#36c0c9]/30">
-                    62 testcases
-                  </span>
-                </div>
-                <p className="text-xs text-[#64748b]">
-                  Preview dataset specifications and configure testcase inclusion for this assessment.
-                </p>
-              </div>
+              <h2 className="text-xl font-extrabold text-[#0d212c]">
+                {selectedQuestionnaire}
+              </h2>
               <button
                 onClick={() => setShowDatasetPreviewModal(false)}
-                className="p-2 rounded-xl border border-[#e2e8f0] text-[#64748b] hover:text-[#0d212c] hover:bg-slate-50 transition cursor-pointer"
+                className="p-1.5 rounded-xl border-0 text-[#64748b] hover:text-[#0d212c] transition cursor-pointer bg-transparent outline-none shadow-none focus:outline-none"
                 title="Close preview"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 stroke-current bg-transparent fill-none border-0" />
               </button>
             </div>
 
@@ -757,8 +748,8 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
               </div>
             </div>
 
-            {/* Testcases List Table */}
-            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+            {/* Testcases List Table with Horizontal Line Separators */}
+            <div className="flex-1 overflow-y-auto divide-y divide-[#e2e8f0]">
               {sampleDatasetTestcases
                 .filter(
                   (tc) =>
@@ -771,10 +762,8 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   return (
                     <div
                       key={tc.id}
-                      className={`p-4 rounded-2xl border transition flex items-start justify-between gap-4 ${
-                        isIncluded
-                          ? 'bg-white border-[#e2e8f0] shadow-2xs'
-                          : 'bg-slate-50/70 border-slate-200 opacity-75'
+                      className={`py-4 px-6 transition flex items-start justify-between gap-4 ${
+                        isIncluded ? 'bg-white' : 'bg-slate-50/50 opacity-75'
                       }`}
                     >
                       {/* Left side: Testcase metadata (Read-only / Non-editable) */}
@@ -811,21 +800,11 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
 
                       {/* Right side: Inclusion Checkbox (Editable toggle) */}
                       <div className="flex items-center justify-end shrink-0 pl-4 pt-1">
-                        <label className="flex items-center gap-2.5 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 border border-[#cbd5e1] px-3.5 py-2 rounded-xl transition">
-                          <span
-                            className={`text-xs font-bold ${
-                              isIncluded ? 'text-[#0d7280]' : 'text-[#64748b]'
-                            }`}
-                          >
-                            {isIncluded ? 'Included' : 'Excluded'}
-                          </span>
-                          <input
-                            type="checkbox"
-                            checked={isIncluded}
-                            onChange={() => toggleTestcaseInclusion(tc.id)}
-                            className="w-4 h-4 rounded border-[#cbd5e1] text-[#36c0c9] focus:ring-[#36c0c9] cursor-pointer"
-                          />
-                        </label>
+                        <Checkbox
+                          label="Include during assessment"
+                          checked={isIncluded}
+                          onChange={() => toggleTestcaseInclusion(tc.id)}
+                        />
                       </div>
                     </div>
                   )
@@ -833,25 +812,19 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
             </div>
 
             {/* Modal Footer */}
-            <div className="bg-[#f8fafc] px-6 py-4 border-t border-[#e2e8f0] flex items-center justify-between shrink-0">
-              <span className="text-xs text-[#64748b] font-medium">
-                <strong className="text-[#0d212c] font-bold">{includedCount}</strong> testcases selected to run in this assessment call.
-              </span>
-
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setShowDatasetPreviewModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-200/60 cursor-pointer"
-                >
-                  Close Preview
-                </button>
-                <button
-                  onClick={() => setShowDatasetPreviewModal(false)}
-                  className="px-6 py-2 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs"
-                >
-                  Save &amp; Apply Selection
-                </button>
-              </div>
+            <div className="bg-[#f8fafc] px-6 py-4 border-t border-[#e2e8f0] flex items-center justify-end shrink-0 gap-3">
+              <button
+                onClick={() => setShowDatasetPreviewModal(false)}
+                className="px-5 py-2.5 rounded-xl text-xs font-semibold text-[#0d212c] border border-[#cbd5e1] hover:bg-slate-50 cursor-pointer bg-white transition"
+              >
+                Close preview
+              </button>
+              <button
+                onClick={() => setShowDatasetPreviewModal(false)}
+                className="px-6 py-2.5 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
+              >
+                Save &amp; Apply Selection
+              </button>
             </div>
           </div>
         </div>

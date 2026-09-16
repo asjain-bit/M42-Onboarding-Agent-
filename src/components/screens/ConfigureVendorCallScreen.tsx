@@ -535,7 +535,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <div className="flex items-center gap-3 pt-3 border-t border-[#e2e8f0] w-full">
               <button
                 onClick={() => setShowRescheduleModal(false)}
-                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer bg-transparent transition"
+                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer bg-transparent transition"
               >
                 Cancel
               </button>
@@ -545,7 +545,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   setScheduleDate(rescheduleDate)
                   setStartTime(rescheduleTime)
                 }}
-                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
+                disabled={!rescheduleDate.trim() || !rescheduleTime.trim() || !rescheduleReason.trim()}
+                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Confirm Reschedule
               </button>
@@ -593,7 +594,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <div className="flex items-center justify-center gap-3 w-full pt-1">
               <button
                 onClick={() => setShowCancelModal(false)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition"
               >
                 Keep Assessment
               </button>
@@ -602,7 +603,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   setShowCancelModal(false)
                   setIsMeetingCancelled(true)
                 }}
-                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
+                disabled={!cancelReason.trim()}
+                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Confirm Cancel
               </button>
@@ -1051,10 +1053,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   <button
                     type="button"
                     onClick={() => setIsDatasetDropdownOpen(!isDatasetDropdownOpen)}
-                    className={`w-full px-4 py-3 rounded-xl border bg-white text-xs font-semibold text-[#0d212c] flex items-center justify-between shadow-2xs transition cursor-pointer outline-none ${
+                    className={`w-full px-4 py-2.5 rounded-xl border bg-white text-xs font-semibold text-[#0d212c] flex items-center justify-between transition cursor-pointer outline-none ${
                       isDatasetDropdownOpen
-                        ? 'border-slate-400 bg-slate-50/50 ring-1 ring-slate-300'
-                        : 'border-[#cbd5e1] hover:border-slate-400 focus:border-slate-400 focus:bg-slate-50/30'
+                        ? 'border-slate-400 bg-slate-50/50'
+                        : 'border-[#e2e8f0] hover:border-[#cbd5e1] focus:border-[#cbd5e1]'
                     }`}
                   >
                     <div className="flex items-center gap-2 truncate">
@@ -1776,29 +1778,9 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl border border-[#e2e8f0] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 my-auto">
             {/* Modal Header */}
             <div className="bg-white px-6 py-5 border-b border-[#e2e8f0] flex items-center justify-between shrink-0">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-xl font-extrabold text-[#0d212c]">
-                    {selectedQuestionnaire || 'Dataset Details'}
-                  </h2>
-                  <span className="px-3 py-1 rounded-xl bg-[#ddf7f9] text-[#0d7280] font-bold text-xs border border-[#36c0c9]/30">
-                    {selectedQuestionnaire === 'ADT-Family History'
-                      ? '24 testcases'
-                      : selectedQuestionnaire === 'ORU-Laboratory'
-                        ? '46 testcases'
-                        : selectedQuestionnaire === 'ORU-Radiology'
-                          ? '13 testcases'
-                          : selectedQuestionnaire === 'ORU-Clinical Documents'
-                            ? '9 testcases'
-                            : selectedQuestionnaire === 'ORU-Vitals'
-                              ? '18 testcases'
-                              : '32 testcases'}
-                  </span>
-                </div>
-                <p className="text-xs text-[#64748b]">
-                  Preview dataset specifications and configure testcase inclusion for this assessment.
-                </p>
-              </div>
+              <h2 className="text-xl font-extrabold text-[#0d212c]">
+                {selectedQuestionnaire || 'Dataset Details'}
+              </h2>
               <button
                 onClick={() => setShowDatasetPreviewModal(false)}
                 className="p-1.5 rounded-xl border-0 text-[#64748b] hover:text-[#0d212c] transition cursor-pointer bg-transparent outline-none shadow-none focus:outline-none"
@@ -1833,8 +1815,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               </div>
             </div>
 
-            {/* Testcases List Table */}
-            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+            {/* Testcases List Table with Horizontal Line Separators */}
+            <div className="flex-1 overflow-y-auto divide-y divide-[#e2e8f0]">
               {sampleDatasetTestcases
                 .filter(
                   (tc) =>
@@ -1847,10 +1829,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   return (
                     <div
                       key={tc.id}
-                      className={`p-4 rounded-2xl border transition flex items-start justify-between gap-4 ${
-                        isIncluded
-                          ? 'bg-white border-[#e2e8f0] shadow-2xs'
-                          : 'bg-slate-50/70 border-slate-200 opacity-75'
+                      className={`py-4 px-6 transition flex items-start justify-between gap-4 ${
+                        isIncluded ? 'bg-white' : 'bg-slate-50/50 opacity-75'
                       }`}
                     >
                       {/* Left side: Testcase metadata (Read-only / Non-editable) */}
@@ -1899,25 +1879,19 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             </div>
 
             {/* Modal Footer */}
-            <div className="bg-[#f8fafc] px-6 py-4 border-t border-[#e2e8f0] flex items-center justify-between shrink-0">
-              <span className="text-xs text-[#64748b] font-medium">
-                <strong className="text-[#0d212c] font-bold">{includedCount}</strong> testcases selected to run in this assessment call.
-              </span>
-
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => setShowDatasetPreviewModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-200/60 cursor-pointer border-0 bg-transparent"
-                >
-                  Close Preview
-                </button>
-                <button
-                  onClick={() => setShowDatasetPreviewModal(false)}
-                  className="px-6 py-2 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
-                >
-                  Save &amp; Apply Selection
-                </button>
-              </div>
+            <div className="bg-[#f8fafc] px-6 py-4 border-t border-[#e2e8f0] flex items-center justify-end shrink-0 gap-3">
+              <button
+                onClick={() => setShowDatasetPreviewModal(false)}
+                className="px-5 py-2.5 rounded-xl text-xs font-semibold text-[#0d212c] border border-[#cbd5e1] hover:bg-slate-50 cursor-pointer bg-white transition"
+              >
+                Close preview
+              </button>
+              <button
+                onClick={() => setShowDatasetPreviewModal(false)}
+                className="px-6 py-2.5 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
+              >
+                Save &amp; Apply Selection
+              </button>
             </div>
           </div>
         </div>
