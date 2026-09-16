@@ -548,7 +548,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
       {/* Main Page Title Header */}
       <div className="w-full px-6 lg:px-10 py-3 flex flex-col gap-1">
         <h1 className="text-xl lg:text-2xl font-extrabold tracking-tight text-[#0d212c]">
-          Configure facility call
+          Configure Assessment Call
         </h1>
         <p className="text-xs text-[#64748b]">
           Set up the session, configure Agent, then review before launch.
@@ -666,15 +666,12 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 <button
                   onClick={onBack}
                   className="p-1 rounded-lg hover:bg-[#f1f5f9] transition text-[#0d212c] cursor-pointer"
-                  title="Back to vendors"
+                  title="Back to facilities"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
                   <h2 className="text-base font-extrabold text-[#0d212c]">Session setup</h2>
-                  <p className="text-xs text-[#64748b] mt-0.5">
-                    Choose the session type, questionnaire, and duration.
-                  </p>
                 </div>
               </div>
 
@@ -689,7 +686,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     <div className="flex flex-col">
                       <span className="font-bold text-xs text-[#0d212c]">Assessment round</span>
                       <span className="text-[11px] text-[#64748b] mt-0.5">
-                        Structured due-diligence interview using an approved questionnaire.
+                        Structured due-diligence interview using an approved dataset.
                       </span>
                     </div>
                   </div>
@@ -729,7 +726,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   <ChevronDown className="w-4 h-4 text-[#64748b] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
                 {selectedQuestionnaire && (
-                  <span className="text-[11px] text-[#64748b] pl-1">62 questions structured</span>
+                  <span className="text-[11px] text-[#64748b] pl-1">Selected dataset configured</span>
                 )}
               </div>
 
@@ -749,8 +746,39 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 </div>
                 <p className="text-[11px] text-[#64748b] mt-1 leading-relaxed">
                   <strong>Note:</strong> This is the estimated duration based on the number of
-                  questions. The minimum time is 135 minutes and the maximum time is 205 minutes an
-                  agent will take to complete the assessment.
+                  questions. The minimum time is{' '}
+                  {selectedQuestionnaire === 'ADT-Family History'
+                    ? 60
+                    : selectedQuestionnaire === 'ORU-Laboratory'
+                      ? 105
+                      : selectedQuestionnaire === 'ORU-Radiology'
+                        ? 35
+                        : selectedQuestionnaire === 'ORU-Clinical Documents'
+                          ? 25
+                          : selectedQuestionnaire === 'ORU-Vitals'
+                            ? 45
+                            : selectedQuestionnaire === 'PPR- Problems'
+                              ? 30
+                              : selectedQuestionnaire === 'RDS - Pharmacy Dispense'
+                                ? 20
+                                : 135}{' '}
+                  minutes and the maximum time is{' '}
+                  {selectedQuestionnaire === 'ADT-Family History'
+                    ? 95
+                    : selectedQuestionnaire === 'ORU-Laboratory'
+                      ? 160
+                      : selectedQuestionnaire === 'ORU-Radiology'
+                        ? 55
+                        : selectedQuestionnaire === 'ORU-Clinical Documents'
+                          ? 45
+                          : selectedQuestionnaire === 'ORU-Vitals'
+                            ? 70
+                            : selectedQuestionnaire === 'PPR- Problems'
+                              ? 50
+                              : selectedQuestionnaire === 'RDS - Pharmacy Dispense'
+                                ? 35
+                                : 205}{' '}
+                  minutes an agent will take to complete the assessment.
                 </p>
               </div>
 
@@ -1208,14 +1236,14 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   <div>
                     <h2 className="text-base font-extrabold text-[#0d212c]">Review & launch</h2>
                     <p className="text-xs text-[#64748b] mt-0.5">
-                      Confirm configuration and initiate automated vendor assessment call.
+                      Confirm configuration and initiate automated facility assessment call.
                     </p>
                   </div>
                 </div>
 
                 <div className="divide-y divide-[#e2e8f0]/80 flex flex-col text-xs">
                   <div className="py-3 flex justify-between">
-                    <span className="text-[#64748b]">Target vendor:</span>
+                    <span className="text-[#64748b]">Target facility:</span>
                     <span className="font-bold text-[#0d212c]">{vendor.name}</span>
                   </div>
                   {recipients.length > 0 && (
@@ -1235,8 +1263,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     </div>
                   )}
                   <div className="py-3 flex justify-between">
-                    <span className="text-[#64748b]">Selected questionnaire:</span>
-                    <span className="font-bold text-[#0d212c]">{selectedQuestionnaire}</span>
+                    <span className="text-[#64748b]">Selected dataset:</span>
+                    <span className="font-bold text-[#0d212c]">{selectedQuestionnaire || 'ADT-Family History'}</span>
                   </div>
                   <div className="py-3 flex justify-between">
                     <span className="text-[#64748b]">Agent Voice:</span>
@@ -1275,8 +1303,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <span className="font-bold text-[#0d212c]">Call summary</span>
 
             <div className="flex items-center gap-3 p-3 rounded-xl bg-[#f8fafc] border border-[#e2e8f0]">
-              <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#36c0c9] font-bold flex items-center justify-center shrink-0">
-                {vendor.name.slice(0, 2).toUpperCase()}
+              <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#0d7280] font-extrabold text-xs flex items-center justify-center shrink-0 border border-[#36c0c9]/30">
+                {vendor.name ? vendor.name.slice(0, 2).toUpperCase() : 'FC'}
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="font-bold text-[#0d212c] truncate">{vendor.name}</span>
@@ -1289,16 +1317,31 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               </div>
             </div>
 
-            {/* Requirement 8: Replace Timezone field with START & END TIME (10:30 AM - 12:30 PM GST) */}
             <div className="divide-y divide-[#e2e8f0]/60 flex flex-col">
               <div className="py-2.5 flex justify-between">
                 <span className="text-[#64748b]">CALL TYPE</span>
                 <span className="font-bold text-[#0d212c]">Assessment round</span>
               </div>
               <div className="py-2.5 flex justify-between">
-                <span className="text-[#64748b]">QUESTIONS</span>
+                <span className="text-[#64748b]">TESTCASES</span>
                 <span className="font-bold text-[#0d212c]">
-                  {selectedQuestionnaire ? '62' : '-'}
+                  {selectedQuestionnaire === 'ADT-Family History'
+                    ? '24'
+                    : selectedQuestionnaire === 'ORU-Laboratory'
+                      ? '46'
+                      : selectedQuestionnaire === 'ORU-Radiology'
+                        ? '13'
+                        : selectedQuestionnaire === 'ORU-Clinical Documents'
+                          ? '9'
+                          : selectedQuestionnaire === 'ORU-Vitals'
+                            ? '18'
+                            : selectedQuestionnaire === 'PPR- Problems'
+                              ? '12'
+                              : selectedQuestionnaire === 'RDS - Pharmacy Dispense'
+                                ? '8'
+                                : selectedQuestionnaire
+                                  ? '24'
+                                  : '-'}
                 </span>
               </div>
               <div className="py-2.5 flex justify-between gap-2">

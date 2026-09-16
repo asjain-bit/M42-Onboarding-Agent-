@@ -11,9 +11,10 @@ interface AssessmentRow {
   vendor: string
   questionnaire: string
   round: string
-  status: 'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready'
+  status: 'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready' | 'cancelled'
   score: string
   passRate: string
+  passRateReason?: string
   createdDate: string
 }
 
@@ -21,6 +22,13 @@ export const DashboardScreen: React.FC = () => {
   const [selectedAssessment, setSelectedAssessment] = useState<AssessmentDetailData | null>(null)
   const [selectedStatusFilter, setSelectedStatusFilter] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
+
+  // Reschedule & Cancel Modals State
+  const [rescheduleTarget, setRescheduleTarget] = useState<AssessmentRow | null>(null)
+  const [rescheduleDate, setRescheduleDate] = useState('2026-09-25')
+  const [rescheduleTime, setRescheduleTime] = useState('14:30')
+  const [cancelTarget, setCancelTarget] = useState<AssessmentRow | null>(null)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   // Show 8 rows per page consistently across all tables
   const [currentPage, setCurrentPage] = useState(1)
@@ -36,6 +44,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'Medium',
       passRate: '85%',
+      passRateReason: 'High pass rate: 17 out of 20 testcases passed during assessment evaluation.',
       createdDate: '1 Sept 2026, 10:30 AM',
     },
     {
@@ -46,6 +55,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'Low',
       passRate: '30%',
+      passRateReason: 'Low pass rate: 6 out of 20 testcases passed during imaging integration audit.',
       createdDate: '28 Aug 2026, 02:15 PM',
     },
     {
@@ -56,6 +66,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'High',
       passRate: '92%',
+      passRateReason: 'High pass rate: 18 out of 20 testcases passed telemetry data validations.',
       createdDate: '24 Aug 2026, 11:45 AM',
     },
     {
@@ -66,6 +77,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'scheduled',
       score: '-',
       passRate: '-',
+      passRateReason: 'Assessment scheduled. Pass rate will be computed upon call completion.',
       createdDate: '20 Aug 2026, 04:20 PM',
     },
     {
@@ -76,6 +88,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'finalised',
       score: 'Low',
       passRate: '20%',
+      passRateReason: 'Low pass rate: 4 out of 20 testcases passed during security controls audit.',
       createdDate: '15 Aug 2026, 09:10 AM',
     },
     {
@@ -86,6 +99,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'Medium',
       passRate: '57%',
+      passRateReason: 'Medium pass rate: 11 out of 20 testcases passed data compliance verification.',
       createdDate: '12 Aug 2026, 03:45 PM',
     },
     {
@@ -96,6 +110,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'High',
       passRate: '80%',
+      passRateReason: 'High pass rate: 16 out of 20 testcases passed API integration checks.',
       createdDate: '10 Aug 2026, 01:25 PM',
     },
     {
@@ -106,6 +121,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'Low',
       passRate: '35%',
+      passRateReason: 'Low pass rate: 7 out of 20 testcases passed ISMS requirements.',
       createdDate: '08 Aug 2026, 11:10 AM',
     },
     {
@@ -116,6 +132,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'finalised',
       score: 'High',
       passRate: '86%',
+      passRateReason: 'High pass rate: 17 out of 20 testcases passed infrastructure security audit.',
       createdDate: '05 Aug 2026, 05:50 PM',
     },
     {
@@ -126,6 +143,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'Low',
       passRate: '25%',
+      passRateReason: 'Low pass rate: 5 out of 20 testcases passed safety & ethics criteria.',
       createdDate: '01 Aug 2026, 09:30 AM',
     },
     {
@@ -136,6 +154,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'scheduled',
       score: '-',
       passRate: '-',
+      passRateReason: 'Assessment scheduled. Pass rate will be computed upon call completion.',
       createdDate: '28 Jul 2026, 04:15 PM',
     },
     {
@@ -143,9 +162,10 @@ export const DashboardScreen: React.FC = () => {
       vendor: 'Global Health Telemetry Unit',
       questionnaire: 'Business Continuity & Disaster Recovery Dataset',
       round: 'Final Review',
-      status: 'finalised',
-      score: 'Medium',
-      passRate: '65%',
+      status: 'cancelled',
+      score: '-',
+      passRate: '-',
+      passRateReason: 'Assessment session was cancelled by admin.',
       createdDate: '25 Jul 2026, 02:00 PM',
     },
   ])
@@ -153,17 +173,16 @@ export const DashboardScreen: React.FC = () => {
   // KPI Card data calculations
   const completedAssessments = assessments.filter((a) => a.status === 'completed').length
   const finalizedAssessments = assessments.filter((a) => a.status === 'finalised').length
+  const scheduledAssessments = assessments.filter((a) => a.status === 'scheduled').length
+  const cancelledAssessments = assessments.filter((a) => a.status === 'cancelled').length
 
   // Filter chips click options
   const filterOptions = [
     { key: 'all', label: 'All assessments', count: assessments.length },
     { key: 'completed', label: 'Completed', count: completedAssessments },
     { key: 'finalised', label: 'Finalised', count: finalizedAssessments },
-    {
-      key: 'scheduled',
-      label: 'Scheduled',
-      count: assessments.filter((a) => a.status === 'scheduled').length,
-    },
+    { key: 'scheduled', label: 'Scheduled', count: scheduledAssessments },
+    { key: 'cancelled', label: 'Cancelled', count: cancelledAssessments },
   ]
 
   const handleFilterClick = (key: string) => {
@@ -200,6 +219,43 @@ export const DashboardScreen: React.FC = () => {
     }
   }
 
+  const handleConfirmReschedule = () => {
+    if (!rescheduleTarget) return
+    const formattedDateTime = `${rescheduleDate}, ${rescheduleTime}`
+    setAssessments((prev) =>
+      prev.map((a) =>
+        a.id === rescheduleTarget.id
+          ? {
+              ...a,
+              status: 'scheduled',
+              createdDate: formattedDateTime,
+            }
+          : a
+      )
+    )
+    setToastMessage(`Assessment for ${rescheduleTarget.vendor} rescheduled to ${formattedDateTime}.`)
+    setRescheduleTarget(null)
+    setTimeout(() => setToastMessage(null), 3500)
+  }
+
+  const handleConfirmCancel = () => {
+    if (!cancelTarget) return
+    setAssessments((prev) =>
+      prev.map((a) =>
+        a.id === cancelTarget.id
+          ? {
+              ...a,
+              status: 'cancelled',
+              passRateReason: 'Assessment cancelled by admin user.',
+            }
+          : a
+      )
+    )
+    setToastMessage(`Assessment for ${cancelTarget.vendor} has been cancelled.`)
+    setCancelTarget(null)
+    setTimeout(() => setToastMessage(null), 3500)
+  }
+
   if (selectedAssessment) {
     return (
       <AssessmentDetailScreen
@@ -212,6 +268,14 @@ export const DashboardScreen: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6 w-full px-6 lg:px-10 py-4 text-[#0d212c]">
+      {/* Toast Banner */}
+      {toastMessage && (
+        <div className="fixed top-5 right-5 z-50 bg-[#f0fdf4] text-[#15803d] text-xs font-semibold px-4 py-3 rounded-xl shadow-md border border-[#bbf7d0] flex items-center gap-2.5 animate-in fade-in duration-200">
+          <Info className="w-4 h-4 text-[#16a34a]" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Breadcrumb Menu */}
       <div className="text-xs font-semibold text-[#64748b] flex items-center gap-1.5">
         <span>M42 admin</span>
@@ -250,7 +314,7 @@ export const DashboardScreen: React.FC = () => {
 
           <div className="flex items-center gap-1.5 pt-1 text-[11px] text-[#64748b]">
             <Info className="w-3.5 h-3.5 text-[#36c0c9] shrink-0" />
-            <span>Grouped by testcases pass rate percentage</span>
+            <span>Grouped by testcases pass rate evaluation</span>
           </div>
         </div>
 
@@ -359,7 +423,7 @@ export const DashboardScreen: React.FC = () => {
         })}
       </div>
 
-      {/* Vendor Assessments Directory Table */}
+      {/* Facilities Directory Table */}
       <div className="bg-white rounded-2xl border border-[#e2e8f0] shadow-xs overflow-hidden w-full flex flex-col">
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left text-sm border-collapse">
@@ -369,7 +433,7 @@ export const DashboardScreen: React.FC = () => {
                 <th className="py-3.5 px-4">Dataset</th>
                 <th className="py-3.5 px-4">Round</th>
                 <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4">Total Pass %</th>
+                <th className="py-3.5 px-4">Pass Rate</th>
                 <th className="py-3.5 px-4">Created date</th>
               </tr>
             </thead>
@@ -384,14 +448,18 @@ export const DashboardScreen: React.FC = () => {
                 paginatedAssessments.map((row) => (
                   <tr
                     key={row.id}
-                    onClick={() =>
-                      setSelectedAssessment({
-                        ...row,
-                        score:
-                          row.score === 'High' ? '94.0' : row.score === 'Medium' ? '72.0' : '0.0',
-                      })
-                    }
-                    className="hover:bg-[#f8fafc] transition cursor-pointer group"
+                    onClick={() => {
+                      if (row.status !== 'cancelled') {
+                        setSelectedAssessment({
+                          ...row,
+                          score:
+                            row.score === 'High' ? '94.0' : row.score === 'Medium' ? '72.0' : '0.0',
+                        })
+                      }
+                    }}
+                    className={`transition cursor-pointer group ${
+                      row.status === 'cancelled' ? 'bg-slate-50/50 hover:bg-slate-100/50' : 'hover:bg-[#f8fafc]'
+                    }`}
                   >
                     <td
                       className="py-3.5 px-4 font-semibold text-xs text-[#0d212c] group-hover:text-[#36c0c9] truncate"
@@ -418,39 +486,43 @@ export const DashboardScreen: React.FC = () => {
                             ? 'Scheduled'
                             : row.status === 'finalised'
                               ? 'Finalised'
-                              : 'Completed'
+                              : row.status === 'cancelled'
+                                ? 'Cancelled'
+                                : 'Completed'
                         }
                         status={
                           row.status === 'scheduled'
                             ? 'info'
                             : row.status === 'finalised'
                               ? 'finalised'
-                              : 'success'
+                              : row.status === 'cancelled'
+                                ? 'error'
+                                : 'success'
                         }
                         dot={false}
                       />
                     </td>
+                    {/* Pass Rate column: NO percentage, chip UI matches status chip, hover tooltip shows concrete reason */}
                     <td className="py-3.5 px-4 text-[#0d212c] text-xs font-extrabold">
-                      {row.passRate !== '-' ? (
+                      {row.passRate !== '-' && row.status !== 'cancelled' ? (
                         (() => {
                           const val = parseInt(row.passRate.replace('%', ''), 10)
-                          const colorClass =
-                            val >= 80
-                              ? 'bg-[#e6f4ea] text-[#137333] border border-[#ceedd5]'
-                              : val >= 50
-                                ? 'bg-[#fef7e0] text-[#b06000] border border-[#fde68a]'
-                                : 'bg-[#fce8e6] text-[#c5221f] border border-[#f8c4b8]'
+                          const level = val >= 80 ? 'High' : val >= 50 ? 'Medium' : 'Low'
+                          const statusType = level === 'High' ? 'success' : level === 'Medium' ? 'warning' : 'error'
+                          const tooltipReason = row.passRateReason || `${level} pass rate based on assessment execution.`
 
                           return (
-                            <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-bold text-xs ${colorClass}`}
-                            >
-                              {row.passRate}
-                            </span>
+                            <div className="relative group/passrate inline-block" title={tooltipReason}>
+                              <StatusChip
+                                label={level}
+                                status={statusType}
+                                dot={false}
+                              />
+                            </div>
                           )
                         })()
                       ) : (
-                        <span className="text-[#64748b] font-normal">-</span>
+                        <span className="text-[#64748b] font-normal" title={row.passRateReason}>-</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4 text-[#64748b] text-xs font-medium">
@@ -463,7 +535,7 @@ export const DashboardScreen: React.FC = () => {
           </table>
         </div>
 
-        {/* 6 Items per page Pagination Footer (Requirement 1) */}
+        {/* Pagination Footer */}
         {filteredAssessments.length > 0 && (
           <div className="flex items-[#64748b] justify-between px-4 py-3 border-t border-[#e2e8f0] bg-[#f8fafc]">
             <div className="text-xs text-[#64748b] font-medium">
@@ -511,6 +583,88 @@ export const DashboardScreen: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Reschedule Assessment Modal */}
+      {rescheduleTarget && (
+        <div className="fixed inset-0 z-50 bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-6 w-full max-w-md flex flex-col gap-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-lg font-extrabold text-[#0d212c]">Reschedule Assessment</h3>
+              <p className="text-xs text-[#64748b]">
+                Select a new date and time for <strong className="text-[#0d212c]">{rescheduleTarget.vendor}</strong>.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-[#64748b]">NEW DATE</label>
+                <input
+                  type="date"
+                  value={rescheduleDate}
+                  onChange={(e) => setRescheduleDate(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-[#36c0c9]"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-[#64748b]">NEW TIME</label>
+                <input
+                  type="time"
+                  value={rescheduleTime}
+                  onChange={(e) => setRescheduleTime(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-[#36c0c9]"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#e2e8f0]">
+              <button
+                onClick={() => setRescheduleTarget(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmReschedule}
+                className="px-5 py-2 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs"
+              >
+                Confirm Reschedule
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Assessment Modal */}
+      {cancelTarget && (
+        <div className="fixed inset-0 z-50 bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-6 w-full max-w-md flex flex-col gap-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex flex-col gap-2">
+              <h3 className="text-lg font-extrabold text-[#0d212c]">Cancel Assessment</h3>
+              <p className="text-xs text-[#64748b] leading-relaxed">
+                Are you sure you want to cancel the scheduled assessment for{' '}
+                <strong className="text-[#0d212c]">{cancelTarget.vendor}</strong>? This will update the status to Cancelled.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#e2e8f0]">
+              <button
+                onClick={() => setCancelTarget(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-100 cursor-pointer"
+              >
+                Keep Assessment
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                className="px-5 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 transition cursor-pointer shadow-2xs"
+              >
+                Confirm Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+

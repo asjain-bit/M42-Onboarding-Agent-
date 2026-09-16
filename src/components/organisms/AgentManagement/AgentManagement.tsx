@@ -19,7 +19,7 @@ const INITIAL_AGENTS: AgentData[] = [
     kind: 'Background',
     version: 'v1',
     status: 'default',
-    prompt: `You are a strict due-diligence scorer. Given a vendor ANSWER and the RESPONSE CUE (what a complete answer must cover), score technical_alignment 0-100 for how well the answer covers the cue. Be strict: an answer that refuses, says 'no', declines, is off-topic, or names none of the specifics the cue asks for must score near 0. Award high scores only when the answer actually provides the specifics required by the cue. Give a one-sentence reasoning.`,
+    prompt: `You are a strict assessment scorer. Given a facility ANSWER and the RESPONSE CUE (what a complete answer must cover), score technical_alignment 0-100 for how well the answer covers the cue. Be strict: an answer that refuses, says 'no', declines, is off-topic, or names none of the specifics the cue asks for must score near 0. Award high scores only when the answer actually provides the specifics required by the cue. Give a one-sentence reasoning.`,
     config: {
       modelDeployment: { value: '', defaultValue: '' },
       temperature: { value: '0', defaultValue: '0' },
@@ -41,7 +41,7 @@ const INITIAL_AGENTS: AgentData[] = [
     kind: 'Background',
     version: 'v1',
     status: 'default',
-    prompt: `You are a technical document mapper for due diligence. Extract key compliance metrics, vendor technical architecture specifications, and security certifications from vendor response documents and map them against M42 compliance framework cues. Provide precise verbatim evidence citations.`,
+    prompt: `You are a technical document mapper for assessment evaluation. Extract key compliance metrics, facility technical architecture specifications, and security certifications from facility response documents and map them against M42 compliance framework cues. Provide precise verbatim evidence citations.`,
     config: {
       modelDeployment: { value: '', defaultValue: '' },
       temperature: { value: '0', defaultValue: '0' },
@@ -63,7 +63,7 @@ const INITIAL_AGENTS: AgentData[] = [
     kind: 'Background',
     version: 'v1',
     status: 'default',
-    prompt: `You are an automated document authenticity and structure validator. Verify uploaded vendor documents against expected HIPAA, SOC 2, and ISO 27001 certificate formats. Flag expired certificates, missing signatures, or corrupted file streams.`,
+    prompt: `You are an automated document authenticity and structure validator. Verify uploaded facility documents against expected HIPAA, SOC 2, and ISO 27001 certificate formats. Flag expired certificates, missing signatures, or corrupted file streams.`,
     config: {
       modelDeployment: { value: '', defaultValue: '' },
       temperature: { value: '0', defaultValue: '0' },
@@ -85,7 +85,7 @@ const INITIAL_AGENTS: AgentData[] = [
     kind: 'Background',
     version: 'v1',
     status: 'default',
-    prompt: `You are a specialized layout and section parser. Map uploaded vendor security whitepapers, architecture diagrams, and questionnaires to M42 risk evaluation dimensions. Extract key policies regarding data encryption in transit and at rest.`,
+    prompt: `You are a specialized layout and section parser. Map uploaded facility security whitepapers, architecture diagrams, and datasets to M42 risk evaluation dimensions. Extract key policies regarding data encryption in transit and at rest.`,
     config: {
       modelDeployment: { value: '', defaultValue: '' },
       temperature: { value: '0', defaultValue: '0' },
@@ -107,7 +107,7 @@ const INITIAL_AGENTS: AgentData[] = [
     kind: 'Voice',
     version: 'v1',
     status: 'default',
-    prompt: `You are the automated onboarding voice assistant for M42 vendor portal. Guide new vendors through initial profile registration, identity verification, and document upload procedures in a clear, friendly, and structured manner over phone calls.`,
+    prompt: `You are the automated onboarding voice assistant for M42 facility portal. Guide new facilities through initial profile registration, identity verification, and document upload procedures in a clear, friendly, and structured manner over phone calls.`,
     config: {
       defaultVoice: { value: '(none)', defaultValue: '' },
       realtimeModelDeployment: { value: '', defaultValue: '' },

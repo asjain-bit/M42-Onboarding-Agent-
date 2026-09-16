@@ -170,7 +170,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div>
               <h3 className="text-xl font-extrabold text-[#0d212c] mb-1.5">Confirm Logout</h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
-                Are you sure you want to log out of M42 Tech Due Diligence?
+                Are you sure you want to log out of M42 Onboarding Agent?
               </p>
             </div>
             <div className="flex items-center justify-center gap-3 w-full mt-2">

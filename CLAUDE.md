@@ -48,6 +48,7 @@ Always use `pnpm` as the package manager:
      ```
 
 3. **Git & Commit Rules**:
+   - **DO NOT push code to GitHub (`git push`) unless the user explicitly requests or instructs you to push code.**
    - Pre-commit hook runs `lint-staged` (ESLint fix + Prettier write).
    - Commit-msg hook runs `commitlint` enforcing Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`).
    - Pre-push hook executes `pnpm typecheck` and `pnpm test`.

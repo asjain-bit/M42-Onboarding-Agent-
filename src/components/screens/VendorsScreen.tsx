@@ -113,36 +113,36 @@ export const VendorsScreen: React.FC = () => {
   const searchVendorResults: SearchVendorResult[] = [
     {
       id: 'sr-1',
-      name: 'Presight AI Holding PLC',
-      domain: 'presight.ai',
+      name: 'Cleveland Clinic Abu Dhabi',
+      domain: 'clevelandclinicabudhabi.ae',
       confidence: 'High confidence',
       confidenceType: 'success',
     },
     {
       id: 'sr-2',
-      name: 'Directus Open Source Ltd',
-      domain: 'directus.io',
+      name: 'Sheikh Shakhbout Medical City (SSMC)',
+      domain: 'ssmc.ae',
       confidence: 'High confidence',
       confidenceType: 'success',
     },
     {
       id: 'sr-3',
-      name: 'Pango Cybersecurity Global',
-      domain: 'pango.com',
+      name: 'Mubadala Health Diagnostics',
+      domain: 'mubadalahealth.ae',
       confidence: 'Medium confidence',
       confidenceType: 'warning',
     },
     {
       id: 'sr-4',
-      name: 'Apex Healthcare Advisory',
-      domain: 'apexhealth.co',
+      name: 'Danat Al Emarat Hospital',
+      domain: 'danatalemarat.ae',
       confidence: 'Medium confidence',
       confidenceType: 'warning',
     },
     {
       id: 'sr-5',
-      name: 'Delphi Intelligence Systems',
-      domain: 'delphiai.de',
+      name: 'Healthpoint Hospital',
+      domain: 'healthpoint.ae',
       confidence: 'Low confidence',
       confidenceType: 'warning',
     },
@@ -155,99 +155,94 @@ export const VendorsScreen: React.FC = () => {
   const [vendors, setVendors] = useState<VendorRow[]>([
     {
       id: 'v-1',
-      name: 'Presight AI | See the Future Today',
-      legalName: 'Presight AI Holding PLC',
-      email: 'compliance@presight.ai',
-      domain: 'presight.ai',
+      name: 'Cleveland Clinic Abu Dhabi',
+      legalName: 'Cleveland Clinic Abu Dhabi LLC',
+      email: 'compliance@clevelandclinicabudhabi.ae',
+      domain: 'clevelandclinicabudhabi.ae',
       country: 'United Arab Emirates',
       flag: '🇦🇪',
       status: 'Activated',
       score: '94.0',
       recipients: [
-        'compliance@presight.ai',
-        'security@presight.ai',
-        'audit@presight.ai',
-        'legal@presight.ai',
-        'dpo@presight.ai',
+        'compliance@clevelandclinicabudhabi.ae',
+        'quality@clevelandclinicabudhabi.ae',
+        'info@clevelandclinicabudhabi.ae',
       ],
     },
     {
       id: 'v-2',
-      name: 'Directus Inc.',
-      legalName: 'Directus Open Source Ltd',
-      email: 'security@directus.io',
-      domain: 'directus.io',
-      country: 'United States',
-      flag: '🇺🇸',
+      name: 'Sheikh Shakhbout Medical City (SSMC)',
+      legalName: 'Sheikh Shakhbout Medical City PJSC',
+      email: 'contact@ssmc.ae',
+      domain: 'ssmc.ae',
+      country: 'United Arab Emirates',
+      flag: '🇦🇪',
       status: 'Activated',
       score: '88.5',
-      recipients: ['security@directus.io', 'admin@directus.io'],
+      recipients: ['contact@ssmc.ae', 'medical@ssmc.ae'],
     },
     {
       id: 'v-3',
-      name: 'Pango Group LLC',
-      legalName: 'Pango Cybersecurity Global',
-      email: 'legal@pango.com',
-      domain: 'pango.com',
-      country: 'United States',
-      flag: '🇺🇸',
+      name: 'Mubadala Health Diagnostics',
+      legalName: 'Mubadala Health LLC',
+      email: 'info@mubadalahealth.ae',
+      domain: 'mubadalahealth.ae',
+      country: 'United Arab Emirates',
+      flag: '🇦🇪',
       status: 'Activated',
       score: '91.2',
-      recipients: [],
+      recipients: ['info@mubadalahealth.ae'],
     },
     {
       id: 'v-4',
-      name: 'Apex Systems Advisory',
-      legalName: 'Apex Healthcare Solutions Inc.',
-      email: 'contact@apexsystems.com',
-      domain: 'apexsystems.com',
-      country: 'United Kingdom',
-      flag: '🇬🇧',
+      name: 'Danat Al Emarat Hospital',
+      legalName: 'Danat Al Emarat Women & Children Hospital',
+      email: 'care@danatalemarat.ae',
+      domain: 'danatalemarat.ae',
+      country: 'United Arab Emirates',
+      flag: '🇦🇪',
       status: 'Activated',
       score: '76.0',
       recipients: [
-        'contact@apexsystems.com',
-        'legal@apexsystems.com',
-        'info@apexsystems.com',
-        'privacy@apexsystems.com',
-        'compliance@apexsystems.com',
+        'care@danatalemarat.ae',
+        'compliance@danatalemarat.ae',
       ],
     },
     {
       id: 'v-5',
-      name: 'Delphi AI Technologies',
-      legalName: 'Delphi Intelligence Systems',
-      email: 'audit@delphiai.com',
-      domain: 'delphiai.com',
-      country: 'Germany',
-      flag: '🇩🇪',
+      name: 'Healthpoint Hospital',
+      legalName: 'Healthpoint Hospital Abu Dhabi',
+      email: 'contact@healthpoint.ae',
+      domain: 'healthpoint.ae',
+      country: 'United Arab Emirates',
+      flag: '🇦🇪',
       status: 'Activated',
       score: '95.8',
-      recipients: ['audit@delphiai.com', 'tech@delphiai.com'],
+      recipients: ['contact@healthpoint.ae', 'quality@healthpoint.ae'],
     },
     {
       id: 'v-6',
-      name: 'BioHealth Analytics',
-      legalName: 'BioHealth Data Group GMBH',
-      email: 'info@biohealth.de',
-      domain: 'biohealth.de',
-      country: 'Germany',
-      flag: '🇩🇪',
+      name: 'Amana Healthcare',
+      legalName: 'Amana Healthcare Medical LLC',
+      email: 'info@amanahealthcare.com',
+      domain: 'amanahealthcare.com',
+      country: 'United Arab Emirates',
+      flag: '🇦🇪',
       status: 'Deactivated',
       score: '64.0',
       recipients: [],
     },
     {
       id: 'v-7',
-      name: 'CloudScale AI Systems',
-      legalName: 'CloudScale Technologies B.V.',
-      email: 'ops@cloudscale.nl',
-      domain: 'cloudscale.nl',
-      country: 'Netherlands',
-      flag: '🇳🇱',
+      name: 'Imperial College London Diabetes Centre',
+      legalName: 'ICLDC Abu Dhabi LLC',
+      email: 'info@icldc.ae',
+      domain: 'icldc.ae',
+      country: 'United Arab Emirates',
+      flag: '🇦🇪',
       status: 'Activated',
       score: '92.0',
-      recipients: ['ops@cloudscale.nl', 'sec@cloudscale.nl'],
+      recipients: ['info@icldc.ae'],
     },
     {
       id: 'v-[#8]',
@@ -930,12 +925,12 @@ export const VendorsScreen: React.FC = () => {
         )}
       </div>
 
-      {/* Edit Vendor Details Popup Modal */}
+      {/* Edit Facility Details Popup Modal */}
       {editingVendor && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-[#e2e8f0] mb-5">
-              <h3 className="text-lg font-bold text-[#0d212c]">Edit vendor details</h3>
+              <h3 className="text-lg font-bold text-[#0d212c]">Edit facility details</h3>
               <button
                 type="button"
                 onClick={() => {
@@ -951,10 +946,10 @@ export const VendorsScreen: React.FC = () => {
             </div>
 
             <form onSubmit={handleSaveEditedVendor} className="flex flex-col gap-4">
-              {/* Vendor name */}
+              {/* Facility name */}
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Vendor name <span className="text-red-500 font-bold">*</span>
+                  Facility name <span className="text-red-500 font-bold">*</span>
                 </label>
                 <input
                   type="text"
@@ -1109,7 +1104,7 @@ export const VendorsScreen: React.FC = () => {
         </div>
       )}
 
-      {/* Confirmation Modal Popup for Activating / Deactivating Vendor (styled like Logout Popup) */}
+      {/* Confirmation Modal Popup for Activating / Deactivating Facility */}
       {confirmStatusVendor && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="relative bg-white rounded-3xl max-w-lg w-full p-8 sm:p-10 shadow-2xl border border-[#e2e8f0] text-center flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 duration-200 min-h-[240px] justify-center">
@@ -1133,8 +1128,8 @@ export const VendorsScreen: React.FC = () => {
             <div>
               <h3 className="text-xl font-extrabold text-[#0d212c] mb-1.5">
                 {confirmStatusVendor.targetStatus === 'Deactivated'
-                  ? 'Deactivate Vendor'
-                  : 'Reactivate Vendor'}
+                  ? 'Deactivate Facility'
+                  : 'Reactivate Facility'}
               </h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
                 {confirmStatusVendor.targetStatus === 'Deactivated'
@@ -1175,11 +1170,11 @@ export const VendorsScreen: React.FC = () => {
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-[#e2e8f0] mb-5">
               <div>
-                <h3 className="text-lg font-extrabold text-[#0d212c]">Add Vendor</h3>
+                <h3 className="text-lg font-extrabold text-[#0d212c]">Add Facility</h3>
                 <p className="text-xs text-[#64748b] mt-0.5 font-medium">
                   {onboardingMode === 'find'
-                    ? 'Search public registry for vendor metadata or enter details manually.'
-                    : 'Manually register supplier profile for risk due diligence.'}
+                    ? 'Search public registry for facility metadata or enter details manually.'
+                    : 'Manually register facility profile for risk due diligence.'}
                 </p>
               </div>
 
@@ -1199,7 +1194,7 @@ export const VendorsScreen: React.FC = () => {
                   <div className="flex flex-col gap-1 relative">
                     <div className="flex items-center gap-1.5 mb-1">
                       <label className="block text-xs font-bold text-[#0d212c]">
-                        Vendor legal name <span className="text-red-500 font-bold">*</span>
+                        Facility legal name <span className="text-red-500 font-bold">*</span>
                       </label>
                       <div className="relative group cursor-pointer">
                         <Info className="w-3.5 h-3.5 text-[#64748b]" />
@@ -1213,7 +1208,7 @@ export const VendorsScreen: React.FC = () => {
                     <div className="relative flex items-center w-full">
                       <input
                         type="text"
-                        placeholder="Type vendor name & press Enter..."
+                        placeholder="Type facility name & press Enter..."
                         value={findSearchQuery}
                         onChange={(e) => setFindSearchQuery(e.target.value)}
                         onKeyDown={handleFindVendorSearchKeyDown}
@@ -1406,16 +1401,16 @@ export const VendorsScreen: React.FC = () => {
                   </div>
                 </div>
 
-                {/* "Can't find vendor?" — centered, no separator */}
+                {/* "Can't find facility?" — centered, no separator */}
                 <div className="flex flex-col gap-3">
                   <button
                     type="button"
                     onClick={() => setOnboardingMode('manual')}
                     className="text-xs cursor-pointer transition bg-transparent border-0 self-center p-0 flex items-center gap-1"
                   >
-                    <span className="text-[#64748b]">Can&apos;t find vendor?</span>
+                    <span className="text-[#64748b]">Can&apos;t find facility?</span>
                     <span className="text-[#36c0c9] font-bold hover:underline">
-                      Add vendor manually
+                      Add facility manually
                     </span>
                   </button>
 
@@ -1440,17 +1435,17 @@ export const VendorsScreen: React.FC = () => {
                       {isAddingVendor ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin text-white" />
-                          <span>Adding vendor...</span>
+                          <span>Adding facility...</span>
                         </>
                       ) : (
-                        <span>Add vendor</span>
+                        <span>Add facility</span>
                       )}
                     </button>
                   </div>
                 </div>
               </div>
             ) : (
-              /* Manual Vendor Flow — stacked layout so height matches Find Vendor */
+              /* Manual Facility Flow — stacked layout so height matches Find Facility */
               <form onSubmit={handleAddVendorManually} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-4">
                   {/* Display name */}
@@ -1591,7 +1586,7 @@ export const VendorsScreen: React.FC = () => {
                     onClick={() => setOnboardingMode('find')}
                     className="text-[#64748b] hover:text-[#0d212c] font-semibold text-xs transition cursor-pointer bg-transparent border-0 p-0"
                   >
-                    ← Back to find vendor
+                    ← Back to find facility
                   </button>
 
                   <div className="flex items-center gap-3">

@@ -82,9 +82,9 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
         <div className="bg-white px-6 py-4 border-b border-[#e2e8f0] flex items-center justify-between">
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-[#64748b]">
-              Vendors / {vendor.name} / New call
+              Facilities / {vendor.name} / New call
             </span>
-            <h1 className="text-xl font-extrabold text-[#0d212c]">Configure vendor call</h1>
+            <h1 className="text-xl font-extrabold text-[#0d212c]">Configure Assessment Call</h1>
           </div>
           <button
             onClick={onClose}
@@ -206,7 +206,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                       <div className="flex flex-col">
                         <span className="font-bold text-xs text-[#0d212c]">Assessment round</span>
                         <span className="text-[11px] text-[#64748b] mt-0.5">
-                          Structured due-diligence interview using an approved questionnaire.
+                          Structured assessment evaluation using an approved dataset.
                         </span>
                       </div>
                     </div>
@@ -214,10 +214,10 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   </div>
                 </div>
 
-                {/* QUESTIONNAIRE SELECT DROPDOWN (Options from Snapshot 3) */}
+                {/* DATASET SELECT DROPDOWN */}
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                    QUESTIONNAIRE
+                    DATASET
                   </span>
                   <div className="relative">
                     <select
@@ -233,7 +233,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                     </select>
                     <ChevronDown className="w-4 h-4 text-[#64748b] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
-                  <span className="text-[11px] text-[#64748b] pl-1">62 questions</span>
+                  <span className="text-[11px] text-[#64748b] pl-1">62 testcases</span>
                 </div>
 
                 {/* Estimated duration box */}
@@ -282,9 +282,6 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
               <div className="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-6">
                 <div>
                   <h2 className="text-base font-extrabold text-[#0d212c]">Configure Sam</h2>
-                  <p className="text-xs text-[#64748b] mt-0.5">
-                    Choose Sam&apos;s voice and when the session should begin.
-                  </p>
                 </div>
 
                 {/* SAM'S VOICE */}
@@ -430,18 +427,15 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
               <div className="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-6">
                 <div>
                   <h2 className="text-base font-extrabold text-[#0d212c]">Review & launch</h2>
-                  <p className="text-xs text-[#64748b] mt-0.5">
-                    Confirm configuration and initiate automated vendor assessment call.
-                  </p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex flex-col gap-3 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-[#64748b]">Target vendor:</span>
+                    <span className="text-[#64748b]">Target facility:</span>
                     <span className="font-bold text-[#0d212c]">{vendor.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#64748b]">Selected questionnaire:</span>
+                    <span className="text-[#64748b]">Selected dataset:</span>
                     <span className="font-bold text-[#0d212c]">{selectedQuestionnaire}</span>
                   </div>
                   <div className="flex justify-between">

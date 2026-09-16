@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
   Send,
   Calendar,
@@ -23,6 +23,9 @@ import {
   MessageSquare,
   Image as ImageIcon,
   Paperclip,
+  ChevronLeft,
+  ChevronRight,
+  Search,
 } from 'lucide-react'
 import { StatusChip } from '@/components/atoms/StatusChip'
 
@@ -31,7 +34,7 @@ export interface AssessmentDetailData {
   vendor: string
   questionnaire: string
   round: string
-  status: 'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready'
+  status: 'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready' | 'cancelled'
   score: string
   createdDate: string
 }
@@ -63,6 +66,7 @@ interface TestcaseItem {
   id: number
   category: string
   title: string
+  type: 'Problems' | 'Sensitive Info' | 'Meds Dispensing'
   expectedBehaviour: string
   agentComment: string
   status: 'Pass' | 'Fail'
@@ -79,50 +83,108 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   const [playbackSpeed, setPlaybackSpeed] = useState('1')
   const [copiedUrl, setCopiedUrl] = useState(false)
   const [expandedSnapshots, setExpandedSnapshots] = useState<Record<number, boolean>>({})
+  const [testCasePage, setTestCasePage] = useState(1)
+
+  // Testcase Search & Status Filter (All, Passed, Failed)
+  const [testcaseSearchTerm, setTestcaseSearchTerm] = useState('')
+  const [testcaseStatusFilter, setTestcaseStatusFilter] = useState<'all' | 'Pass' | 'Fail'>('all')
 
   const [currentStatus, setCurrentStatus] = useState<
-    'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready'
+    'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready' | 'cancelled'
   >(assessment.status)
 
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
-  // Sample Meeting URL for Dispatch Call
-  const meetingUrl = 'https://meet.m42.ae/call/vendor-audit-9823'
+  // Reschedule & Cancel Assessment Modal States
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false)
+  const [rescheduleDate, setRescheduleDate] = useState('2026-09-24')
+  const [rescheduleTime, setRescheduleTime] = useState('14:30')
+  const [rescheduleReason, setRescheduleReason] = useState('')
+
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [cancelReason, setCancelReason] = useState('Schedule conflict')
+
+  const handleConfirmReschedule = () => {
+    setShowRescheduleModal(false)
+    setToastMessage(
+      `Assessment for ${assessment.vendor} rescheduled to ${rescheduleDate} at ${rescheduleTime}.`
+    )
+    setTimeout(() => setToastMessage(null), 3500)
+  }
+
+  const handleConfirmCancel = () => {
+    setShowCancelModal(false)
+    setCurrentStatus('cancelled')
+    if (onStatusChange) onStatusChange('ready')
+    setToastMessage(`Assessment for ${assessment.vendor} has been cancelled.`)
+    setTimeout(() => setToastMessage(null), 3500)
+  }
+
+  // Sample Meeting URL for Dispatch Call (Facility terminology)
+  const meetingUrl = 'https://meet.m42.ae/call/facility-audit-9823'
 
   const isScheduled = currentStatus === 'scheduled'
 
-  // Assessment Lifecycle Data
+  // Exact Assessment Lifecycle Data (9 Steps matching user screenshots, Scoring renamed to Verdict)
   const lifecycleSteps = [
-    { title: 'Select dataset & details', actor: 'Admin User', time: '1 Sept, 10:25 AM', status: 'DONE' },
-    { title: 'Call dispatched', actor: 'M42 Dispatcher', time: '1 Sept, 10:30 AM', status: 'DONE' },
     {
-      title: 'Join call room',
-      actor: 'Facilities Admin & Agent Sam',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:15 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
+      title: 'Call dispatched',
+      actor: 'Admin User',
+      time: '1 Sept, 10:30 AM',
+      status: 'DONE',
+    },
+    {
+      title: 'Meeting Scheduled',
+      actor: 'System Scheduler',
+      time: '1 Sept, 01:14 PM',
+      status: 'DONE',
       hasMeetingUrl: true,
     },
     {
-      title: 'Run testcases',
-      actor: 'Facilities Admin',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:18 PM',
+      title: 'Participants joined',
+      actor: 'Presight AI',
+      time: isScheduled ? 'Pending' : '1 Sept, 01:15 PM',
       status: isScheduled ? 'AWAITING' : 'DONE',
     },
     {
-      title: 'Evaluate testcases',
+      title: 'Assessment call',
       actor: 'Voice Agent Sam',
+      time: isScheduled ? 'Pending' : '1 Sept, 01:19 PM',
+      status: isScheduled ? 'AWAITING' : 'DONE',
+    },
+    {
+      title: 'Call ended',
+      actor: 'Voice Agent Sam',
+      time: isScheduled ? 'Pending' : '1 Sept, 01:19 PM',
+      status: isScheduled ? 'AWAITING' : 'DONE',
+    },
+    {
+      title: 'Transcript composed',
+      actor: 'NLP Pipeline',
+      time: isScheduled ? 'Pending' : '1 Sept, 01:20 PM',
+      status: isScheduled ? 'AWAITING' : 'DONE',
+    },
+    {
+      title: 'Verdict',
+      actor: 'Evaluation Subagent',
       time: isScheduled ? 'Pending' : '1 Sept, 01:22 PM',
       status: isScheduled ? 'AWAITING' : 'DONE',
     },
     {
-      title: 'Conclude assessment',
-      actor: 'Admin & System',
+      title: 'Report ready',
+      actor: 'Audit Engine',
+      time: isScheduled ? 'Pending' : '1 Sept, 01:25 PM',
+      status: isScheduled ? 'AWAITING' : 'DONE',
+    },
+    {
+      title: 'Finalized',
+      actor: 'Admin User',
       time:
         !isScheduled && (currentStatus === 'completed' || currentStatus === 'finalised')
           ? '1 Sept, 02:05 PM'
           : 'Pending',
       status:
-        !isScheduled && (currentStatus === 'completed' || currentStatus === 'finalised')
+        !isScheduled && currentStatus === 'finalised'
           ? 'DONE'
           : 'AWAITING',
     },
@@ -235,7 +297,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       category: 'System',
       timestamp: '1 Sept 2026, 01:14 PM',
       actor: 'M42 System Scheduler',
-      details: 'Meeting URL created (https://meet.m42.ae/call/vendor-audit-9823).',
+      details: 'Meeting URL created (https://meet.m42.ae/call/facility-audit-9823).',
       icon: Calendar,
     },
     {
@@ -248,7 +310,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       icon: Mail,
     },
     {
-      id: 'aud-1',
+      id: 'aud-[#01]',
       title: 'Dataset selected & assessment initialized',
       category: 'Admin',
       timestamp: '1 Sept 2026, 10:25 AM',
@@ -288,6 +350,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       id: 1,
       category: 'Corporate Registration',
       title: 'Headquarters Location & Stock Exchange Verification',
+      type: 'Problems',
       expectedBehaviour:
         'Must return valid HQ city (Abu Dhabi), country (United Arab Emirates), and registered exchange ticker (ADX: PRESIGHT).',
       agentComment:
@@ -306,6 +369,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       id: 2,
       category: 'Data Security',
       title: 'Customer Data Encryption at Rest and in Transit',
+      type: 'Sensitive Info',
       expectedBehaviour:
         'AES-256 for data at rest and TLS 1.2 or higher for data in transit must be explicitly configured.',
       agentComment:
@@ -324,6 +388,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       id: 3,
       category: 'Compliance',
       title: 'Current ISO/IEC 27001 Certificate Verification',
+      type: 'Problems',
       expectedBehaviour:
         'Active, non-expired Stage 2 ISO/IEC 27001 certificate document must be verified.',
       agentComment:
@@ -342,6 +407,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       id: 4,
       category: 'Access Control',
       title: 'Identity & Access Control (SSO, MFA, Least Privilege)',
+      type: 'Sensitive Info',
       expectedBehaviour:
         'Enterprise SSO provider integration, mandatory MFA enforcement, and RBAC least privilege required.',
       agentComment:
@@ -360,6 +426,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       id: 5,
       category: 'Resilience',
       title: 'Incident Response Process & Customer Breach SLA',
+      type: 'Meds Dispensing',
       expectedBehaviour:
         'Documented IR playbook with customer breach notification SLA within 72 hours.',
       agentComment:
@@ -378,6 +445,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       id: 6,
       category: 'Assurance',
       title: 'Penetration Test Summary or SOC 2 Type II Report',
+      type: 'Problems',
       expectedBehaviour:
         'Recent (< 12 months) SOC 2 Type II report or external penetration test summary required.',
       agentComment:
@@ -396,6 +464,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       id: 7,
       category: 'Data Residency',
       title: 'Regional Data Storage & Residency Restriction',
+      type: 'Sensitive Info',
       expectedBehaviour:
         'Data storage locked to UAE cloud region (me-central-1 / Abu Dhabi & Dubai datacenters).',
       agentComment:
@@ -411,6 +480,22 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       ],
     },
   ]
+
+
+  // Filter testcases based on search term and status chips
+  const filteredTestcases = useMemo(() => {
+    return testcases.filter((q) => {
+      const matchesStatus = testcaseStatusFilter === 'all' || q.status === testcaseStatusFilter
+      const query = testcaseSearchTerm.toLowerCase().trim()
+      const matchesSearch =
+        !query ||
+        q.title.toLowerCase().includes(query) ||
+        q.category.toLowerCase().includes(query) ||
+        q.expectedBehaviour.toLowerCase().includes(query) ||
+        q.agentComment.toLowerCase().includes(query)
+      return matchesStatus && matchesSearch
+    })
+  }, [testcases, testcaseStatusFilter, testcaseSearchTerm])
 
   const passedCount = testcases.filter((q) => q.status === 'Pass').length
   const failedCount = testcases.filter((q) => q.status === 'Fail').length
@@ -513,15 +598,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
           </div>
 
           <div className="flex items-center gap-3 pb-3">
-            {isScheduled ? null : currentStatus === 'finalised' || currentStatus === 'completed' ? (
-              <button
-                onClick={() => alert(`Downloading report for ${assessment.vendor}...`)}
-                className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2 rounded-xl flex items-center gap-2 transition cursor-pointer shadow-2xs border-0"
-              >
-                <Download className="w-4 h-4 text-white" />
-                <span>Download report</span>
-              </button>
-            ) : (
+            {isScheduled ? null : currentStatus === 'completed' ? (
               <>
                 <button
                   onClick={() => alert(`Downloading report for ${assessment.vendor}...`)}
@@ -537,7 +614,15 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                   Finalize
                 </button>
               </>
-            )}
+            ) : currentStatus === 'finalised' ? (
+              <button
+                onClick={() => alert(`Downloading report for ${assessment.vendor}...`)}
+                className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2 rounded-xl flex items-center gap-2 transition cursor-pointer shadow-2xs border-0"
+              >
+                <Download className="w-4 h-4 text-white" />
+                <span>Download report</span>
+              </button>
+            ) : null}
           </div>
         </div>
 
@@ -624,6 +709,45 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
           )
         ) : (
           <>
+            {/* Meeting summary section for Scheduled Assessments */}
+            {isScheduled && (
+              <div className="flex flex-col gap-2 w-full">
+                <h3 className="text-sm font-bold text-[#0d212c]">Meeting summary</h3>
+                <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <span className="text-xs font-bold text-[#0d212c]">Scheduled Session Details</span>
+                    <span className="text-xs text-[#64748b]">
+                      Scheduled Date & Time: <strong className="text-[#0d212c]">{assessment.createdDate}</strong>
+                    </span>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-[#36c0c9] font-medium">
+                      <span className="truncate">{meetingUrl}</span>
+                      <button
+                        onClick={handleCopyMeetingUrl}
+                        className="p-1 hover:bg-slate-100 rounded text-slate-500 cursor-pointer shrink-0"
+                        title="Copy meeting link"
+                      >
+                        {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-center">
+                    <button
+                      onClick={() => setShowRescheduleModal(true)}
+                      className="px-4 py-2 text-xs font-bold rounded-xl border border-[#36c0c9] text-[#0d7280] hover:bg-[#ddf7f9] transition cursor-pointer shadow-2xs"
+                    >
+                      Reschedule Assessment
+                    </button>
+                    <button
+                      onClick={() => setShowCancelModal(true)}
+                      className="px-4 py-2 text-xs font-bold rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 transition cursor-pointer shadow-2xs"
+                    >
+                      Cancel Assessment
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Section 1: Assessment lifecycle */}
             <div className="flex flex-col gap-2">
               <h3 className="text-sm font-bold text-[#0d212c]">Assessment lifecycle</h3>
@@ -633,7 +757,10 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
                   return (
                     <React.Fragment key={step.title}>
-                      <div className="p-4 rounded-2xl bg-white shadow-xs border border-[#e2e8f0]/60 flex flex-col justify-start gap-2 h-[145px] w-[210px] shrink-0 min-w-0">
+                      <div
+                        className="p-4 rounded-2xl bg-white shadow-xs border border-[#e2e8f0]/60 flex flex-col justify-start gap-2 h-[145px] w-[210px] shrink-0 min-w-0"
+                        title={step.title}
+                      >
                         <div className="flex items-center justify-between gap-2">
                           <h4
                             className="font-bold text-[#0d212c] text-sm truncate"
@@ -649,7 +776,9 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         </div>
 
                         <div className="flex flex-col gap-0.5">
-                          <p className="text-[11px] text-[#64748b]">{step.actor}</p>
+                          <p className="text-[11px] text-[#64748b]" title={step.actor}>
+                            {step.actor}
+                          </p>
                           <p className="text-[10px] text-[#64748b] font-medium">{step.time}</p>
                         </div>
 
@@ -714,7 +843,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                             <CheckCircle2 className="w-3.5 h-3.5 text-[#137333]" />
                             PASSED TESTCASES
                           </span>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e6f4ea] text-[#137333]">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#e6f4ea] text-[#137333]">
                             Pass
                           </span>
                         </div>
@@ -730,7 +859,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                             <CheckCircle2 className="w-3.5 h-3.5 text-[#c5221f]" />
                             FAILED TESTCASES
                           </span>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fce8e6] text-[#c5221f]">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#fce8e6] text-[#c5221f]">
                             Fail
                           </span>
                         </div>
@@ -827,135 +956,356 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               </div>
             </div>
 
-            {/* Section 5: Testcases (7) */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
+            {/* Section 5: Testcases (7) with Search Bar & Sorting Chips */}
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <h3 className="text-base font-extrabold text-[#0d212c]">
-                  Testcases ({testcases.length})
+                  Testcases ({filteredTestcases.length})
                 </h3>
+
+                {/* Right controls: Pagination & Search */}
+                <div className="flex items-center gap-3">
+                  <div className="relative w-56">
+                    <Search className="w-3.5 h-3.5 text-[#64748b] absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Search testcases..."
+                      value={testcaseSearchTerm}
+                      onChange={(e) => setTestcaseSearchTerm(e.target.value)}
+                      className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#e2e8f0] bg-white text-xs font-medium text-[#0d212c] outline-none focus:border-[#36c0c9] shadow-2xs"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setTestCasePage((p) => Math.max(1, p - 1))}
+                      disabled={testCasePage === 1}
+                      className="w-7 h-7 rounded-lg border border-[#e2e8f0] bg-white text-[#64748b] hover:text-[#0d212c] disabled:opacity-40 cursor-pointer flex items-center justify-center transition"
+                      title="Previous testcase"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-xs font-semibold text-[#64748b]">
+                      {testCasePage} of {filteredTestcases.length || 1}
+                    </span>
+                    <button
+                      onClick={() => setTestCasePage((p) => Math.min(filteredTestcases.length || 1, p + 1))}
+                      disabled={testCasePage >= (filteredTestcases.length || 1)}
+                      className="w-7 h-7 rounded-lg border border-[#e2e8f0] bg-white text-[#64748b] hover:text-[#0d212c] disabled:opacity-40 cursor-pointer flex items-center justify-center transition"
+                      title="Next testcase"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-col gap-4">
-                {testcases.map((q) => {
-                  const isPass = q.status === 'Pass'
-                  const isExpanded = !!expandedSnapshots[q.id]
-                  const visibleSnapshots = isExpanded ? q.snapshots : q.snapshots.slice(0, 4)
-                  const hiddenCount = q.snapshots.length - 4
-                  const formattedIndex = String(q.id).padStart(2, '0')
-
+              {/* Sorting Chips: All, Passed, Failed */}
+              <div className="flex items-center gap-2">
+                {[
+                  { key: 'all', label: 'All', count: testcases.length },
+                  { key: 'Pass', label: 'Passed', count: passedCount },
+                  { key: 'Fail', label: 'Failed', count: failedCount },
+                ].map((chip) => {
+                  const isSelected = testcaseStatusFilter === chip.key
                   return (
-                    <div
-                      key={q.id}
-                      className="bg-white rounded-2xl border border-[#e2e8f0] p-5 sm:p-6 shadow-2xs flex flex-col gap-4"
+                    <button
+                      key={chip.key}
+                      onClick={() => setTestcaseStatusFilter(chip.key as 'all' | 'Pass' | 'Fail')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+                        isSelected
+                          ? 'bg-[#36c0c9] text-white font-bold shadow-2xs border border-[#36c0c9]'
+                          : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
+                      }`}
                     >
-                      {/* Top Header Row: Circular index badge + Category & Title + Pass/Fail Pill */}
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-center gap-3.5 min-w-0">
-                          {/* Circular Index Badge in Primary Light Cyan */}
-                          <div className="w-9 h-9 rounded-full bg-[#ddf7f9] text-[#0d7280] font-extrabold text-xs flex items-center justify-center shrink-0 border border-[#36c0c9]/30">
-                            {formattedIndex}
-                          </div>
+                      <span>{chip.label}</span>
+                      <span
+                        className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                          isSelected ? 'bg-white/25 text-white' : 'bg-[#f1f5f9] text-[#64748b]'
+                        }`}
+                      >
+                        {chip.count}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
 
-                          <div className="flex flex-col min-w-0">
-                            <span className="text-[11px] font-bold text-[#64748b]">
-                              {q.category}
-                            </span>
-                            <h4 className="font-extrabold text-[#0d212c] text-sm leading-snug truncate">
-                              {q.title}
-                            </h4>
-                          </div>
+              {/* Testcase List Cards (Numbering and connector line INSIDE the white card) */}
+              <div className="flex flex-col gap-6">
+                {filteredTestcases.length === 0 ? (
+                  <div className="bg-white p-8 rounded-2xl border border-[#e2e8f0] text-center text-xs text-[#64748b]">
+                    No testcases matching filter criteria.
+                  </div>
+                ) : (
+                  filteredTestcases.map((q, idx) => {
+                    const isPass = q.status === 'Pass'
+                    const isExpanded = !!expandedSnapshots[q.id]
+                    const visibleSnapshots = isExpanded ? q.snapshots : q.snapshots.slice(0, 4)
+                    const hiddenCount = q.snapshots.length - 4
+                    const formattedIndex = String(q.id).padStart(2, '0')
+
+                    return (
+                      <div
+                        key={q.id}
+                        className="bg-white rounded-2xl border border-[#e2e8f0] p-6 shadow-2xs relative pl-16 flex flex-col gap-4 overflow-hidden"
+                      >
+                        {/* Numbered Step Circle 01 inside white container (vertical line removed per user request) */}
+                        <div className="absolute left-5 top-6 w-8 h-8 rounded-full bg-[#ddf7f9] text-[#0d7280] font-extrabold text-xs flex items-center justify-center border border-[#36c0c9]/40 z-10 shadow-2xs">
+                          {formattedIndex}
                         </div>
 
-                        {!isScheduled && (
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              isPass
-                                ? 'bg-[#e6f4ea] text-[#137333] border border-[#ceedd5]'
-                                : 'bg-[#fce8e6] text-[#c5221f] border border-[#f8c4b8]'
-                            }`}
-                          >
-                            {isPass ? 'Pass' : 'Fail'}
-                          </span>
-                        )}
-                      </div>
+                        {/* Top Header Row: Title & Type Chip + Status Pill (category text above title removed per user request) */}
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex flex-col min-w-0">
+                            <h4 className="font-extrabold text-[#0d212c] text-base leading-snug">
+                              {q.title}
+                            </h4>
+                            {/* Testcase Type Chip (Problems, Sensitive Info, Meds Dispensing) moved below testcase title */}
+                            <div className="flex items-center gap-1.5 mt-1.5">
+                              <span
+                                className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold inline-flex items-center ${
+                                  q.type === 'Problems'
+                                    ? 'bg-sky-50 text-sky-700 border border-sky-200'
+                                    : q.type === 'Sensitive Info'
+                                      ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                                      : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                }`}
+                              >
+                                {q.type}
+                              </span>
+                            </div>
+                          </div>
 
-                      {/* Middle Area: EXPECTED BEHAVIOUR (and AGENT COMMENT only when evaluated) */}
-                      <div className="flex flex-col gap-3.5 py-1">
-                        {/* EXPECTED BEHAVIOUR */}
-                        <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
-                          <div className="flex items-center gap-2 text-[#0d7280]">
-                            <FileText className="w-3.5 h-3.5 text-[#36c0c9]" />
+                          {!isScheduled && (
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center shrink-0 ${
+                                isPass
+                                  ? 'bg-[#e6f4ea] text-[#137333] border border-[#ceedd5]'
+                                  : 'bg-[#fce8e6] text-[#c5221f] border border-[#f8c4b8]'
+                              }`}
+                            >
+                              {isPass ? 'Pass' : 'Fail'}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* EXPECTED BEHAVIOUR (No background box around icon) */}
+                        <div className="flex items-start gap-3 pt-1">
+                          <FileText className="w-5 h-5 text-[#36c0c9] shrink-0 stroke-[2.2] mt-0.5" />
+                          <div className="flex flex-col gap-1 min-w-0">
                             <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748b]">
                               EXPECTED BEHAVIOUR
                             </span>
+                            <p className="text-xs text-[#0d212c] font-normal leading-relaxed">
+                              {q.expectedBehaviour}
+                            </p>
                           </div>
-                          <p className="text-xs text-[#1e293b] font-medium leading-relaxed pl-5">
-                            {q.expectedBehaviour}
-                          </p>
                         </div>
 
-                        {/* AGENT COMMENT - Only rendered when assessment is completed or finalised (NOT scheduled) */}
+                        {!isScheduled && <div className="border-b border-[#e2e8f0]/60 my-0.5" />}
+
+                        {/* AGENT COMMENT (No background box around icon) */}
                         {!isScheduled && (
-                          <div className="flex flex-col gap-1.5 p-3.5 rounded-xl bg-[#ddf7f9]/30 border border-[#36c0c9]/30">
-                            <div className="flex items-center gap-2 text-[#0f766e]">
-                              <MessageSquare className="w-3.5 h-3.5 text-[#0d7280]" />
-                              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#0f766e]">
+                          <div className="flex items-start gap-3">
+                            <MessageSquare className="w-5 h-5 text-[#0d7280] shrink-0 stroke-[2.2] mt-0.5" />
+                            <div className="flex flex-col gap-1 min-w-0">
+                              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748b]">
                                 AGENT COMMENT
                               </span>
+                              <p className="text-xs text-[#0d212c] font-normal leading-relaxed">
+                                {q.agentComment}
+                              </p>
                             </div>
-                            <p className="text-xs text-[#0d212c] font-medium leading-relaxed pl-5">
-                              {q.agentComment}
-                            </p>
+                          </div>
+                        )}
+
+                        {!isScheduled && <div className="border-b border-[#e2e8f0]/60 my-0.5" />}
+
+                        {/* ATTACHED SNAPSHOTS (Using attached Excel image in attachment box per user request) */}
+                        {!isScheduled && (
+                          <div className="flex flex-col gap-3 pt-1">
+                            <div className="flex items-center gap-1.5 font-bold text-[#64748b] text-[11px] uppercase tracking-wider">
+                              <Paperclip className="w-3.5 h-3.5 text-[#64748b]" />
+                              <span>ATTACHED SNAPSHOTS ({q.snapshots.length})</span>
+                            </div>
+
+                            <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
+                              {visibleSnapshots.map((snap, idxSnap) => (
+                                <div
+                                  key={idxSnap}
+                                  className="px-3 py-2.5 rounded-xl border border-[#e2e8f0] bg-white flex items-center justify-between gap-3 shadow-2xs hover:border-[#cbd5e1] transition cursor-pointer shrink-0 min-w-[220px]"
+                                  onClick={() => alert(`Viewing snapshot ${snap.filename}...`)}
+                                >
+                                  {/* Attached Excel Screenshot Thumbnail Image */}
+                                  <div className="w-14 h-10 rounded-lg border border-[#cbd5e1] shrink-0 overflow-hidden relative shadow-2xs bg-white">
+                                    <img
+                                      src="/excel_snapshot.png"
+                                      alt={snap.filename}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+
+                                  <div className="flex flex-col min-w-0">
+                                    <span
+                                      className="font-bold text-xs text-[#0d212c] truncate max-w-[120px]"
+                                      title={snap.filename}
+                                    >
+                                      {snap.filename}
+                                    </span>
+                                    {snap.tag && (
+                                      <span
+                                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full w-fit mt-0.5 ${
+                                          snap.tag === 'After'
+                                            ? 'bg-[#e6f4ea] text-[#137333]'
+                                            : 'bg-slate-100 text-[#64748b]'
+                                        }`}
+                                      >
+                                        {snap.tag}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      alert(`Downloading ${snap.filename}...`)
+                                    }}
+                                    className="p-1 rounded-lg text-slate-400 hover:text-[#0d212c] hover:bg-slate-100 transition cursor-pointer border-0 shrink-0"
+                                    title={`Download ${snap.filename}`}
+                                  >
+                                    <Download className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              ))}
+
+                              {/* +2 more button — text-only, no fill or stroke */}
+                              {hiddenCount > 0 && !isExpanded && (
+                                <button
+                                  onClick={() => toggleExpandSnapshots(q.id)}
+                                  className="px-3 py-2 text-[#36c0c9] hover:text-[#0d7280] font-extrabold text-xs transition cursor-pointer shrink-0 bg-transparent border-0"
+                                >
+                                  +{hiddenCount} more
+                                </button>
+                              )}
+                            </div>
                           </div>
                         )}
                       </div>
-
-                      {/* Bottom Attachment Row: Wrapped in Light Grey Container Box (Only rendered when evaluated) */}
-                      {!isScheduled && (
-                        <div className="bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-4 flex flex-col gap-2.5">
-                          <div className="flex items-center gap-1.5 text-xs font-bold text-[#64748b]">
-                            <Paperclip className="w-3.5 h-3.5 text-[#64748b]" />
-                            <span>Attached snapshots ({q.snapshots.length})</span>
-                          </div>
-
-                          <div className="flex items-center gap-2.5 flex-wrap">
-                            {visibleSnapshots.map((snap, idx) => (
-                              <div
-                                key={idx}
-                                className="px-3 py-1.5 rounded-xl border border-[#e2e8f0] bg-white inline-flex items-center gap-2 text-xs shadow-2xs hover:border-[#cbd5e1] transition cursor-pointer"
-                                onClick={() => alert(`Viewing snapshot ${snap.filename}...`)}
-                              >
-                                <ImageIcon className="w-3.5 h-3.5 text-[#36c0c9] shrink-0" />
-                                <span className="font-semibold text-xs text-[#0d212c] truncate max-w-[170px]">
-                                  {snap.filename}
-                                </span>
-                                {snap.tag && (
-                                  <span className="text-[10px] font-medium text-[#64748b] bg-slate-100 px-1.5 py-0.5 rounded">
-                                    ({snap.tag})
-                                  </span>
-                                )}
-                              </div>
-                            ))}
-
-                            {hiddenCount > 0 && (
-                              <button
-                                onClick={() => toggleExpandSnapshots(q.id)}
-                                className="text-[#36c0c9] hover:text-[#0d7280] text-xs font-semibold hover:underline cursor-pointer transition ml-1"
-                              >
-                                {isExpanded ? 'Show less' : `+${hiddenCount}`}
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
+                    )
+                  })
+                )}
               </div>
             </div>
           </>
         )}
       </div>
+
+      {/* Reschedule Assessment Modal */}
+      {showRescheduleModal && (
+        <div className="fixed inset-0 z-50 bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-6 w-full max-w-md flex flex-col gap-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-lg font-extrabold text-[#0d212c]">Reschedule Assessment</h3>
+              <p className="text-xs text-[#64748b]">
+                Select a new date and time for <strong className="text-[#0d212c]">{assessment.vendor}</strong>.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-[#64748b]">NEW DATE</label>
+                <input
+                  type="date"
+                  value={rescheduleDate}
+                  onChange={(e) => setRescheduleDate(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-[#36c0c9]"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-[#64748b]">NEW TIME</label>
+                <input
+                  type="time"
+                  value={rescheduleTime}
+                  onChange={(e) => setRescheduleTime(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-[#36c0c9]"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-bold text-[#64748b]">REASON / NOTES (OPTIONAL)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Schedule conflict requested by facility"
+                  value={rescheduleReason}
+                  onChange={(e) => setRescheduleReason(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-[#36c0c9]"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#e2e8f0]">
+              <button
+                onClick={() => setShowRescheduleModal(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmReschedule}
+                className="px-5 py-2 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs"
+              >
+                Confirm Reschedule
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Assessment Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-6 w-full max-w-md flex flex-col gap-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex flex-col gap-2">
+              <h3 className="text-lg font-extrabold text-[#0d212c]">Cancel Assessment</h3>
+              <p className="text-xs text-[#64748b] leading-relaxed">
+                Are you sure you want to cancel the scheduled assessment for{' '}
+                <strong className="text-[#0d212c]">{assessment.vendor}</strong>? This action will update the assessment status to Cancelled.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-bold text-[#64748b]">CANCELLATION REASON</label>
+              <select
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                className="w-full px-3.5 py-2 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-semibold outline-none focus:border-[#36c0c9] bg-white cursor-pointer"
+              >
+                <option value="Schedule conflict">Schedule conflict</option>
+                <option value="Facility request">Facility request</option>
+                <option value="Technical issues">Technical issues</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#e2e8f0]">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-100 cursor-pointer"
+              >
+                Keep Assessment
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                className="px-5 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 transition cursor-pointer shadow-2xs"
+              >
+                Confirm Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

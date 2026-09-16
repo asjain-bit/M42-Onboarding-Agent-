@@ -101,6 +101,13 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
 
   // Screen Share & Screen Capture states
   const [isScreenSharing, setIsScreenSharing] = useState(false)
+  const [showScreenShareModal, setShowScreenShareModal] = useState(false)
+  const [screenShareSource, setScreenShareSource] = useState<'entire_screen' | 'tab'>('entire_screen')
+  const [activeCapturePreview, setActiveCapturePreview] = useState<{ id: string; name: string; time: string } | null>(null)
+  const captureTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [capturedSnapshots, setCapturedSnapshots] = useState<
+    { id: string; name: string; time: string }[]
+  >([])
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   const showToastNotification = (msg: string) => {
@@ -173,20 +180,41 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
       showToastNotification('Start assessment first to share screen')
       return
     }
-    setIsScreenSharing((prev) => {
-      const next = !prev
-      showToastNotification(next ? 'Screen sharing started' : 'Screen sharing stopped')
-      return next
-    })
+    if (isScreenSharing) {
+      setIsScreenSharing(false)
+      showToastNotification('Screen sharing stopped')
+    } else {
+      setShowScreenShareModal(true)
+    }
   }
 
-  // Screen Capture action
+  const handleConfirmScreenShare = () => {
+    setShowScreenShareModal(false)
+    setIsScreenSharing(true)
+    showToastNotification('Screen sharing started')
+  }
+
+  // Screen Capture action — 5s auto-disappearing toast, replaced on re-click
   const handleCaptureScreen = () => {
     if (!assessmentStarted) {
       showToastNotification('Start assessment first to capture screen')
       return
     }
-    showToastNotification('Screen capture saved (call_snapshot_2026.png)')
+    const snapNum = String(capturedSnapshots.length + 1).padStart(2, '0')
+    const snapName = `snapshot_${snapNum}.png`
+    const snapTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const snapId = `snap-${Date.now()}`
+
+    setCapturedSnapshots((prev) => [...prev, { id: snapId, name: snapName, time: snapTime }])
+
+    if (captureTimeoutRef.current) {
+      clearTimeout(captureTimeoutRef.current)
+    }
+    setActiveCapturePreview({ id: snapId, name: snapName, time: snapTime })
+
+    captureTimeoutRef.current = setTimeout(() => {
+      setActiveCapturePreview(null)
+    }, 5000)
   }
 
   // Download Results Excel/CSV Spreadsheet handler
@@ -878,24 +906,23 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
 
           {/* Actions */}
           <div className="flex flex-col gap-2.5">
-            {/* Download Evaluation Results Excel Button */}
+            {/* Download Results (Primary) */}
             <button
               id="callroom-download-results-excel-btn"
               onClick={handleDownloadExcelResults}
               className="w-full bg-[#36c0c9] hover:bg-[#2badb6] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-2 shadow-xs"
             >
-              <FileSpreadsheet className="w-4 h-4" />
-              Download Evaluation Results (Excel)
+              Download Results
             </button>
 
             {userRole === 'admin' && (
               <>
+                {/* Download transcript (Secondary - no icon) */}
                 <button
                   id="callroom-download-transcript-btn"
                   onClick={() => alert('Downloading call transcript...')}
-                  className="w-full bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-2"
+                  className="w-full bg-white hover:bg-slate-50 text-[#0d212c] font-bold text-xs py-3 rounded-xl border border-[#cbd5e1] transition cursor-pointer flex items-center justify-center gap-2"
                 >
-                  <MessageSquare className="w-4 h-4" />
                   Download transcript
                 </button>
 
@@ -924,35 +951,45 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           <div className="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full bg-[#ddf7f9]/20 blur-3xl" />
         </div>
 
-        <div className="relative bg-white rounded-3xl border border-[#e2e8f0] shadow-xl p-10 max-w-sm w-full flex flex-col items-center gap-6 text-center">
+        <div className="relative bg-white rounded-3xl border border-[#e2e8f0] shadow-xl p-8 max-w-md w-full flex flex-col items-center gap-6 text-center">
           <Image src="/dark-logo.png" alt="M42" width={72} height={28} className="object-contain" />
           <div className="flex flex-col gap-2">
             <h2 className="text-xl font-extrabold text-[#0d212c]">You have left the meeting</h2>
             <p className="text-xs text-[#64748b] leading-relaxed">
-              Do you want to rejoin the assessment session?
+              Do you want to rejoin the assessment session or download evaluation results?
             </p>
           </div>
 
-          <div className="w-full flex flex-col gap-2.5 mt-2">
-            <button
-              id="callroom-rejoin-btn"
-              onClick={() => {
-                setShowLeaveConfirm(false)
-                if (userRole === 'vendor') {
-                  setVendorNameInput('')
-                  setVendorEmailInput('')
-                  setOtpDigits(['', '', '', ''])
-                  setOtpError('')
-                  setVendorFlowStep('vendor_input')
-                  setRoomState('join')
-                } else {
-                  setRoomState('waiting')
-                }
-              }}
-              className="w-full bg-[#0d212c] hover:bg-[#122e3d] text-white border-0 font-bold text-xs py-3 rounded-xl transition cursor-pointer shadow-xs"
-            >
-              Rejoin call
-            </button>
+          <div className="w-full flex flex-col gap-3 mt-2">
+            {/* Same line: Rejoin call (Primary) + Download Results (Secondary, no icon, no excel text) */}
+            <div className="flex items-center gap-2.5 w-full">
+              <button
+                id="callroom-rejoin-btn"
+                onClick={() => {
+                  setShowLeaveConfirm(false)
+                  if (userRole === 'vendor') {
+                    setVendorNameInput('')
+                    setVendorEmailInput('')
+                    setOtpDigits(['', '', '', ''])
+                    setOtpError('')
+                    setVendorFlowStep('vendor_input')
+                    setRoomState('join')
+                  } else {
+                    setRoomState('waiting')
+                  }
+                }}
+                className="flex-1 bg-[#36c0c9] hover:bg-[#2badb6] text-white border-0 font-bold text-xs py-3 rounded-xl transition cursor-pointer shadow-xs"
+              >
+                Rejoin call
+              </button>
+
+              <button
+                onClick={handleDownloadExcelResults}
+                className="flex-1 bg-white hover:bg-slate-50 text-[#0d212c] border border-[#cbd5e1] font-bold text-xs py-3 rounded-xl transition cursor-pointer shadow-2xs"
+              >
+                Download Results
+              </button>
+            </div>
 
             {userRole === 'admin' && (
               <button
@@ -963,7 +1000,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                     onBack()
                   }
                 }}
-                className="w-full bg-transparent hover:bg-slate-100 text-[#64748b] hover:text-[#0d212c] font-semibold text-xs py-2.5 rounded-xl transition cursor-pointer border-0"
+                className="w-full bg-transparent hover:bg-slate-100 text-[#64748b] hover:text-[#0d212c] font-semibold text-xs py-2.5 rounded-xl transition cursor-pointer border-0 mt-1"
               >
                 Back to facilities
               </button>
@@ -1075,6 +1112,109 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Screen Share Source Selection Modal (Light Theme) */}
+      {showScreenShareModal && (
+        <div className="fixed inset-0 z-[10000] bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-6 w-full max-w-md flex flex-col gap-5 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex flex-col gap-1">
+              <h3 className="text-lg font-extrabold text-[#0d212c]">Share your screen</h3>
+              <p className="text-xs text-[#64748b]">
+                Select what you would like to share with Sam AI and session participants.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <div
+                onClick={() => setScreenShareSource('entire_screen')}
+                className={`p-4 rounded-2xl border-2 transition cursor-pointer flex items-center gap-3.5 ${
+                  screenShareSource === 'entire_screen'
+                    ? 'border-[#36c0c9] bg-[#ddf7f9]/30'
+                    : 'border-[#e2e8f0] bg-white hover:bg-slate-50'
+                }`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    screenShareSource === 'entire_screen'
+                      ? 'bg-[#36c0c9] text-white'
+                      : 'bg-slate-100 text-[#64748b]'
+                  }`}
+                >
+                  <ScreenShare className="w-5 h-5" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-[#0d212c]">Entire Screen</span>
+                  <span className="text-[11px] text-[#64748b]">Share your full desktop screen and all windows</span>
+                </div>
+              </div>
+
+              <div
+                onClick={() => setScreenShareSource('tab')}
+                className={`p-4 rounded-2xl border-2 transition cursor-pointer flex items-center gap-3.5 ${
+                  screenShareSource === 'tab'
+                    ? 'border-[#36c0c9] bg-[#ddf7f9]/30'
+                    : 'border-[#e2e8f0] bg-white hover:bg-slate-50'
+                }`}
+              >
+                <div
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    screenShareSource === 'tab'
+                      ? 'bg-[#36c0c9] text-white'
+                      : 'bg-slate-100 text-[#64748b]'
+                  }`}
+                >
+                  <MonitorUp className="w-5 h-5" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-[#0d212c]">Tab or Window</span>
+                  <span className="text-[11px] text-[#64748b]">Share a single browser tab or application window</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-[#e2e8f0]">
+              <button
+                onClick={() => setShowScreenShareModal(false)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-[#64748b] hover:bg-slate-100 cursor-pointer border-0 bg-transparent"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmScreenShare}
+                className="px-5 py-2 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
+              >
+                Share Screen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5-Second Snapshot Floating Preview Toast (Bottom-Right) */}
+      {activeCapturePreview && (
+        <div className="fixed bottom-20 right-6 z-50 bg-white border border-[#cbd5e1] rounded-2xl shadow-2xl p-3 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-4 duration-200 max-w-[220px]">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-extrabold text-[#0d212c]">Snapshot Captured</span>
+            <button
+              onClick={() => setActiveCapturePreview(null)}
+              className="text-[#94a3b8] hover:text-[#0d212c] p-0.5 rounded cursor-pointer border-0 bg-transparent"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="relative rounded-lg overflow-hidden border border-[#e2e8f0] bg-slate-50">
+            <img
+              src="/excel_snapshot.png"
+              alt="Snapshot preview"
+              className="w-full h-24 object-cover"
+            />
+          </div>
+          <div className="flex items-center justify-between text-[10px] text-[#64748b] font-medium">
+            <span className="truncate">{activeCapturePreview.name}</span>
+            <span>{activeCapturePreview.time}</span>
           </div>
         </div>
       )}
@@ -1421,25 +1561,6 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           )}
         </div>
 
-        {/* Download Results (Excel) button */}
-        <div className="flex flex-col items-center gap-0.5 relative group">
-          <button
-            id="callroom-download-results-btn"
-            onClick={handleDownloadExcelResults}
-            disabled={!assessmentStarted}
-            title={assessmentStarted ? 'Download evaluation results (Excel/CSV)' : 'Available after assessment starts'}
-            className={`w-10 h-10 rounded-full flex items-center justify-center border-0 shadow-sm transition ${!assessmentStarted ? 'bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed opacity-50' : 'bg-[#ddf7f9] text-[#0d7280] hover:bg-[#b2eff4] cursor-pointer border border-[#36c0c9]/30'}`}
-          >
-            <FileSpreadsheet className="w-4 h-4" />
-          </button>
-          <span className="text-[9px] text-[#0d7280] font-bold">Results (Excel)</span>
-          {!assessmentStarted && (
-            <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0d212c] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
-              Start assessment first
-            </div>
-          )}
-        </div>
-
         {/* Transcript toggle — disabled until assessment starts */}
         <div className="flex flex-col items-center gap-0.5 relative group">
           <button
@@ -1506,31 +1627,25 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           <>
             <div className="w-px h-8 bg-[#e2e8f0] mx-1" />
 
-            <div className="flex flex-col items-center gap-0.5 relative group">
-              <div className="relative">
-                <button
-                  id="callroom-finalise-btn"
-                  onClick={() => assessmentStarted && setShowFinaliseConfirm(true)}
-                  disabled={!assessmentStarted}
-                  title={
-                    assessmentStarted
-                      ? 'End and finalise assessment'
-                      : 'Available after assessment starts'
-                  }
-                  className={`h-10 px-4 rounded-full flex items-center justify-center gap-1.5 transition border-0 font-bold text-xs shadow-sm ${
-                    assessmentStarted
-                      ? 'bg-[#ddf7f9] hover:bg-[#b2eff4] text-[#0d7280] border border-[#36c0c9]/30 cursor-pointer'
-                      : 'bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed opacity-50'
-                  }`}
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>End &amp; Finalise</span>
-                </button>
-
-                <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0d212c] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
-                  {!assessmentStarted ? 'Start assessment first' : 'End and finalise assessment'}
-                </div>
-              </div>
+            <div className="flex flex-col items-center gap-0.5 relative">
+              <button
+                id="callroom-finalise-btn"
+                onClick={() => assessmentStarted && setShowFinaliseConfirm(true)}
+                disabled={!assessmentStarted}
+                title={
+                  assessmentStarted
+                    ? 'End and finalise assessment'
+                    : 'Available after assessment starts'
+                }
+                className={`h-10 px-4 rounded-full flex items-center justify-center gap-1.5 transition border-0 font-bold text-xs shadow-sm focus:outline-none outline-none ${
+                  assessmentStarted
+                    ? 'bg-[#ddf7f9] hover:bg-[#b2eff4] text-[#0d7280] border border-[#36c0c9]/30 cursor-pointer'
+                    : 'bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed opacity-50'
+                }`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>End &amp; Finalise</span>
+              </button>
               <span className="text-[9px] text-[#94a3b8] font-medium">Finalise</span>
             </div>
           </>

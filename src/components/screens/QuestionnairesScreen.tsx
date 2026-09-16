@@ -373,7 +373,7 @@ export const QuestionnairesScreen: React.FC = () => {
                     title={item.description}
                   >
                     <span className="truncate block max-w-sm">{item.description}</span>
-                    <div className="pointer-events-none opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 absolute left-4 bottom-full mb-1 z-50 w-80 bg-[#0d212c] text-white text-xs p-3 rounded-xl shadow-xl border border-white/10 leading-relaxed font-normal whitespace-normal">
+                    <div className="pointer-events-none opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 absolute left-4 bottom-full mb-1 z-50 w-80 bg-[#0d212c] text-white text-xs p-3 rounded-xl border border-white/10 leading-relaxed font-normal whitespace-normal">
                       {item.description}
                     </div>
                   </td>
@@ -635,7 +635,7 @@ export const QuestionnairesScreen: React.FC = () => {
             <div>
               <h3 className="text-xl font-extrabold text-[#0d212c] mb-1.5">Confirm deletion</h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
-                Are you sure you want to remove this questionnaire template from your active
+                Are you sure you want to remove this dataset template from your active
                 workspace?
               </p>
             </div>

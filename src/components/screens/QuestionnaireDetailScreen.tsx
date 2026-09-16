@@ -237,9 +237,6 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
       {/* Header Bar */}
       <div className="w-full px-6 lg:px-10 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <span className="text-[11px] font-bold tracking-wider text-[#64748b] uppercase">
-            DATASET DETAILS
-          </span>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-xl lg:text-2xl font-extrabold tracking-tight text-[#0d212c]">
               {questionnaire.title}
@@ -423,22 +420,6 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 }`}
               />
             </div>
-
-            {/* Checkboxes: Research needed | Attachment required */}
-            <div className="flex items-center gap-6 pt-2">
-              <Checkbox
-                label="Research needed"
-                checked={q.researchNeeded}
-                disabled={!isEditing}
-                onChange={(e) => handleQuestionChange(q.id, 'researchNeeded', e.target.checked)}
-              />
-              <Checkbox
-                label="Attachment required"
-                checked={q.attachmentRequired}
-                disabled={!isEditing}
-                onChange={(e) => handleQuestionChange(q.id, 'attachmentRequired', e.target.checked)}
-              />
-            </div>
           </div>
         ))}
       </div>
@@ -486,19 +467,6 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 />
               </div>
 
-              <div className="flex items-center gap-6 py-2">
-                <Checkbox
-                  label="Research needed"
-                  checked={newResearchNeeded}
-                  onChange={(e) => setNewResearchNeeded(e.target.checked)}
-                />
-                <Checkbox
-                  label="Attachment required"
-                  checked={newAttachmentRequired}
-                  onChange={(e) => setNewAttachmentRequired(e.target.checked)}
-                />
-              </div>
-
               <div className="flex justify-end gap-3 pt-3 border-t border-[#e2e8f0]">
                 <button
                   type="button"
@@ -520,26 +488,45 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         </div>
       )}
 
-      {/* Confirmation Popup for Deleting Individual Question */}
+      {/* Confirmation Popup for Deleting Individual Testcase */}
       {deletingQuestionId !== null && (
         <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-[#e2e8f0]">
-            <h3 className="text-lg font-bold text-[#0d212c] mb-2">Confirm deletion</h3>
-            <p className="text-xs text-[#64748b] mb-6">
-              Are you sure you want to remove this question from the questionnaire?
-            </p>
-            <div className="flex justify-end gap-3">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-lg font-extrabold text-[#0d212c]">Confirm deletion</h3>
+                {/* Status / Type Chips as used in Dashboard & Assessment Details */}
+                <div className="flex items-center gap-1.5">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-sky-50 text-sky-700 border border-sky-200">
+                    Problems
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e6f4ea] text-[#137333]">
+                    Active
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-[#64748b] leading-relaxed">
+                Are you sure you want to remove testcase{' '}
+                <strong className="text-[#0d212c]">
+                  &quot;
+                  {questions.find((q) => q.id === deletingQuestionId)?.question || 'Selected testcase'}
+                  &quot;
+                </strong>{' '}
+                from this dataset?
+              </p>
+            </div>
+            <div className="flex justify-end gap-3 border-t border-[#e2e8f0] pt-3">
               <button
                 onClick={() => setDeletingQuestionId(null)}
-                className="px-3.5 py-2 rounded-lg border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] hover:bg-slate-50 cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] hover:bg-slate-50 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteQuestion}
-                className="px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer"
+                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer shadow-2xs border-0"
               >
-                Delete question
+                Delete testcase
               </button>
             </div>
           </div>

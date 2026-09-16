@@ -52,39 +52,39 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             </span>
           </div>
 
-          <div>
-            <h2 className="text-xl lg:text-2xl font-bold text-[#0d212c] leading-snug tracking-tight mb-2">
-              Smarter evaluations. Clear verdicts.
-            </h2>
-          </div>
-
           {/* Feature points */}
-          <div className="space-y-6 pt-2">
-            <div className="flex items-start gap-3.5">
-              <Users className="w-6 h-6 text-[#0f766e] shrink-0 mt-0.5" />
+          <div className="space-y-8 pt-4">
+            <div className="flex items-start gap-4">
+              <div className="p-2.5 rounded-xl bg-white/70 border border-[#36c0c9]/30 text-[#0d7280] shrink-0 shadow-2xs">
+                <Users className="w-6 h-6 text-[#0d7280]" />
+              </div>
               <div>
-                <h3 className="font-bold text-[#0d212c] text-sm">Collaborative Evaluations</h3>
-                <p className="text-slate-600 text-xs mt-0.5 leading-relaxed">
+                <h3 className="font-extrabold text-[#0d212c] text-base lg:text-lg">Collaborative Evaluations</h3>
+                <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-medium">
                   Facilitators and evaluators work together to run test cases.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3.5">
-              <ShieldCheck className="w-6 h-6 text-[#0f766e] shrink-0 mt-0.5" />
+            <div className="flex items-start gap-4">
+              <div className="p-2.5 rounded-xl bg-white/70 border border-[#36c0c9]/30 text-[#0d7280] shrink-0 shadow-2xs">
+                <ShieldCheck className="w-6 h-6 text-[#0d7280]" />
+              </div>
               <div>
-                <h3 className="font-bold text-[#0d212c] text-sm">AI-Powered Analysis</h3>
-                <p className="text-slate-600 text-xs mt-0.5 leading-relaxed">
+                <h3 className="font-extrabold text-[#0d212c] text-base lg:text-lg">AI-Powered Analysis</h3>
+                <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-medium">
                   Automatically capture snapshots, analyze results, and generate verdicts.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3.5">
-              <PieChart className="w-6 h-6 text-[#0f766e] shrink-0 mt-0.5" />
+            <div className="flex items-start gap-4">
+              <div className="p-2.5 rounded-xl bg-white/70 border border-[#36c0c9]/30 text-[#0d7280] shrink-0 shadow-2xs">
+                <PieChart className="w-6 h-6 text-[#0d7280]" />
+              </div>
               <div>
-                <h3 className="font-bold text-[#0d212c] text-sm">Clear & Auditable Results</h3>
-                <p className="text-slate-600 text-xs mt-0.5 leading-relaxed">
+                <h3 className="font-extrabold text-[#0d212c] text-base lg:text-lg">Clear &amp; Auditable Results</h3>
+                <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-medium">
                   Track test case outcomes and get a final verdict for every dataset.
                 </p>
               </div>
