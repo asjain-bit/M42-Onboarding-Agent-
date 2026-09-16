@@ -561,13 +561,13 @@ export const VendorsScreen: React.FC = () => {
       <div className="text-xs font-semibold text-[#64748b] flex items-center gap-1.5">
         <span>M42 admin</span>
         <span>/</span>
-        <span className="text-[#36c0c9] font-bold">Vendors</span>
+        <span className="text-[#36c0c9] font-bold">Facilities</span>
       </div>
 
-      {/* Header Bar with Search Bar placed on the LEFT side of the Add Vendor CTA */}
+      {/* Header Bar with Search Bar placed on the LEFT side of the Add Facility CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-0.5">
-          <h2 className="text-xl font-extrabold text-[#0d212c]">Vendors</h2>
+          <h2 className="text-xl font-extrabold text-[#0d212c]">Facilities</h2>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -575,7 +575,7 @@ export const VendorsScreen: React.FC = () => {
             <Search className="w-4 h-4 text-[#64748b] absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search vendor name, email..."
+              placeholder="Search facility name, email..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value)
@@ -593,7 +593,7 @@ export const VendorsScreen: React.FC = () => {
             className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold py-2 px-5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition cursor-pointer border-0 shrink-0"
           >
             <Plus className="w-4 h-4 text-white" />
-            <span>Add Vendor</span>
+            <span>Add Facility</span>
           </button>
         </div>
       </div>
@@ -601,7 +601,7 @@ export const VendorsScreen: React.FC = () => {
       {/* Status Filter Chips */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
         {[
-          { key: 'all', label: 'All Vendors', count: vendors.length },
+          { key: 'all', label: 'All Facilities', count: vendors.length },
           {
             key: 'Activated',
             label: 'Activated',
@@ -640,13 +640,13 @@ export const VendorsScreen: React.FC = () => {
         })}
       </div>
 
-      {/* Vendors Directory Table */}
+      {/* Facilities Directory Table */}
       <div className="bg-white rounded-2xl border border-[#e2e8f0] shadow-xs overflow-hidden w-full flex flex-col mt-1">
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
               <tr className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] text-xs font-bold">
-                <th className="py-3.5 px-5">Vendor Name</th>
+                <th className="py-3.5 px-5">Facility Name</th>
                 <th className="py-3.5 px-5">Domain</th>
                 <th className="py-3.5 px-5">Recipients</th>
                 <th className="py-3.5 px-5">Country</th>
@@ -687,7 +687,7 @@ export const VendorsScreen: React.FC = () => {
               {paginatedVendors.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-[#64748b] text-sm">
-                    No vendors matching search criteria.
+                    No facilities matching search criteria.
                   </td>
                 </tr>
               ) : (
@@ -810,7 +810,7 @@ export const VendorsScreen: React.FC = () => {
                               }}
                               title={
                                 vendor.status === 'Deactivated'
-                                  ? 'Cannot dispatch call for a deactivated vendor'
+                                  ? 'Cannot dispatch call for a deactivated facility'
                                   : 'Dispatch Call'
                               }
                               className={`w-full px-4 py-2.5 text-left text-xs font-semibold border-0 bg-transparent transition ${
@@ -831,7 +831,7 @@ export const VendorsScreen: React.FC = () => {
                               }}
                               title={
                                 vendor.status === 'Deactivated'
-                                  ? 'Cannot edit details for a deactivated vendor'
+                                  ? 'Cannot edit details for a deactivated facility'
                                   : 'Edit Details'
                               }
                               className={`w-full px-4 py-2.5 text-left text-xs font-semibold border-0 bg-transparent transition ${
@@ -854,7 +854,7 @@ export const VendorsScreen: React.FC = () => {
                                 }}
                                 className="w-full px-4 py-2.5 text-left text-xs font-semibold text-red-600 hover:bg-red-50 cursor-pointer transition border-t border-slate-100 bg-transparent"
                               >
-                                Deactivate Vendor
+                                Deactivate Facility
                               </button>
                             ) : (
                               <button
@@ -867,7 +867,7 @@ export const VendorsScreen: React.FC = () => {
                                 }}
                                 className="w-full px-4 py-2.5 text-left text-xs font-semibold text-emerald-600 hover:bg-emerald-50 cursor-pointer transition border-t border-slate-100 bg-transparent"
                               >
-                                Reactivate Vendor
+                                Reactivate Facility
                               </button>
                             )}
                           </div>

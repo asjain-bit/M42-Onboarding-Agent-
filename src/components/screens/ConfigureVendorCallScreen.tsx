@@ -86,13 +86,14 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(true)
   const [nudgeWaitSeconds, setNudgeWaitSeconds] = useState('30')
 
-  const questionnaireOptions = [
-    'Technical Questionnaire',
-    'Data Protection & Privacy',
-    'Presight Technical & Compliance',
-    'Information Security & Compliance',
-    'SOC 2 Type II Vendor Risk Assessment',
-    'HIPAA & Healthcare Data Compliance Checklist',
+  const datasetOptions = [
+    'ADT-Family History',
+    'ORU-Laboratory',
+    'ORU-Radiology',
+    'ORU-Clinical Documents',
+    'ORU-Vitals',
+    'PPR- Problems',
+    'RDS - Pharmacy Dispense',
   ]
 
   // Requirement 6: Full text "Marin Agent recommended" chip used without truncation
@@ -360,7 +361,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             className="hover:text-[#36c0c9] cursor-pointer flex items-center gap-1"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Vendors</span>
+            <span>Facilities</span>
           </button>
           <span>/</span>
           <span>{vendor.name}</span>
@@ -450,7 +451,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
               <div>
                 <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider block mb-1">
-                  QUESTIONNAIRE
+                  DATASET
                 </span>
                 <span className="font-bold text-[#0d212c]">{selectedQuestionnaire}</span>
               </div>
@@ -467,7 +468,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     1
                   </div>
                   <p className="leading-relaxed text-[#64748b]">
-                    Share the link with the vendor team. No account needed, they join with their
+                    Share the link with the facility team. No account needed, they join with their
                     name.
                   </p>
                 </div>
@@ -486,7 +487,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     3
                   </div>
                   <p className="leading-relaxed text-[#64748b]">
-                    Press Start assessment once everyone is in. Agent runs the questionnaire from
+                    Press Start assessment once everyone is in. Agent runs the dataset evaluation from
                     there.
                   </p>
                 </div>
@@ -502,7 +503,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               Schedule another call
             </button>
 
-            {/* View vendor's call room flow button outside of card below Schedule another call */}
+            {/* View facility's call room flow button outside of card below Schedule another call */}
             <div className="w-full max-w-md flex flex-col items-center gap-1.5 pt-4 border-t border-[#e2e8f0]">
               <button
                 id="dispatched-view-vendor-flow-btn"
@@ -513,10 +514,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 }}
                 className="w-full bg-[#f8fafc] hover:bg-[#ddf7f9]/50 text-[#0d7280] font-bold text-xs py-2.5 px-4 rounded-xl transition cursor-pointer border border-[#36c0c9]/40 flex items-center justify-center gap-1.5 shadow-2xs"
               >
-                View vendor&apos;s call room flow
+                View facility&apos;s call room flow
               </button>
               <p className="text-[11px] text-[#64748b] text-center font-normal">
-                This is a placeholder for showcasing the vendor&apos;s flow.
+                This is a placeholder for showcasing the facility&apos;s flow.
               </p>
             </div>
           </div>
@@ -534,7 +535,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           className="hover:text-[#36c0c9] cursor-pointer flex items-center gap-1"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Vendors</span>
+          <span>Facilities</span>
         </button>
         <span>/</span>
         <button onClick={onBack} className="hover:text-[#36c0c9] cursor-pointer">
@@ -547,7 +548,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
       {/* Main Page Title Header */}
       <div className="w-full px-6 lg:px-10 py-3 flex flex-col gap-1">
         <h1 className="text-xl lg:text-2xl font-extrabold tracking-tight text-[#0d212c]">
-          Configure vendor call
+          Configure facility call
         </h1>
         <p className="text-xs text-[#64748b]">
           Set up the session, configure Agent, then review before launch.
@@ -703,10 +704,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 </div>
               </div>
 
-              {/* QUESTIONNAIRE SELECT DROPDOWN */}
+              {/* DATASET SELECT DROPDOWN */}
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                  QUESTIONNAIRE <span className="text-red-500 font-bold">*</span>
+                  DATASET <span className="text-red-500 font-bold">*</span>
                 </label>
                 <div className="relative">
                   <select
@@ -717,9 +718,9 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     }`}
                   >
                     <option value="" disabled className="text-[#94a3b8]">
-                      Select questionnaire...
+                      Select dataset...
                     </option>
-                    {questionnaireOptions.map((opt) => (
+                    {datasetOptions.map((opt) => (
                       <option key={opt} value={opt} className="text-[#0d212c]">
                         {opt}
                       </option>

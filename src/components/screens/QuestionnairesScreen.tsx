@@ -40,110 +40,65 @@ export const QuestionnairesScreen: React.FC = () => {
   const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([
     {
       id: 'q-1',
-      title: 'Clinical EHR & Patient Records Dataset',
+      title: 'ADT-Family History',
       description:
-        'Core clinical workflows, EHR data structures, patient record privacy, and interoperability testcases.',
+        "Records a patient's family medical history - who the condition belongs to (mother, father, sibling, etc.), what the condition is, its SNOMED code, whether it's confirmed present or ruled out, the age it started, and when it was recorded.",
       fileType: 'PDF',
-      questionsCount: 62,
+      questionsCount: 24,
       status: 'Ready',
     },
     {
       id: 'q-2',
-      title: 'PACS & Radiology Imaging Dataset',
+      title: 'ORU-Laboratory',
       description:
-        'Diagnostic imaging storage, DICOM protocol compliance, PACS server security, and image archive retention.',
+        'Holds laboratory test reports (blood work, chemistry panels, cultures, urine tests, etc.), organized by category. Each report lists the individual tests run, their results, normal ranges, abnormal/critical flags, comments, and status (Final or Correction).',
       fileType: 'PDF',
-      questionsCount: 45,
+      questionsCount: 46,
       status: 'Ready',
     },
     {
       id: 'q-3',
-      title: 'Lab Telemetry & Diagnostic Sync Dataset',
+      title: 'ORU-Radiology',
       description:
-        'Real-time laboratory telemetry, HL7/FHIR diagnostic syncing, and automated lab instrument integration testcases.',
+        'Holds imaging reports such as Chest X-Ray, MRI, and CT Scan including the test code, result status (Final or Correction), any comments, and which folder the report is filed under.',
       fileType: 'DOCX',
-      questionsCount: 50,
-      status: 'Draft',
+      questionsCount: 13,
+      status: 'Ready',
     },
     {
       id: 'q-4',
-      title: 'Pharmacy & Medication Inventory Dataset',
+      title: 'ORU-Clinical Documents',
       description:
-        'Closed-loop medication administration, automated dispensing system security, and e-prescription integrity dataset.',
+        'Holds ECG reports, including the test code, description, performing organization, and confidentiality level.',
       fileType: 'DOCX',
-      questionsCount: 38,
+      questionsCount: 9,
       status: 'Ready',
     },
     {
       id: 'q-5',
-      title: 'SOC 2 Type II Facility Security Dataset',
+      title: 'ORU-Vitals',
       description:
-        'Evaluation of security, availability, processing integrity, confidentiality, and physical facility controls.',
+        "Captures a patient's vital sign readings such as blood pressure, heart rate, respiratory rate, temperature, height, weight, and oxygen saturation, along with when each reading was taken and where.",
       fileType: 'PDF',
-      questionsCount: 32,
+      questionsCount: 18,
       status: 'Ready',
     },
     {
       id: 'q-6',
-      title: 'HIPAA & Healthcare Data Compliance Dataset',
+      title: 'PPR- Problems',
       description:
-        'PHI safeguarding, EHR system integrations, BAA agreements, and UAE DOH health data residency verification.',
+        "Holds a patient's active problem/diagnosis list, the condition, its code (ICD/SNOMED), status (Active, Inactive, Resolved), the recording clinician, and whether it's flagged as sensitive.",
       fileType: 'PDF',
-      questionsCount: 29,
+      questionsCount: 12,
       status: 'Draft',
     },
     {
       id: 'q-7',
-      title: 'Third-Party Cloud API Integration Dataset',
+      title: 'RDS - Pharmacy Dispense',
       description:
-        'SaaS API endpoint security, OAuth2 token rotation, payload encryption, and webhook reliability testcases.',
+        'Records when a pharmacy dispenses a prescribed medication — how much was given, which brand, any dispensing notes, and links back to the original medication order.',
       fileType: 'MD',
-      questionsCount: 20,
-      status: 'Ready',
-    },
-    {
-      id: 'q-8',
-      title: 'ISO 27001 ISMS Healthcare Dataset',
-      description:
-        'Information Security Management System policies, risk assessment register, and healthcare facility security controls.',
-      fileType: 'PDF',
-      questionsCount: 40,
-      status: 'Ready',
-    },
-    {
-      id: 'q-9',
-      title: 'Cloud Infrastructure Audit Dataset',
-      description:
-        'Multi-cloud tenant isolation, IAM role hierarchy, and automated vulnerability remediation dataset.',
-      fileType: 'PDF',
-      questionsCount: 35,
-      status: 'Draft',
-    },
-    {
-      id: 'q-10',
-      title: 'Clinical AI Safety & Ethics Dataset',
-      description:
-        'Diagnostic AI model bias testing, clinical decision support safety monitoring, and model performance auditing.',
-      fileType: 'DOCX',
-      questionsCount: 48,
-      status: 'Ready',
-    },
-    {
-      id: 'q-11',
-      title: 'UAE DOH Health Data Residency Dataset',
-      description:
-        'Verification of in-country UAE cloud node hosting, data isolation, and Ministry of Health compliance.',
-      fileType: 'PDF',
-      questionsCount: 25,
-      status: 'Ready',
-    },
-    {
-      id: 'q-12',
-      title: 'Business Continuity & Disaster Recovery Dataset',
-      description:
-        'RTO/RPO targets, facility failover drills, offsite encrypted backup verification, and incident playbook dataset.',
-      fileType: 'PDF',
-      questionsCount: 30,
+      questionsCount: 8,
       status: 'Ready',
     },
   ])
@@ -414,10 +369,13 @@ export const QuestionnairesScreen: React.FC = () => {
                     {item.title}
                   </td>
                   <td
-                    className="py-3.5 px-4 text-[#64748b] text-xs max-w-sm truncate"
+                    className="py-3.5 px-4 text-[#64748b] text-xs max-w-sm truncate relative group/tooltip"
                     title={item.description}
                   >
-                    {item.description}
+                    <span className="truncate block max-w-sm">{item.description}</span>
+                    <div className="pointer-events-none opacity-0 group-hover/tooltip:opacity-100 transition-opacity duration-200 absolute left-4 bottom-full mb-1 z-50 w-80 bg-[#0d212c] text-white text-xs p-3 rounded-xl shadow-xl border border-white/10 leading-relaxed font-normal whitespace-normal">
+                      {item.description}
+                    </div>
                   </td>
                   <td
                     className="py-3.5 px-4 text-[#0d212c] font-semibold text-xs"

@@ -33,7 +33,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'questionnaires', label: 'Datasets', icon: FileText },
-    { id: 'vendors', label: 'Vendors', icon: Building2 },
+    { id: 'vendors', label: 'Facilities', icon: Building2 },
     { id: 'agents', label: 'Agents', icon: Bot },
   ]
 

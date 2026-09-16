@@ -19,13 +19,16 @@ import {
   Clock,
   Check,
   Download,
+  Camera,
+  FileSpreadsheet,
+  ScreenShare,
 } from 'lucide-react'
 import { VendorDispatchData } from './ConfigureVendorCallScreen'
 
 type CallRoomState = 'join' | 'waiting' | 'left' | 'finalised'
 
 interface TranscriptEntry {
-  speaker: 'Sam' | 'Vendor'
+  speaker: 'Sam' | 'Facility'
   text: string
   time: string
 }
@@ -43,37 +46,37 @@ interface CallRoomScreenProps {
   hideChangeRole?: boolean
 }
 
-// Sample questionnaire transcript
+// Sample dataset evaluation transcript
 const sampleTranscript: TranscriptEntry[] = [
   {
     speaker: 'Sam',
     time: '11:32 AM',
-    text: "Welcome. I'm Sam, your AI assessor. Before we begin, I want to confirm you have consented to this session being recorded and transcribed.",
+    text: "Welcome. I'm Sam, your AI assessor. Before we begin, I want to confirm you have consented to this dataset evaluation session being recorded and transcribed.",
   },
   {
-    speaker: 'Vendor',
+    speaker: 'Facility',
     time: '11:32 AM',
     text: 'Yes, we confirm and consent to the recording.',
   },
   {
     speaker: 'Sam',
     time: '11:33 AM',
-    text: "Thank you. Let's begin with Section 1: Data Protection & Privacy.",
+    text: "Thank you. Let's begin with Dataset 1: ADT-Family History.",
   },
   {
     speaker: 'Sam',
     time: '11:33 AM',
-    text: 'Does your organisation maintain a formal data classification policy that categorises data based on sensitivity level — for example, public, internal, confidential, or restricted?',
+    text: 'Does your facility maintain formal records for patient family medical history including SNOMED codes, age of onset, and confirmed status?',
   },
   {
-    speaker: 'Vendor',
+    speaker: 'Facility',
     time: '11:35 AM',
-    text: 'Yes, we have a formal data classification policy. All data is categorised into four tiers: Public, Internal Use, Confidential, and Restricted. The policy is reviewed annually and enforced through our DLP tooling.',
+    text: 'Yes, our EHR system records family medical history with full SNOMED codes, confirmed/ruled-out flags, and onset age. All 24 test cases are validated.',
   },
   {
     speaker: 'Sam',
     time: '11:36 AM',
-    text: 'Can you describe how your organisation ensures data subject rights requests — such as access, erasure, or portability — are handled within the regulatory timeframes set by applicable data protection laws?',
+    text: 'Can you describe how your facility validates laboratory test reports (ORU-Laboratory) and critical value flags?',
   },
 ]
 
@@ -95,6 +98,17 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
   const [showTranscript, setShowTranscript] = useState(false)
   const [pulseActive, setPulseActive] = useState(true)
   const [wavePhase, setWavePhase] = useState(0)
+
+  // Screen Share & Screen Capture states
+  const [isScreenSharing, setIsScreenSharing] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const showToastNotification = (msg: string) => {
+    setToastMessage(msg)
+    setTimeout(() => {
+      setToastMessage((prev) => (prev === msg ? null : prev))
+    }, 3500)
+  }
 
   // Assessment lifecycle
   const [assessmentStarted, setAssessmentStarted] = useState(false)
@@ -153,6 +167,121 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
     e.target.value = ''
   }
 
+  // Toggle Screen Share
+  const handleToggleScreenShare = () => {
+    if (!assessmentStarted) {
+      showToastNotification('Start assessment first to share screen')
+      return
+    }
+    setIsScreenSharing((prev) => {
+      const next = !prev
+      showToastNotification(next ? 'Screen sharing started' : 'Screen sharing stopped')
+      return next
+    })
+  }
+
+  // Screen Capture action
+  const handleCaptureScreen = () => {
+    if (!assessmentStarted) {
+      showToastNotification('Start assessment first to capture screen')
+      return
+    }
+    showToastNotification('Screen capture saved (call_snapshot_2026.png)')
+  }
+
+  // Download Results Excel/CSV Spreadsheet handler
+  const handleDownloadExcelResults = () => {
+    const csvHeaders = [
+      'Dataset Name',
+      'Test Case ID',
+      'Test Case Description',
+      'Expected Behaviour',
+      'Agent Verdict',
+      'Confidence Score',
+      'Agent Evaluation Notes',
+    ]
+    const csvRows = [
+      [
+        'ADT-Family History',
+        'TC-FH-01',
+        'Records a patient\'s family medical history - who the condition belongs to, SNOMED code, age recorded',
+        'System accurately logs family history with SNOMED code and age of onset',
+        'PASS',
+        '98%',
+        'All 24 testcases passed. Verified SNOMED codes and relationship mapping.',
+      ],
+      [
+        'ORU-Laboratory',
+        'TC-LAB-01',
+        'Holds laboratory test reports organized by category, normal ranges, abnormal/critical flags',
+        'System validates blood work, chemistry panels, normal ranges, and flags',
+        'PASS',
+        '96%',
+        'All 46 testcases verified with exact flags for abnormal laboratory findings.',
+      ],
+      [
+        'ORU-Radiology',
+        'TC-RAD-01',
+        'Holds imaging reports such as Chest X-Ray, MRI, and CT Scan',
+        'System processes radiology reports and preserves final/correction status',
+        'PASS',
+        '99%',
+        '13 testcases passed. DICOM and radiology report metadata correctly formatted.',
+      ],
+      [
+        'ORU-Clinical Documents',
+        'TC-CD-01',
+        'Holds ECG reports, description, performing organization, confidentiality level',
+        'System logs performing organization and confidentiality levels',
+        'PASS',
+        '94%',
+        '9 testcases passed. High-confidentiality documents secured.',
+      ],
+      [
+        'ORU-Vitals',
+        'TC-VIT-01',
+        'Captures patient\'s vital sign readings (BP, heart rate, temp, height, weight, SpO2)',
+        'System captures blood pressure, heart rate, temp, height, weight, and SpO2',
+        'PASS',
+        '100%',
+        '18 testcases passed. Continuous telemetry stream parsed.',
+      ],
+      [
+        'PPR- Problems',
+        'TC-PR-01',
+        'Holds patient\'s active problem/diagnosis list (Active, Inactive, Resolved)',
+        'System categorizes Active, Inactive, and Sensitive diagnosis flags',
+        'PASS',
+        '97%',
+        '12 testcases passed. ICD/SNOMED coding verified.',
+      ],
+      [
+        'RDS - Pharmacy Dispense',
+        'TC-PD-01',
+        'Records when pharmacy dispenses medication - brand, dispensing notes, links',
+        'System tracks medication brand, dosage, dispensing notes, and links to order',
+        'PASS',
+        '95%',
+        '8 testcases passed. RxNorm and prescription IDs confirmed.',
+      ],
+    ]
+
+    const csvContent = [
+      csvHeaders.map((h) => `"${h.replace(/"/g, '""')}"`).join(','),
+      ...csvRows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')),
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', `${vendor?.name || 'Facility'}_Evaluation_Results.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    showToastNotification('Downloaded evaluation results spreadsheet (CSV/Excel)')
+  }
+
   // Meeting started state (defaults to true if timing === 'now')
   const [isMeetingStarted, setIsMeetingStarted] = useState<boolean>(timing !== 'later')
 
@@ -195,8 +324,8 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
 
   // Admin initials (current user = admin = M42)
   const adminInitial = yourName.trim() ? yourName.trim()[0].toUpperCase() : 'A'
-  // Vendor display name
-  const vendorShortName = vendor.name.split(' ').slice(0, 2).join(' ')
+  // Facility display name
+  const facilityShortName = vendor.name.split(' ').slice(0, 2).join(' ')
 
   const handleStartAssessment = () => {
     setAssessmentStarted(true)
@@ -264,7 +393,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] rounded-full bg-[#e0f2fe]/20 blur-3xl" />
         </div>
 
-        {/* STEP 1: SELECT LOGIN ROLE (SSO vs VENDOR) */}
+        {/* STEP 1: SELECT LOGIN ROLE (SSO vs FACILITY) */}
         {vendorFlowStep === 'select_role' && (
           <div className="relative w-full max-w-[440px]">
             <div className="mb-6 text-center flex flex-col items-center gap-1">
@@ -387,7 +516,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 </div>
               </button>
 
-              {/* Login as a Vendor Button — disabled if meeting is not started */}
+              {/* Login as a Facility Button — disabled if meeting is not started */}
               <button
                 disabled={!isMeetingStarted}
                 onClick={() => {
@@ -408,7 +537,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 </div>
                 <div className="mt-0.5">
                   <div className="font-semibold text-sm text-[#0d212c] group-hover:text-[#36c0c9] transition-colors">
-                    Join as a Vendor
+                    Join as a Facility
                   </div>
                   <div className="text-xs text-gray-500 mt-0.5">
                     Verify via email OTP to join assessment call
@@ -501,7 +630,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           </div>
         )}
 
-        {/* STEP 2B: VENDOR DETAILS SCREEN (Name & Email mandatory, Info icon on email field) */}
+        {/* STEP 2B: FACILITY DETAILS SCREEN (Name & Email mandatory) */}
         {vendorFlowStep === 'vendor_input' &&
           (() => {
             const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vendorEmailInput.trim())
@@ -513,17 +642,17 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                   <h1 className="text-2xl font-extrabold text-[#0d212c] leading-tight">
                     {vendor.name}
                   </h1>
-                  <p className="text-xs text-[#64748b] font-medium">Vendor Identity Verification</p>
+                  <p className="text-xs text-[#64748b] font-medium">Facility Identity Verification</p>
                 </div>
 
                 <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-xl p-7 flex flex-col gap-4">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs font-bold text-[#0d212c]">
-                      Vendor Name <span className="text-red-500">*</span>
+                      Facility Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
-                      placeholder="Enter vendor name..."
+                      placeholder="Enter facility name..."
                       value={vendorNameInput}
                       onChange={(e) => setVendorNameInput(e.target.value)}
                       className="w-full px-3.5 py-2.5 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] text-xs text-[#0d212c] outline-none focus:border-[#36c0c9] transition"
@@ -533,9 +662,8 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                   <div className="flex flex-col gap-1.5">
                     <div className="flex items-center gap-1.5">
                       <label className="text-xs font-bold text-[#0d212c]">
-                        Vendor Email ID <span className="text-red-500">*</span>
+                        Facility Email ID <span className="text-red-500">*</span>
                       </label>
-                      {/* Info Icon — no bg, grey color */}
                       <div className="relative group cursor-pointer">
                         <Info className="w-3.5 h-3.5 text-[#64748b] hover:text-[#0d212c] transition" />
                         <div className="pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute left-1/2 -translate-x-1/2 bottom-6 z-50 w-64 bg-[#0d212c] text-white text-xs p-3 rounded-xl shadow-xl border border-white/10 text-left leading-relaxed font-normal">
@@ -546,7 +674,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
 
                     <input
                       type="email"
-                      placeholder="e.g. contact@vendor.com"
+                      placeholder="e.g. contact@facility.com"
                       value={vendorEmailInput}
                       onChange={(e) => setVendorEmailInput(e.target.value)}
                       className={`w-full px-3.5 py-2.5 rounded-xl border bg-[#f8fafc] text-xs text-[#0d212c] outline-none transition ${
@@ -587,7 +715,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
             )
           })()}
 
-        {/* STEP 2C: 4-BLOCK OTP VERIFICATION SCREEN (Clean Header, 4 Blocks, Error State) */}
+        {/* STEP 2C: 4-BLOCK OTP VERIFICATION SCREEN */}
         {vendorFlowStep === 'vendor_otp' && (
           <div className="relative w-full max-w-[420px]">
             <div className="mb-6 text-center flex flex-col items-center gap-1">
@@ -640,7 +768,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 </p>
               )}
 
-              {/* Don't get the code? Resend OTP with 60-second countdown */}
+              {/* Resend OTP */}
               <div className="flex items-center justify-center gap-1.5 text-xs text-[#64748b] my-0.5">
                 <span>Don&apos;t get the code?</span>
                 {resendTimer > 0 ? (
@@ -722,14 +850,14 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
             <div className="flex flex-col gap-1">
               <h2 className="text-xl font-extrabold text-[#0d212c]">Assessment finalised</h2>
               <p className="text-xs text-[#64748b] leading-relaxed">
-                The call has ended for all participants. The transcript and audit log have been
+                The call has ended for all participants. The transcript, audit log, and evaluation results have been
                 saved.
               </p>
             </div>
           </div>
 
           {/* Transcript preview */}
-          <div className="bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-4 flex flex-col gap-3 max-h-[260px] overflow-y-auto">
+          <div className="bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-4 flex flex-col gap-3 max-h-[240px] overflow-y-auto">
             <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#64748b]">
               Call Transcript
             </span>
@@ -749,12 +877,22 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
+            {/* Download Evaluation Results Excel Button */}
+            <button
+              id="callroom-download-results-excel-btn"
+              onClick={handleDownloadExcelResults}
+              className="w-full bg-[#36c0c9] hover:bg-[#2badb6] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-2 shadow-xs"
+            >
+              <FileSpreadsheet className="w-4 h-4" />
+              Download Evaluation Results (Excel)
+            </button>
+
             {userRole === 'admin' && (
               <>
                 <button
                   id="callroom-download-transcript-btn"
-                  onClick={() => alert('Downloading transcript...')}
+                  onClick={() => alert('Downloading call transcript...')}
                   className="w-full bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-2"
                 >
                   <MessageSquare className="w-4 h-4" />
@@ -768,7 +906,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                   }}
                   className="w-full bg-transparent hover:bg-slate-100 text-[#64748b] hover:text-[#0d212c] font-semibold text-xs py-2.5 rounded-xl transition cursor-pointer border-0"
                 >
-                  Back to vendors
+                  Back to facilities
                 </button>
               </>
             )}
@@ -796,7 +934,6 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           </div>
 
           <div className="w-full flex flex-col gap-2.5 mt-2">
-            {/* Rejoin call — primary dark color (#0d212c) with white text */}
             <button
               id="callroom-rejoin-btn"
               onClick={() => {
@@ -817,7 +954,6 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
               Rejoin call
             </button>
 
-            {/* Back to vendors — only shown for Admin users */}
             {userRole === 'admin' && (
               <button
                 onClick={() => {
@@ -829,7 +965,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 }}
                 className="w-full bg-transparent hover:bg-slate-100 text-[#64748b] hover:text-[#0d212c] font-semibold text-xs py-2.5 rounded-xl transition cursor-pointer border-0"
               >
-                Back to vendors
+                Back to facilities
               </button>
             )}
           </div>
@@ -841,6 +977,14 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
   // ─── IN-CALL ROOM ─────────────────────────────────────────────────────────────
   return (
     <div className="fixed inset-0 z-[9999] bg-[#f8fafc] flex flex-col overflow-hidden">
+      {/* Dynamic Toast Notification (Screen share, Screen capture, Excel download) */}
+      {toastMessage && (
+        <div className="fixed top-14 left-1/2 -translate-x-1/2 z-[10000] bg-[#0d212c] text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-2xl border border-white/20 flex items-center gap-2.5 animate-in fade-in slide-in-from-top-4 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-[#36c0c9]" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Leave Confirmation Popup */}
       {showLeaveConfirm && (
         <div className="absolute inset-0 z-50 flex items-center justify-center p-4">
@@ -911,8 +1055,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
               <h3 className="text-xl font-extrabold text-[#0d212c]">End & Finalise Assessment?</h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
                 This will end the live call for all participants and mark the assessment as
-                complete. The audit log and call transcript will be saved. This action cannot be
-                undone.
+                complete. The audit log, evaluation results Excel file, and transcript will be saved.
               </p>
             </div>
             <div className="flex items-center gap-3 w-full mt-2">
@@ -973,6 +1116,14 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
             <div className="absolute top-1/3 left-1/3 w-80 h-80 rounded-full bg-[#ddf7f9]/20 blur-3xl" />
           </div>
 
+          {/* Screen Share Active Header Banner */}
+          {isScreenSharing && (
+            <div className="bg-[#0d212c] text-white py-1.5 px-4 flex items-center justify-center gap-2 text-xs font-semibold shadow-sm shrink-0 z-10 animate-in slide-in-from-top duration-200">
+              <ScreenShare className="w-4 h-4 text-[#36c0c9] animate-pulse" />
+              <span>You are presenting your screen to Sam AI &amp; participants</span>
+            </div>
+          )}
+
           {/* ── CENTER STAGE ─────────────────────────────────────────────────────── */}
           <div className="flex-1 flex flex-col items-center justify-center gap-5 px-8 py-4 relative z-0">
             {/* AI Assessor Avatar */}
@@ -1027,19 +1178,19 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
             )}
           </div>
 
-          {/* ── PARTICIPANT TILES — bottom-right, Teams style Light Theme ────────────────────── */}
+          {/* ── PARTICIPANT TILES — bottom-right ────────────────────── */}
           <div className="absolute bottom-4 right-4 flex items-end gap-2.5 z-10">
-            {/* Vendor tile */}
+            {/* Facility tile */}
             <div className="w-32 h-22 rounded-2xl bg-white border border-[#e2e8f0] shadow-xl flex flex-col items-center justify-center gap-1 relative overflow-hidden p-2">
               <div className="w-9 h-9 rounded-full bg-[#f1f5f9] border border-[#cbd5e1] flex items-center justify-center text-[#0d212c] font-bold text-sm shadow-2xs">
-                {vendorShortName ? vendorShortName[0].toUpperCase() : 'V'}
+                {facilityShortName ? facilityShortName[0].toUpperCase() : 'F'}
               </div>
               <span className="text-[10px] font-bold text-[#0d212c] truncate max-w-[110px] px-1 text-center">
-                {vendorShortName}
+                {facilityShortName}
               </span>
               <div className="absolute bottom-1 left-1.5 flex items-center gap-1 bg-[#f1f5f9] border border-[#e2e8f0] rounded-md px-1.5 py-0.5">
                 <Mic className="w-2.5 h-2.5 text-[#64748b]" />
-                <span className="text-[8px] font-semibold text-[#64748b]">Vendor</span>
+                <span className="text-[8px] font-semibold text-[#64748b]">Facility</span>
               </div>
             </div>
 
@@ -1052,7 +1203,6 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 {yourName.trim() || 'Admin'}{' '}
                 <span className="text-[#36c0c9] font-extrabold">(you)</span>
               </span>
-              {/* Mic badge */}
               <div
                 className={`absolute bottom-1 left-1.5 flex items-center gap-1 rounded-md px-1.5 py-0.5 border ${
                   isMuted
@@ -1098,7 +1248,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                     <span
                       className={`text-[10px] font-extrabold ${entry.speaker === 'Sam' ? 'text-[#36c0c9]' : 'text-[#0d212c]'}`}
                     >
-                      {entry.speaker === 'Sam' ? 'Sam (AI)' : yourName.trim() || 'Vendor'}
+                      {entry.speaker === 'Sam' ? 'Sam (AI)' : yourName.trim() || 'Facility'}
                     </span>
                     <span className="text-[9px] text-[#94a3b8]">{entry.time}</span>
                   </div>
@@ -1183,7 +1333,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
       </div>
 
       {/* ── BOTTOM TOOLBAR ───────────────────────────────────────────────────────── */}
-      <div className="bg-white border-t border-[#e2e8f0] flex items-center justify-center gap-3 shrink-0 shadow-sm px-6 py-3">
+      <div className="bg-white border-t border-[#e2e8f0] flex items-center justify-center gap-3 shrink-0 shadow-sm px-6 py-3 overflow-x-auto">
         {/* Mute — always active */}
         <div className="flex flex-col items-center gap-0.5">
           <button
@@ -1215,6 +1365,77 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           {!assessmentStarted && (
             <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0d212c] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
               Start assessment to upload
+            </div>
+          )}
+        </div>
+
+        {/* Screen Share button */}
+        <div className="flex flex-col items-center gap-0.5 relative group">
+          <button
+            id="callroom-screenshare-btn"
+            onClick={handleToggleScreenShare}
+            disabled={!assessmentStarted}
+            title={
+              !assessmentStarted
+                ? 'Available after assessment starts'
+                : isScreenSharing
+                  ? 'Stop screen share'
+                  : 'Start screen share'
+            }
+            className={`w-10 h-10 rounded-full flex items-center justify-center border-0 shadow-sm transition ${
+              !assessmentStarted
+                ? 'bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed opacity-50'
+                : isScreenSharing
+                  ? 'bg-[#36c0c9] text-white hover:bg-[#2badb6] cursor-pointer ring-2 ring-[#36c0c9]/30'
+                  : 'bg-[#f1f5f9] text-[#334155] hover:bg-[#e2e8f0] cursor-pointer'
+            }`}
+          >
+            <ScreenShare className="w-4 h-4" />
+          </button>
+          <span className="text-[9px] text-[#94a3b8] font-medium">
+            {isScreenSharing ? 'Sharing' : 'Screen Share'}
+          </span>
+          {!assessmentStarted && (
+            <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0d212c] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+              Start assessment first
+            </div>
+          )}
+        </div>
+
+        {/* Screen Capture button */}
+        <div className="flex flex-col items-center gap-0.5 relative group">
+          <button
+            id="callroom-screencapture-btn"
+            onClick={handleCaptureScreen}
+            disabled={!assessmentStarted}
+            title={assessmentStarted ? 'Capture screen snapshot' : 'Available after assessment starts'}
+            className={`w-10 h-10 rounded-full flex items-center justify-center border-0 shadow-sm transition ${!assessmentStarted ? 'bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed opacity-50' : 'bg-[#f1f5f9] text-[#334155] hover:bg-[#e2e8f0] cursor-pointer'}`}
+          >
+            <Camera className="w-4 h-4" />
+          </button>
+          <span className="text-[9px] text-[#94a3b8] font-medium">Capture</span>
+          {!assessmentStarted && (
+            <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0d212c] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+              Start assessment first
+            </div>
+          )}
+        </div>
+
+        {/* Download Results (Excel) button */}
+        <div className="flex flex-col items-center gap-0.5 relative group">
+          <button
+            id="callroom-download-results-btn"
+            onClick={handleDownloadExcelResults}
+            disabled={!assessmentStarted}
+            title={assessmentStarted ? 'Download evaluation results (Excel/CSV)' : 'Available after assessment starts'}
+            className={`w-10 h-10 rounded-full flex items-center justify-center border-0 shadow-sm transition ${!assessmentStarted ? 'bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed opacity-50' : 'bg-[#ddf7f9] text-[#0d7280] hover:bg-[#b2eff4] cursor-pointer border border-[#36c0c9]/30'}`}
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+          </button>
+          <span className="text-[9px] text-[#0d7280] font-bold">Results (Excel)</span>
+          {!assessmentStarted && (
+            <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0d212c] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
+              Start assessment first
             </div>
           )}
         </div>
@@ -1265,12 +1486,10 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 <p className="text-[10px] text-[#64748b] leading-relaxed">
                   Sam is paused and stopped from speaking. Press to resume.
                 </p>
-                {/* Tooltip arrow */}
                 <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-white border-r border-b border-[#e2e8f0] rotate-45" />
               </div>
             )}
 
-            {/* Disabled tooltip */}
             {!assessmentStarted && (
               <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0d212c] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover/hold:opacity-100 transition-opacity duration-150 z-50">
                 Start assessment first
@@ -1285,7 +1504,6 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
         {/* End & Finalise — only visible for admin role */}
         {userRole === 'admin' && (
           <>
-            {/* Divider */}
             <div className="w-px h-8 bg-[#e2e8f0] mx-1" />
 
             <div className="flex flex-col items-center gap-0.5 relative group">
@@ -1309,7 +1527,6 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                   <span>End &amp; Finalise</span>
                 </button>
 
-                {/* Tooltip */}
                 <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0d212c] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
                   {!assessmentStarted ? 'Start assessment first' : 'End and finalise assessment'}
                 </div>
@@ -1319,7 +1536,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           </>
         )}
 
-        {/* Leave — no tooltip, visible to vendor too */}
+        {/* Leave */}
         <div className="flex flex-col items-center gap-0.5">
           <button
             id="callroom-leave-btn"
