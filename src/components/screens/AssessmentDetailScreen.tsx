@@ -74,7 +74,7 @@ interface TestcaseItem {
   type: string
   expectedBehaviour: string
   agentComment: string
-  status: 'Pass' | 'Fail'
+  status: 'Pass' | 'Fail' | 'Blocked' | 'Scheduled' | 'Not Applicable' | 'N/A'
   snapshots: SnapshotFile[]
 }
 
@@ -535,6 +535,9 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
   const passedCount = testcases.filter((q) => q.status === 'Pass').length
   const failedCount = testcases.filter((q) => q.status === 'Fail').length
+  const blockedCount = testcases.filter((q) => q.status === 'Blocked').length
+  const scheduledCount = testcases.filter((q) => q.status === 'Scheduled').length
+  const naCount = testcases.filter((q) => q.status === 'N/A' || q.status === 'Not Applicable').length
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-[#0d212c] pb-16 font-sans w-full">
@@ -799,6 +802,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                   <div className="flex items-center gap-5 shrink-0 self-start sm:self-center">
                     <button
                       onClick={() => setShowCancelModal(true)}
+                      title="If the scheduled meeting is already started the cancel and reschedule button should become disabled as the meeting is already in progress"
                       className="flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 bg-transparent border-0 cursor-pointer p-0 transition"
                     >
                       <XCircle className="w-4 h-4 text-rose-600" />
@@ -806,9 +810,10 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                     </button>
                     <button
                       onClick={() => setShowRescheduleModal(true)}
-                      className="flex items-center gap-1.5 text-xs font-bold text-[#0d7280] hover:text-[#09515b] bg-transparent border-0 cursor-pointer p-0 transition"
+                      title="If the scheduled meeting is already started the cancel and reschedule button should become disabled as the meeting is already in progress"
+                      className="flex items-center gap-1.5 text-xs font-bold text-[#36c0c9] hover:text-[#2badb6] bg-transparent border-0 cursor-pointer p-0 transition"
                     >
-                      <Calendar className="w-4 h-4 text-[#0d7280]" />
+                      <Calendar className="w-4 h-4 text-[#36c0c9]" />
                       <span>Reschedule meeting</span>
                     </button>
                   </div>
@@ -1053,7 +1058,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                 <p className="text-xs text-[#64748b] leading-relaxed">
                   {isScheduled
                     ? 'No summary generated yet. The meeting has not been started.'
-                    : `Assessment evaluation completed across 7 testcases: ${passedCount} passed, ${failedCount} failed.`}
+                    : `Assessment evaluation completed across ${testcases.length} testcases: ${passedCount} passed, ${failedCount} failed, ${blockedCount} blocked, ${scheduledCount} scheduled, ${naCount} not applicable.`}
                 </p>
               </div>
             </div>

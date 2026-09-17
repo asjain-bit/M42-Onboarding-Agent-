@@ -23,6 +23,7 @@ import {
   FileSpreadsheet,
   ScreenShare,
   Square,
+  Copy,
 } from 'lucide-react'
 import { VendorDispatchData } from './ConfigureVendorCallScreen'
 
@@ -634,17 +635,17 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 Open Call Room
               </button>
 
-              <button
-                onClick={onBack}
-                className="text-xs text-center text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer bg-transparent border-0 mt-1"
-              >
-                ← Back to call details
-              </button>
-
-              {!hideChangeRole && (
+              {hideChangeRole ? (
+                <button
+                  onClick={onBack}
+                  className="text-xs text-center text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer bg-transparent border-0 mt-1"
+                >
+                  ← Back to call details
+                </button>
+              ) : (
                 <button
                   onClick={() => setVendorFlowStep('select_role')}
-                  className="text-xs text-center text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer bg-transparent border-0"
+                  className="text-xs text-center text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer bg-transparent border-0 mt-1"
                 >
                   ← Change login role
                 </button>
@@ -854,19 +855,17 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
   if (roomState === 'finalised') {
     return (
       <div className="fixed inset-0 z-[9999] bg-[#f8fafc] flex flex-col items-center justify-center p-6 overflow-hidden">
+        {/* M42 Logo positioned on top left side outside the modal */}
+        <div className="absolute top-8 left-8 sm:top-10 sm:left-12 z-20">
+          <Image src="/dark-logo.png" alt="M42" width={84} height={32} className="object-contain" />
+        </div>
+
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full bg-[#ddf7f9]/20 blur-3xl" />
         </div>
 
         <div className="relative bg-white rounded-3xl border border-[#e2e8f0] shadow-xl p-8 max-w-md w-full flex flex-col gap-5">
           <div className="flex flex-col items-center text-center gap-3">
-            <Image
-              src="/dark-logo.png"
-              alt="M42"
-              width={72}
-              height={28}
-              className="object-contain"
-            />
             <div className="w-12 h-12 rounded-full bg-[#ddf7f9] flex items-center justify-center">
               <CheckCircle2 className="w-6 h-6 text-[#0d7280]" />
             </div>
@@ -881,9 +880,26 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
 
           {/* Transcript preview */}
           <div className="bg-[#f8fafc] rounded-2xl border border-[#e2e8f0] p-4 flex flex-col gap-3 max-h-[240px] overflow-y-auto">
-            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#64748b]">
-              Call Transcript
-            </span>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#64748b]">
+                Call Transcript
+              </span>
+              {userRole === 'admin' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fullText = sampleTranscript.map((t) => `${t.speaker} (${t.time}): ${t.text}`).join('\n')
+                    navigator.clipboard.writeText(fullText)
+                    showToastNotification('Transcript copied to clipboard')
+                  }}
+                  className="text-[10px] font-bold text-[#0d7280] hover:text-[#09515b] flex items-center gap-1 cursor-pointer bg-transparent border-0 p-0 transition"
+                  title="Copy transcript"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>Copy</span>
+                </button>
+              )}
+            </div>
             {sampleTranscript.map((entry, idx) => (
               <div key={idx} className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5">
@@ -900,37 +916,59 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col gap-2.5">
-            {/* Download Results (Primary) */}
-            <button
-              id="callroom-download-results-excel-btn"
-              onClick={handleDownloadExcelResults}
-              className="w-full bg-[#36c0c9] hover:bg-[#2badb6] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-2 shadow-xs"
-            >
-              Download Results
-            </button>
-
-            {userRole === 'admin' && (
+          <div className="flex flex-col gap-2.5 w-full">
+            {userRole === 'admin' ? (
               <>
-                {/* Download transcript (Secondary - no icon) */}
-                <button
-                  id="callroom-download-transcript-btn"
-                  onClick={() => alert('Downloading call transcript...')}
-                  className="w-full bg-white hover:bg-slate-50 text-[#0d212c] font-bold text-xs py-3 rounded-xl border border-[#cbd5e1] transition cursor-pointer flex items-center justify-center gap-2"
-                >
-                  Download transcript
-                </button>
+                <div className="flex items-center gap-2.5 w-full">
+                  {/* Download transcript on the left side (Secondary) */}
+                  <button
+                    id="callroom-download-transcript-btn"
+                    onClick={() => {
+                      const fullText = sampleTranscript.map((t) => `${t.speaker} (${t.time}): ${t.text}`).join('\n')
+                      const element = document.createElement('a')
+                      const file = new Blob([fullText], { type: 'text/plain' })
+                      element.href = URL.createObjectURL(file)
+                      element.download = 'call_transcript.txt'
+                      document.body.appendChild(element)
+                      element.click()
+                      document.body.removeChild(element)
+                      showToastNotification('Downloaded call transcript')
+                    }}
+                    className="flex-1 bg-white hover:bg-slate-50 text-[#0d212c] font-bold text-xs py-3 rounded-xl border border-[#cbd5e1] transition cursor-pointer flex items-center justify-center shadow-2xs"
+                  >
+                    Download transcript
+                  </button>
+
+                  {/* Download Results on the right side (Primary) */}
+                  <button
+                    id="callroom-download-results-excel-btn"
+                    onClick={handleDownloadExcelResults}
+                    className="flex-1 bg-[#36c0c9] hover:bg-[#2badb6] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0 flex items-center justify-center shadow-xs"
+                  >
+                    Download Results
+                  </button>
+                </div>
 
                 <button
                   onClick={() => {
                     if (onExitToVendors) onExitToVendors()
                     else onBack()
                   }}
-                  className="w-full bg-transparent hover:bg-slate-100 text-[#64748b] hover:text-[#0d212c] font-semibold text-xs py-2.5 rounded-xl transition cursor-pointer border-0"
+                  className="w-full bg-transparent text-[#64748b] hover:text-[#0d212c] font-semibold text-xs py-2.5 rounded-xl cursor-pointer border-0"
                 >
                   Back to facilities
                 </button>
               </>
+            ) : (
+              <button
+                onClick={() => {
+                  if (onExitToVendors) onExitToVendors()
+                  else onBack()
+                }}
+                className="w-full bg-[#36c0c9] hover:bg-[#2badb6] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-2 shadow-xs"
+              >
+                Back to facilities
+              </button>
             )}
           </div>
         </div>
@@ -951,40 +989,50 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           <div className="flex flex-col gap-2">
             <h2 className="text-xl font-extrabold text-[#0d212c]">You have left the meeting</h2>
             <p className="text-xs text-[#64748b] leading-relaxed">
-              Do you want to rejoin the assessment session or download evaluation results?
+              {userRole === 'admin'
+                ? 'Do you want to rejoin the assessment session or download evaluation results?'
+                : 'Do you want to rejoin the assessment session?'}
             </p>
           </div>
 
           <div className="w-full flex flex-col gap-3 mt-2">
-            {/* Same line: Rejoin call (Primary) + Download Results (Secondary, no icon, no excel text) */}
-            <div className="flex items-center gap-2.5 w-full">
+            {userRole === 'admin' ? (
+              <div className="flex items-center gap-2.5 w-full">
+                <button
+                  onClick={handleDownloadExcelResults}
+                  className="flex-1 bg-white hover:bg-slate-50 text-[#0d212c] border border-[#cbd5e1] font-bold text-xs py-3 rounded-xl transition cursor-pointer shadow-2xs"
+                >
+                  Download Results
+                </button>
+
+                <button
+                  id="callroom-rejoin-btn"
+                  onClick={() => {
+                    setShowLeaveConfirm(false)
+                    setRoomState('waiting')
+                  }}
+                  className="flex-1 bg-[#36c0c9] hover:bg-[#2badb6] text-white border-0 font-bold text-xs py-3 rounded-xl transition cursor-pointer shadow-xs"
+                >
+                  Rejoin call
+                </button>
+              </div>
+            ) : (
               <button
                 id="callroom-rejoin-btn"
                 onClick={() => {
                   setShowLeaveConfirm(false)
-                  if (userRole === 'vendor') {
-                    setVendorNameInput('')
-                    setVendorEmailInput('')
-                    setOtpDigits(['', '', '', ''])
-                    setOtpError('')
-                    setVendorFlowStep('vendor_input')
-                    setRoomState('join')
-                  } else {
-                    setRoomState('waiting')
-                  }
+                  setVendorNameInput('')
+                  setVendorEmailInput('')
+                  setOtpDigits(['', '', '', ''])
+                  setOtpError('')
+                  setVendorFlowStep('vendor_input')
+                  setRoomState('join')
                 }}
-                className="flex-1 bg-[#36c0c9] hover:bg-[#2badb6] text-white border-0 font-bold text-xs py-3 rounded-xl transition cursor-pointer shadow-xs"
+                className="w-full bg-[#36c0c9] hover:bg-[#2badb6] text-white border-0 font-bold text-xs py-3 rounded-xl transition cursor-pointer shadow-xs"
               >
                 Rejoin call
               </button>
-
-              <button
-                onClick={handleDownloadExcelResults}
-                className="flex-1 bg-white hover:bg-slate-50 text-[#0d212c] border border-[#cbd5e1] font-bold text-xs py-3 rounded-xl transition cursor-pointer shadow-2xs"
-              >
-                Download Results
-              </button>
-            </div>
+            )}
 
             {userRole === 'admin' && (
               <button
@@ -995,7 +1043,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                     onBack()
                   }
                 }}
-                className="w-full bg-transparent hover:bg-slate-100 text-[#64748b] hover:text-[#0d212c] font-semibold text-xs py-2.5 rounded-xl transition cursor-pointer border-0 mt-1"
+                className="w-full bg-transparent text-[#64748b] hover:text-[#0d212c] font-semibold text-xs py-2.5 rounded-xl cursor-pointer border-0 mt-1"
               >
                 Back to facilities
               </button>
@@ -1237,17 +1285,30 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           </div>
         </div>
 
-        {assessmentStarted ? (
-          <span className="inline-flex items-center gap-2 bg-[#dcfce7] text-[#15803d] text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wide border border-[#bbf7d0]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse inline-block" />
-            Live · {formatElapsed(elapsedSeconds)}
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 bg-[#fef3c7] text-[#92400e] text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wide border border-[#fde68a]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-pulse inline-block" />
-            Waiting to start
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {userRole === 'admin' && assessmentStarted && (
+            <button
+              id="callroom-top-download-results-btn"
+              onClick={handleDownloadExcelResults}
+              className="px-3.5 py-1.5 rounded-xl bg-[#36c0c9] hover:bg-[#2badb6] text-white font-bold text-xs flex items-center gap-1.5 transition cursor-pointer border-0 shadow-2xs"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Download Results</span>
+            </button>
+          )}
+
+          {assessmentStarted ? (
+            <span className="inline-flex items-center gap-2 bg-[#dcfce7] text-[#15803d] text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wide border border-[#bbf7d0]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse inline-block" />
+              Live · {formatElapsed(elapsedSeconds)}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 bg-[#fef3c7] text-[#92400e] text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wide border border-[#fde68a]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-pulse inline-block" />
+              Waiting to start
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── MAIN BODY ────────────────────────────────────────────────────────────── */}

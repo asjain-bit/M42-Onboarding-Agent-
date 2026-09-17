@@ -208,27 +208,44 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
     7: true,
   })
 
-  const toggleTestcaseInclusion = (id: number) => {
-    setTestcaseInclusions((prev) => ({
+  // Draft state while editing in the preview modal
+  const [draftTestcaseInclusions, setDraftTestcaseInclusions] = useState<Record<number, boolean>>({
+    1: true,
+    2: true,
+    3: true,
+    4: true,
+    5: true,
+    6: true,
+    7: true,
+  })
+
+  const handleOpenDatasetPreview = () => {
+    setDraftTestcaseInclusions({ ...testcaseInclusions })
+    setShowDatasetPreviewModal(true)
+  }
+
+  const toggleDraftTestcaseInclusion = (id: number) => {
+    setDraftTestcaseInclusions((prev) => ({
       ...prev,
       [id]: !prev[id],
     }))
   }
 
-  const allTestcasesIncluded =
+  const allDraftTestcasesIncluded =
     sampleDatasetTestcases.length > 0 &&
-    sampleDatasetTestcases.every((tc) => testcaseInclusions[tc.id])
+    sampleDatasetTestcases.every((tc) => draftTestcaseInclusions[tc.id])
 
-  const toggleSelectAllTestcases = () => {
-    const nextState = !allTestcasesIncluded
+  const toggleSelectAllDraftTestcases = () => {
+    const nextState = !allDraftTestcasesIncluded
     const updated: Record<number, boolean> = {}
     sampleDatasetTestcases.forEach((tc) => {
       updated[tc.id] = nextState
     })
-    setTestcaseInclusions(updated)
+    setDraftTestcaseInclusions(updated)
   }
 
   const includedCount = Object.values(testcaseInclusions).filter(Boolean).length
+  const draftIncludedCount = Object.values(draftTestcaseInclusions).filter(Boolean).length
 
   // Estimated duration is auto-populated and non-editable
   const estimatedDuration = '60-120 minutes'
@@ -998,7 +1015,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   {selectedQuestionnaire && (
                     <button
                       type="button"
-                      onClick={() => setShowDatasetPreviewModal(true)}
+                      onClick={handleOpenDatasetPreview}
                       className="text-xs font-bold text-[#36c0c9] hover:text-[#0d7280] flex items-center gap-1 cursor-pointer bg-transparent border-0 transition"
                     >
                       <span>Open preview</span>
@@ -1657,23 +1674,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               <div className="py-2.5 flex justify-between">
                 <span className="text-[#64748b]">TESTCASES</span>
                 <span className="font-bold text-[#0d212c]">
-                  {selectedQuestionnaire === 'ADT-Family History'
-                    ? '24'
-                    : selectedQuestionnaire === 'ORU-Laboratory'
-                      ? '46'
-                      : selectedQuestionnaire === 'ORU-Radiology'
-                        ? '13'
-                        : selectedQuestionnaire === 'ORU-Clinical Documents'
-                          ? '9'
-                          : selectedQuestionnaire === 'ORU-Vitals'
-                            ? '18'
-                            : selectedQuestionnaire === 'PPR- Problems'
-                              ? '12'
-                              : selectedQuestionnaire === 'RDS - Pharmacy Dispense'
-                                ? '8'
-                                : selectedQuestionnaire
-                                  ? '24'
-                                  : '-'}
+                  {selectedQuestionnaire ? includedCount : '-'}
                 </span>
               </div>
               <div className="py-2.5 flex justify-between gap-2">
@@ -1758,16 +1759,16 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
                 <button
                   type="button"
-                  onClick={toggleSelectAllTestcases}
+                  onClick={toggleSelectAllDraftTestcases}
                   className="bg-transparent border-0 p-0 shadow-none outline-none flex items-center gap-2.5 text-xs font-bold text-[#0d212c] hover:text-[#0d7280] transition cursor-pointer select-none"
                 >
                   <div
-                    className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${allTestcasesIncluded
+                    className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${allDraftTestcasesIncluded
                         ? 'border-[#36c0c9] bg-[#36c0c9] text-white'
                         : 'border-[#cbd5e1] bg-white'
                       }`}
                   >
-                    {allTestcasesIncluded && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                    {allDraftTestcasesIncluded && <Check className="w-3 h-3 text-white stroke-[3]" />}
                   </div>
                   <span>Select all testcase during assessment</span>
                 </button>
@@ -1801,7 +1802,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     tc.code.toLowerCase().includes(datasetSearchQuery.toLowerCase())
                 )
                 .map((tc) => {
-                  const isIncluded = !!testcaseInclusions[tc.id]
+                  const isIncluded = !!draftTestcaseInclusions[tc.id]
 
                   return (
                     <div
@@ -1813,7 +1814,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       <div className="flex items-center shrink-0 pt-0.5" title="Include testcase during assessment">
                         <Checkbox
                           checked={isIncluded}
-                          onChange={() => toggleTestcaseInclusion(tc.id)}
+                          onChange={() => toggleDraftTestcaseInclusion(tc.id)}
                         />
                       </div>
 
@@ -1856,7 +1857,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <div className="bg-[#f8fafc] px-6 py-4 border-t border-[#e2e8f0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
               <div className="flex items-center gap-2.5 text-xs text-[#64748b] flex-wrap">
                 <span>
-                  Included in Assessment: <strong className="text-[#0d212c] font-bold">{includedCount} / 7 testcases</strong>
+                  Included in Assessment: <strong className="text-[#0d212c] font-bold">{draftIncludedCount} / 7 testcases</strong>
                 </span>
                 <span>|</span>
                 <span>
@@ -1872,10 +1873,14 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   Close preview
                 </button>
                 <button
-                  onClick={() => setShowDatasetPreviewModal(false)}
+                  id="save-dataset-preview-btn"
+                  onClick={() => {
+                    setTestcaseInclusions(draftTestcaseInclusions)
+                    setShowDatasetPreviewModal(false)
+                  }}
                   className="px-6 py-2.5 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
                 >
-                  Save &amp; Apply Selection
+                  Save
                 </button>
               </div>
             </div>
