@@ -611,7 +611,7 @@ export const QuestionnairesScreen: React.FC = () => {
               <div className="p-4 rounded-2xl border border-[#e2e8f0] bg-[#f8fafc]/60 flex flex-col gap-2.5 shadow-2xs">
                 <p className="text-xs text-[#64748b] leading-relaxed">
                   <strong className="text-[#0d212c]">Note:</strong> Please make sure to include all
-                  questions in the specified format along with all response details. Below is the
+                  the testcases in the specified format along with all details. Below is the
                   reference template which you can download.
                 </p>
                 <button
