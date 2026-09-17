@@ -372,7 +372,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
                 Category
               </span>
-              <span>Category Type</span>
+              <span>Type</span>
             </div>
           </div>
         </div>
@@ -465,51 +465,52 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               {isEditing && (
                 <button
                   onClick={() => setDeletingQuestionId(q.id)}
-                  className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 transition cursor-pointer"
-                  title="Delete testcase"
-                  aria-label="Delete testcase"
+                  className="text-slate-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition cursor-pointer shrink-0"
+                  title="Delete question"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               )}
             </div>
 
-            {/* TESTCASE Input Field */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                TESTCASE
-              </label>
-              <input
-                type="text"
-                value={q.question}
-                readOnly={!isEditing}
-                tabIndex={!isEditing ? -1 : 0}
-                onChange={(e) => handleQuestionChange(q.id, 'question', e.target.value)}
-                className={`w-full px-4 py-2.5 rounded-xl border text-xs font-medium text-[#0d212c] transition ${
-                  isEditing
-                    ? 'border-[#cbd5e1] focus:border-[#cbd5e1] focus:outline-none bg-white'
-                    : 'border-[#e2e8f0] bg-slate-50/50 cursor-default outline-none select-none pointer-events-none'
-                }`}
-              />
-            </div>
+            {/* Testcase Title/Prompt */}
+            {isEditing ? (
+              <div>
+                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
+                  Testcase name
+                </label>
+                <input
+                  type="text"
+                  value={q.question}
+                  onChange={(e) => handleQuestionChange(q.id, 'question', e.target.value)}
+                  className="w-full text-xs font-medium text-[#0d212c] bg-white border border-[#cbd5e1] rounded-xl px-4 py-2.5 outline-none focus:border-[#36c0c9] transition"
+                  placeholder="Enter testcase description..."
+                />
+              </div>
+            ) : (
+              <p className="text-xs font-medium text-[#0d212c] leading-relaxed">
+                {q.question}
+              </p>
+            )}
 
-            {/* EVALUATION CRITERIA Textarea */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[11px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                EVALUATION CRITERIA
-              </label>
-              <textarea
-                value={q.responseCue}
-                readOnly={!isEditing}
-                tabIndex={!isEditing ? -1 : 0}
-                onChange={(e) => handleQuestionChange(q.id, 'responseCue', e.target.value)}
-                rows={2}
-                className={`w-full px-4 py-2.5 rounded-xl border text-xs font-medium text-[#0d212c] resize-y transition ${
-                  isEditing
-                    ? 'border-[#cbd5e1] focus:border-[#cbd5e1] focus:outline-none bg-white'
-                    : 'border-[#e2e8f0] bg-slate-50/50 cursor-default outline-none select-none pointer-events-none'
-                }`}
-              />
+            {/* Evaluation Criteria / Cues Block */}
+            <div className="bg-[#f8fafc] border border-[#e2e8f0] p-4 rounded-xl flex flex-col gap-1.5">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#64748b]">
+                Evaluation Criteria / Required Evidence
+              </span>
+              {isEditing ? (
+                <textarea
+                  value={q.responseCue}
+                  onChange={(e) => handleQuestionChange(q.id, 'responseCue', e.target.value)}
+                  rows={2}
+                  className="w-full text-xs text-[#0d212c] bg-white border border-[#cbd5e1] rounded-lg p-2.5 outline-none focus:border-[#36c0c9] transition resize-y font-normal"
+                  placeholder="Describe the expected criteria or proof points..."
+                />
+              ) : (
+                <p className="text-xs text-[#64748b] leading-relaxed">
+                  {q.responseCue}
+                </p>
+              )}
             </div>
           </div>
         ))}
@@ -532,6 +533,34 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             <form onSubmit={handleAddQuestion} className="flex flex-col gap-4">
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
+                  Message type <span className="text-red-500 font-bold">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. ADT, ORU, SIU..."
+                  value={newMessageType}
+                  onChange={(e) => setNewMessageType(e.target.value)}
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#36c0c9] transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
+                  Category type <span className="text-red-500 font-bold">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Problems, Sensitive Info..."
+                  value={newCategoryType}
+                  onChange={(e) => setNewCategoryType(e.target.value)}
+                  required
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#36c0c9] transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
                   Testcase name <span className="text-red-500 font-bold">*</span>
                 </label>
                 <input
@@ -540,7 +569,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   value={newQuestionText}
                   onChange={(e) => setNewQuestionText(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#36c0c9] transition"
                 />
               </div>
 
@@ -554,37 +583,8 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   onChange={(e) => setNewResponseCue(e.target.value)}
                   required
                   rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white resize-y"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white resize-y focus:border-[#36c0c9] transition"
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                    Message type <span className="text-red-500 font-bold">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. ADT, ORU, SIU..."
-                    value={newMessageType}
-                    onChange={(e) => setNewMessageType(e.target.value)}
-                    required
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                    Category type <span className="text-red-500 font-bold">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Problems, Sensitive Info..."
-                    value={newCategoryType}
-                    onChange={(e) => setNewCategoryType(e.target.value)}
-                    required
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white"
-                  />
-                </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-[#e2e8f0]">

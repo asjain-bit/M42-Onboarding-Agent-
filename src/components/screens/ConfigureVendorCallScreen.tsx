@@ -762,11 +762,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       setShowCallRoom(true)
                     }
                   }}
-                  className={`w-full font-bold text-xs py-3.5 px-6 rounded-xl transition border-0 ${
-                    timing === 'later'
+                  className={`w-full font-bold text-xs py-3.5 px-6 rounded-xl transition border-0 ${timing === 'later'
                       ? 'bg-[#0d212c]/40 text-white/70 cursor-not-allowed shadow-none'
                       : 'bg-[#0d212c] hover:bg-[#122e3d] text-white cursor-pointer shadow-xs'
-                  }`}
+                    }`}
                 >
                   Open call room
                 </button>
@@ -904,23 +903,21 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Step 1 Indicator */}
             <div
-              className={`p-3.5 rounded-xl border transition cursor-pointer flex items-center gap-3 ${
-                currentStep === 1
+              className={`p-3.5 rounded-xl border transition cursor-pointer flex items-center gap-3 ${currentStep === 1
                   ? 'border-[#36c0c9] bg-[#ddf7f9]/20'
                   : currentStep > 1
                     ? 'border-[#e2e8f0] bg-[#f8fafc]'
                     : 'border-[#e2e8f0] bg-white'
-              }`}
+                }`}
               onClick={() => setCurrentStep(1)}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                  currentStep === 1
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${currentStep === 1
                     ? 'bg-[#36c0c9] text-white'
                     : currentStep > 1
                       ? 'bg-[#137333] text-white'
                       : 'bg-[#e2e8f0] text-[#64748b]'
-                }`}
+                  }`}
               >
                 {currentStep > 1 ? <Check className="w-4 h-4" /> : '01'}
               </div>
@@ -934,24 +931,22 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <button
               disabled={!isStep1Valid}
               onClick={() => isStep1Valid && setCurrentStep(2)}
-              className={`p-3.5 rounded-xl border transition flex items-center gap-3 text-left w-full ${
-                currentStep === 2
+              className={`p-3.5 rounded-xl border transition flex items-center gap-3 text-left w-full ${currentStep === 2
                   ? 'border-[#36c0c9] bg-[#ddf7f9]/20'
                   : currentStep > 2 || hasCompletedStep2
                     ? 'border-[#e2e8f0] bg-[#f8fafc] cursor-pointer'
                     : isStep1Valid
                       ? 'border-[#e2e8f0] bg-white cursor-pointer hover:border-[#cbd5e1]'
                       : 'border-[#e2e8f0] bg-slate-50 opacity-40 cursor-not-allowed'
-              }`}
+                }`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                  currentStep === 2
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${currentStep === 2
                     ? 'bg-[#36c0c9] text-white'
                     : currentStep > 2 || hasCompletedStep2
                       ? 'bg-[#137333] text-white'
                       : 'bg-[#e2e8f0] text-[#64748b]'
-                }`}
+                  }`}
               >
                 {currentStep > 2 || hasCompletedStep2 ? <Check className="w-4 h-4" /> : '02'}
               </div>
@@ -965,18 +960,16 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <button
               disabled={!isStep3Unlocked}
               onClick={() => isStep3Unlocked && setCurrentStep(3)}
-              className={`p-3.5 rounded-xl border transition flex items-center gap-3 text-left w-full ${
-                currentStep === 3
+              className={`p-3.5 rounded-xl border transition flex items-center gap-3 text-left w-full ${currentStep === 3
                   ? 'border-[#36c0c9] bg-[#ddf7f9]/20'
                   : isStep3Unlocked
                     ? 'border-[#e2e8f0] bg-white cursor-pointer hover:border-[#cbd5e1]'
                     : 'border-[#e2e8f0] bg-slate-50 opacity-40 cursor-not-allowed'
-              }`}
+                }`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                  currentStep === 3 ? 'bg-[#36c0c9] text-white' : 'bg-[#e2e8f0] text-[#64748b]'
-                }`}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${currentStep === 3 ? 'bg-[#36c0c9] text-white' : 'bg-[#e2e8f0] text-[#64748b]'
+                  }`}
               >
                 03
               </div>
@@ -991,9 +984,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
       {/* Main Content Layout Grid */}
       <div
-        className={`w-full px-6 lg:px-10 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 ${
-          currentStep === 3 ? 'items-stretch' : 'items-start'
-        }`}
+        className={`w-full px-6 lg:px-10 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 ${currentStep === 3 ? 'items-stretch' : 'items-start'
+          }`}
       >
         {/* Left Column: STEP CONTENT (8 cols) */}
         <div
@@ -1062,11 +1054,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   <button
                     type="button"
                     onClick={() => setIsDatasetDropdownOpen(!isDatasetDropdownOpen)}
-                    className={`w-full px-4 py-2.5 rounded-xl border bg-white text-xs font-semibold text-[#0d212c] flex items-center justify-between transition cursor-pointer outline-none ${
-                      isDatasetDropdownOpen
+                    className={`w-full px-4 py-2.5 rounded-xl border bg-white text-xs font-semibold text-[#0d212c] flex items-center justify-between transition cursor-pointer outline-none ${isDatasetDropdownOpen
                         ? 'border-[#cbd5e1] bg-slate-50/50 shadow-xs'
                         : 'border-[#e2e8f0] hover:border-[#cbd5e1] focus:border-[#cbd5e1]'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2 truncate">
                       <FileText className="w-4 h-4 text-[#64748b] shrink-0" />
@@ -1075,9 +1066,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       </span>
                     </div>
                     <ChevronDown
-                      className={`w-4 h-4 text-[#64748b] shrink-0 transition-transform duration-200 ${
-                        isDatasetDropdownOpen ? 'rotate-180' : ''
-                      }`}
+                      className={`w-4 h-4 text-[#64748b] shrink-0 transition-transform duration-200 ${isDatasetDropdownOpen ? 'rotate-180' : ''
+                        }`}
                     />
                   </button>
 
@@ -1091,11 +1081,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                             setSelectedQuestionnaire(opt)
                             setIsDatasetDropdownOpen(false)
                           }}
-                          className={`px-3.5 py-2.5 rounded-xl cursor-pointer transition flex items-center justify-between ${
-                            selectedQuestionnaire === opt
+                          className={`px-3.5 py-2.5 rounded-xl cursor-pointer transition flex items-center justify-between ${selectedQuestionnaire === opt
                               ? 'bg-[#ddf7f9]/40 border border-[#36c0c9]/40 text-[#0d212c]'
                               : 'hover:bg-slate-50 text-[#0d212c]'
-                          }`}
+                            }`}
                         >
                           <span className="text-xs font-bold">{opt}</span>
                           <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-[#64748b]">
@@ -1211,17 +1200,15 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       ? 'Maximum 5 recipients reached'
                       : 'Enter email address and press Enter...'
                   }
-                  className={`w-full px-4 py-2.5 rounded-xl border text-xs text-[#0d212c] outline-none transition disabled:bg-slate-100 disabled:opacity-60 disabled:cursor-not-allowed ${
-                    recipientError
+                  className={`w-full px-4 py-2.5 rounded-xl border text-xs text-[#0d212c] outline-none transition disabled:bg-slate-100 disabled:opacity-60 disabled:cursor-not-allowed ${recipientError
                       ? 'border-red-500 focus:border-red-500'
                       : 'border-[#e2e8f0] focus:border-[#cbd5e1]'
-                  }`}
+                    }`}
                 />
 
                 <div
-                  className={`flex items-center justify-between text-[11px] ${
-                    recipients.length > 5 ? 'text-red-600 font-bold' : 'text-[#64748b]'
-                  }`}
+                  className={`flex items-center justify-between text-[11px] ${recipients.length > 5 ? 'text-red-600 font-bold' : 'text-[#64748b]'
+                    }`}
                 >
                   <span>Maximum 5 recipients can be added</span>
                   <span>{recipients.length}/5</span>
@@ -1314,11 +1301,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     <div
                       key={v.id}
                       onClick={() => setSelectedVoice(v.id)}
-                      className={`p-3.5 rounded-2xl border transition cursor-pointer flex flex-col gap-1.5 ${
-                        selectedVoice === v.id
+                      className={`p-3.5 rounded-2xl border transition cursor-pointer flex flex-col gap-1.5 ${selectedVoice === v.id
                           ? 'border-[#36c0c9] bg-[#ddf7f9]/20'
                           : 'border-[#e2e8f0] bg-white hover:border-[#cbd5e1]'
-                      }`}
+                        }`}
                     >
                       {/* Requirement 6: Recommended chip */}
                       <div className="flex items-center justify-between gap-2">
@@ -1334,11 +1320,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                         <button
                           type="button"
                           onClick={(e) => togglePlayVoice(v.id, e)}
-                          className={`p-1.5 rounded-lg transition cursor-pointer shrink-0 border-0 ${
-                            playingVoiceId === v.id
+                          className={`p-1.5 rounded-lg transition cursor-pointer shrink-0 border-0 ${playingVoiceId === v.id
                               ? 'bg-[#36c0c9] text-white shadow-xs'
                               : 'bg-[#f1f5f9] text-[#0d212c] hover:bg-[#e2e8f0]'
-                          }`}
+                            }`}
                           title={`Listen to ${v.label}'s voice`}
                         >
                           {playingVoiceId === v.id ? (
@@ -1368,11 +1353,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       <div
                         key={ev.id}
                         onClick={() => setSelectedVoice(ev.id)}
-                        className={`p-3 rounded-xl border text-xs cursor-pointer flex items-center justify-between gap-2 ${
-                          selectedVoice === ev.id
+                        className={`p-3 rounded-xl border text-xs cursor-pointer flex items-center justify-between gap-2 ${selectedVoice === ev.id
                             ? 'bg-[#ddf7f9]/30 border-[#36c0c9] text-[#0d212c] font-bold'
                             : 'bg-white border-[#e2e8f0] text-[#64748b] hover:bg-[#f1f5f9]'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           <Volume2 className="w-3.5 h-3.5 text-[#36c0c9]" />
@@ -1404,11 +1388,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 <div className="grid grid-cols-2 gap-3">
                   <div
                     onClick={() => setTiming('now')}
-                    className={`p-4 rounded-2xl border transition cursor-pointer flex flex-col gap-1 ${
-                      timing === 'now'
+                    className={`p-4 rounded-2xl border transition cursor-pointer flex flex-col gap-1 ${timing === 'now'
                         ? 'border-[#36c0c9] bg-[#ddf7f9]/20'
                         : 'border-[#e2e8f0] bg-white'
-                    }`}
+                      }`}
                   >
                     <span className="font-bold text-xs text-[#0d212c]">Start now</span>
                     <span className="text-[10px] text-[#64748b]">
@@ -1418,11 +1401,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
                   <div
                     onClick={() => setTiming('later')}
-                    className={`p-4 rounded-2xl border transition cursor-pointer flex flex-col gap-1 ${
-                      timing === 'later'
+                    className={`p-4 rounded-2xl border transition cursor-pointer flex flex-col gap-1 ${timing === 'later'
                         ? 'border-[#36c0c9] bg-[#ddf7f9]/20'
                         : 'border-[#e2e8f0] bg-white'
-                    }`}
+                      }`}
                   >
                     <span className="font-bold text-xs text-[#0d212c]">Schedule for later</span>
                     <span className="text-[10px] text-[#64748b]">
@@ -1474,13 +1456,12 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                           disabled={!startTime}
                           value={endTime}
                           onChange={(e) => setEndTime(e.target.value)}
-                          className={`w-full px-3 py-2 rounded-xl border bg-white text-xs outline-none focus:border-[#cbd5e1] transition ${
-                            !startTime
+                          className={`w-full px-3 py-2 rounded-xl border bg-white text-xs outline-none focus:border-[#cbd5e1] transition ${!startTime
                               ? 'opacity-40 cursor-not-allowed bg-slate-50 border-[#e2e8f0] text-[#94a3b8]'
                               : isTimeInvalid
                                 ? 'border-red-500 text-red-700 font-semibold cursor-pointer'
                                 : 'border-[#e2e8f0] text-[#0d212c] cursor-pointer font-medium'
-                          }`}
+                            }`}
                         >
                           <option value="">
                             {!startTime ? 'Select start time first' : 'Select end time'}
@@ -1691,9 +1672,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           className={`lg:col-span-4 flex flex-col gap-6 ${currentStep === 3 ? 'h-full' : 'h-auto'}`}
         >
           <div
-            className={`bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-4 text-xs ${
-              currentStep === 3 ? 'h-full justify-between' : 'h-auto justify-start'
-            }`}
+            className={`bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-4 text-xs ${currentStep === 3 ? 'h-full justify-between' : 'h-auto justify-start'
+              }`}
           >
             <span className="font-bold text-[#0d212c]">Call summary</span>
 
@@ -1825,11 +1805,10 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   className="bg-transparent border-0 p-0 shadow-none outline-none flex items-center gap-2.5 text-xs font-bold text-[#0d212c] hover:text-[#0d7280] transition cursor-pointer select-none"
                 >
                   <div
-                    className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
-                      allTestcasesIncluded
+                    className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${allTestcasesIncluded
                         ? 'border-[#36c0c9] bg-[#36c0c9] text-white'
                         : 'border-[#cbd5e1] bg-white'
-                    }`}
+                      }`}
                   >
                     {allTestcasesIncluded && <Check className="w-3 h-3 text-white stroke-[3]" />}
                   </div>
@@ -1850,7 +1829,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
                       Category
                     </span>
-                    <span>Category Type</span>
+                    <span>Category</span>
                   </div>
                 </div>
               </div>
@@ -1870,9 +1849,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   return (
                     <div
                       key={tc.id}
-                      className={`py-5 px-6 transition flex items-start gap-4 ${
-                        isIncluded ? 'bg-white' : 'bg-slate-50/50 opacity-75'
-                      }`}
+                      className={`py-5 px-6 transition flex items-start gap-4 ${isIncluded ? 'bg-white' : 'bg-slate-50/50 opacity-75'
+                        }`}
                     >
                       {/* Left side: Inclusion Checkbox */}
                       <div className="flex items-center shrink-0 pt-0.5" title="Include testcase during assessment">
@@ -1889,15 +1867,14 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                             {tc.code}
                           </span>
                           <span
-                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                              tc.type === 'Problems'
+                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${tc.type === 'Problems'
                                 ? 'bg-amber-50 text-amber-800 border-amber-200'
                                 : tc.type === 'Sensitive Info'
                                   ? 'bg-purple-50 text-purple-800 border-purple-200'
                                   : tc.type === 'Meds Dispensing'
                                     ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                                     : 'bg-blue-50 text-blue-800 border-blue-200'
-                            }`}
+                              }`}
                           >
                             {tc.type}
                           </span>

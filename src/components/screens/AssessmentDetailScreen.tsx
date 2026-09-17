@@ -889,7 +889,6 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-[#0d212c]">Agent Verdict</h3>
-                  <span className="text-[11px] text-[#64748b]">Evaluation Criteria &amp; Verdict Legend</span>
                 </div>
                 <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs w-full flex flex-col gap-5">
                   {isScheduled ? (
@@ -1149,7 +1148,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                     <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
                       Category
                     </span>
-                    <span>Category Type</span>
+                    <span>Type</span>
                   </div>
                 </div>
               </div>
