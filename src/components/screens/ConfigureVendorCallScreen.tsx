@@ -1786,7 +1786,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
                       Category
                     </span>
-                    <span>Category</span>
+                    <span>Type - Accessible Section</span>
                   </div>
                 </div>
               </div>

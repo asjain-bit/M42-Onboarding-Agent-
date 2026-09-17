@@ -1148,7 +1148,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                     <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
                       Category
                     </span>
-                    <span>Type</span>
+                    <span>Type - Accessible Section</span>
                   </div>
                 </div>
               </div>
