@@ -614,14 +614,13 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               </p>
             </div>
 
+            {/* Optional Reason field without asterisk */}
             <div className="flex flex-col gap-1.5 w-full text-left">
-              <label className="text-xs font-semibold text-[#0d212c]">
-                Reason <span className="text-red-500">*</span>
-              </label>
+              <label className="text-xs font-semibold text-[#0d212c]">Reason</label>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Describe the reason for cancelling this meeting..."
+                placeholder="Describe the reason for cancelling this meeting (optional)..."
                 rows={4}
                 className="w-full px-4 py-3 rounded-xl border border-[#cbd5e1] text-xs text-[#0d212c] font-normal outline-none focus:border-slate-400 focus:bg-slate-50/50 bg-white resize-none transition min-h-[110px]"
               />
@@ -630,7 +629,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <div className="flex items-center justify-center gap-3 w-full pt-1">
               <button
                 onClick={() => setShowCancelModal(false)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition hover:bg-slate-50"
               >
                 Keep Assessment
               </button>
@@ -639,8 +638,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   setShowCancelModal(false)
                   setIsMeetingCancelled(true)
                 }}
-                disabled={!cancelReason.trim()}
-                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs hover:bg-red-700"
               >
                 Confirm Cancel
               </button>
@@ -675,50 +673,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
         <div className="w-full max-w-2xl px-6 mt-8 flex flex-col gap-6">
 
-          {/* Meeting Summary Section with Tertiary Text+Icon Buttons on Right Side — ONLY shown for Schedule for later */}
-          {isScheduledLater && (
-            <div className="flex flex-col gap-2 w-full">
-              <h3 className="text-sm font-bold text-[#0d212c]">Meeting summary</h3>
-              <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex flex-col gap-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-[#0d212c]">Scheduled Session Details</span>
-                    {isMeetingCancelled && (
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#fce8e6] text-[#c5221f]">
-                        Cancelled
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-xs text-[#64748b]">
-                    Scheduled Date &amp; Time:{' '}
-                    <strong className={isMeetingCancelled ? 'text-[#64748b] line-through' : 'text-[#0d212c]'}>
-                      {scheduleDate}, {startTime} - {endTime}
-                    </strong>
-                  </span>
-                </div>
 
-                {/* Tertiary text only buttons with icons: Cancel on left, Reschedule on right */}
-                {!isMeetingCancelled && (
-                  <div className="flex items-center gap-4 shrink-0 self-start sm:self-center">
-                    <button
-                      onClick={() => setShowCancelModal(true)}
-                      className="flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 bg-transparent border-0 cursor-pointer p-0 transition"
-                    >
-                      <XCircle className="w-4 h-4 text-rose-600" />
-                      <span>Cancel meeting</span>
-                    </button>
-                    <button
-                      onClick={() => setShowRescheduleModal(true)}
-                      className="flex items-center gap-1.5 text-xs font-bold text-[#0d7280] hover:text-[#09515b] bg-transparent border-0 cursor-pointer p-0 transition"
-                    >
-                      <Calendar className="w-4 h-4 text-[#0d7280]" />
-                      <span>Reschedule meeting</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
 
           <div className="bg-white p-8 rounded-3xl border border-[#e2e8f0] shadow-xs flex flex-col gap-6">
             <div className="flex flex-col gap-2">
@@ -726,9 +681,11 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 <span className="text-[11px] font-extrabold text-[#64748b] uppercase tracking-wider">
                   JOIN LINK
                 </span>
-                <span className="text-[11px] text-[#64748b]">
-                  The call is open now. Share the link and join.
-                </span>
+                {!isScheduledLater && (
+                  <span className="text-[11px] text-[#64748b]">
+                    The call is open now. Share the link and join.
+                  </span>
+                )}
               </div>
 
               <div className="relative flex items-center w-full">
