@@ -24,6 +24,10 @@ import {
   ScreenShare,
   Square,
   Copy,
+  Send,
+  Clipboard,
+  Crop,
+  Image as ImageIcon,
 } from 'lucide-react'
 import { VendorDispatchData } from './ConfigureVendorCallScreen'
 
@@ -135,6 +139,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
 
   // Local device file upload state & ref
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const modalFileInputRef = useRef<HTMLInputElement | null>(null)
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; name: string; size: string; type: string; sender?: string; time: string; tag?: string }[]
   >([
@@ -146,6 +151,144 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
       time: '11:34 AM',
     },
   ])
+
+  // Admin Upload Document 3-Option Modal States
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [uploadModalTab, setUploadModalTab] = useState<'capture' | 'paste' | 'upload'>('capture')
+  const [availableScreens, setAvailableScreens] = useState<
+    { id: string; name: string; size: string; sender: string; time: string; url?: string }[]
+  >([])
+  const [selectedScreenIds, setSelectedScreenIds] = useState<string[]>([])
+
+  const handleCaptureInModal = () => {
+    const snapNum = String(availableScreens.length + 1).padStart(2, '0')
+    const snapName = `EMR_Portal_Capture_${snapNum}.png`
+    const snapTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const snapId = `screen-${Date.now()}`
+    const newScreen = {
+      id: snapId,
+      name: snapName,
+      size: `${Math.floor(Math.random() * 200 + 150)} KB`,
+      sender: yourName.trim() || 'M42 Admin',
+      time: snapTime,
+      url: '/excel_snapshot.png',
+    }
+    setAvailableScreens((prev) => [newScreen, ...prev])
+    setSelectedScreenIds((prev) => [snapId, ...prev])
+    showToastNotification('Selected area captured and added to screens available to agent')
+  }
+
+  const handlePasteImage = (e?: React.ClipboardEvent) => {
+    let fileFound = false
+    if (e && e.clipboardData) {
+      const items = e.clipboardData.items
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const file = items[i].getAsFile()
+          if (file) {
+            fileFound = true
+            const snapNum = String(availableScreens.length + 1).padStart(2, '0')
+            const snapName = file.name && file.name !== 'image.png' ? file.name : `Pasted_Screenshot_${snapNum}.png`
+            const snapTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            const snapId = `screen-${Date.now()}`
+            const fileSizeStr = file.size > 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(file.size / 1024)} KB`
+            const objectUrl = URL.createObjectURL(file)
+            const newScreen = {
+              id: snapId,
+              name: snapName,
+              size: fileSizeStr || '210 KB',
+              sender: yourName.trim() || 'M42 Admin',
+              time: snapTime,
+              url: objectUrl,
+            }
+            setAvailableScreens((prev) => [newScreen, ...prev])
+            setSelectedScreenIds((prev) => [snapId, ...prev])
+            showToastNotification('Screenshot pasted and added to screens available to agent')
+          }
+        }
+      }
+    }
+    if (!fileFound && !e) {
+      const snapNum = String(availableScreens.length + 1).padStart(2, '0')
+      const snapName = `Pasted_Screenshot_${snapNum}.png`
+      const snapTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const snapId = `screen-${Date.now()}`
+      const newScreen = {
+        id: snapId,
+        name: snapName,
+        size: `${Math.floor(Math.random() * 180 + 140)} KB`,
+        sender: yourName.trim() || 'M42 Admin',
+        time: snapTime,
+        url: '/excel_snapshot.png',
+      }
+      setAvailableScreens((prev) => [newScreen, ...prev])
+      setSelectedScreenIds((prev) => [snapId, ...prev])
+      showToastNotification('Screenshot pasted and added to screens available to agent')
+    }
+  }
+
+  const handleModalFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const snapTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const snapId = `screen-${Date.now()}`
+    const fileSizeStr = file.size > 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(file.size / 1024)} KB`
+    const objectUrl = URL.createObjectURL(file)
+    const newScreen = {
+      id: snapId,
+      name: file.name,
+      size: fileSizeStr,
+      sender: yourName.trim() || 'M42 Admin',
+      time: snapTime,
+      url: objectUrl,
+    }
+    setAvailableScreens((prev) => [newScreen, ...prev])
+    setSelectedScreenIds((prev) => [snapId, ...prev])
+    showToastNotification(`Uploaded ${file.name} to screens available to agent`)
+    e.target.value = ''
+  }
+
+  const handleModalFileDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const file = e.dataTransfer.files?.[0]
+    if (!file) return
+    const snapTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const snapId = `screen-${Date.now()}`
+    const fileSizeStr = file.size > 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(file.size / 1024)} KB`
+    const objectUrl = URL.createObjectURL(file)
+    const newScreen = {
+      id: snapId,
+      name: file.name,
+      size: fileSizeStr,
+      sender: yourName.trim() || 'M42 Admin',
+      time: snapTime,
+      url: objectUrl,
+    }
+    setAvailableScreens((prev) => [newScreen, ...prev])
+    setSelectedScreenIds((prev) => [snapId, ...prev])
+    showToastNotification(`Uploaded ${file.name} to screens available to agent`)
+  }
+
+  const handleSendScreensToAgent = () => {
+    if (selectedScreenIds.length === 0) return
+    const selectedScreens = availableScreens.filter((s) => selectedScreenIds.includes(s.id))
+    const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    const newUploads = selectedScreens.map((s) => ({
+      id: `doc-${Date.now()}-${s.id}`,
+      name: s.name,
+      size: s.size,
+      type: 'PNG',
+      tag: 'Comparison',
+      sender: s.sender,
+      time: nowStr,
+    }))
+
+    setUploadedFiles((prev) => [...prev, ...newUploads])
+    setShowUploadModal(false)
+    setShowTranscript(true)
+    showToastNotification(`Sent ${selectedScreens.length} screenshot(s) to agent for comparison`)
+  }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -1236,6 +1379,258 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
         </div>
       )}
 
+      {/* Admin Upload Document 3-Option Modal (Light Theme Design) */}
+      {showUploadModal && (
+        <div className="fixed inset-0 z-[10000] bg-[#0d212c]/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-[#e2e8f0] shadow-2xl p-6 sm:p-7 w-full max-w-lg flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-150 relative my-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-[#e2e8f0]">
+              <div className="flex items-center gap-2.5">
+                <MonitorUp className="w-5 h-5 text-[#0d212c] shrink-0" />
+                <h3 className="text-base font-extrabold text-[#0d212c]">Upload document</h3>
+              </div>
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="p-1.5 rounded-xl text-[#64748b] hover:text-[#0d212c] hover:bg-slate-100 transition cursor-pointer border-0 bg-transparent"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Tabs matching Assessment Detail / Dashboard design language without icons */}
+            <div className="flex items-center gap-6 sm:gap-8 border-b border-[#e2e8f0]">
+              <button
+                type="button"
+                onClick={() => setUploadModalTab('capture')}
+                className={`pb-3 text-xs sm:text-sm font-bold border-b-2 -mb-px cursor-pointer ${
+                  uploadModalTab === 'capture'
+                    ? 'border-[#36c0c9] text-[#36c0c9]'
+                    : 'border-transparent text-[#64748b]'
+                }`}
+              >
+                <span>Capture screen</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setUploadModalTab('paste')}
+                className={`pb-3 text-xs sm:text-sm font-bold border-b-2 -mb-px cursor-pointer ${
+                  uploadModalTab === 'paste'
+                    ? 'border-[#36c0c9] text-[#36c0c9]'
+                    : 'border-transparent text-[#64748b]'
+                }`}
+              >
+                <span>Paste image</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setUploadModalTab('upload')}
+                className={`pb-3 text-xs sm:text-sm font-bold border-b-2 -mb-px cursor-pointer ${
+                  uploadModalTab === 'upload'
+                    ? 'border-[#36c0c9] text-[#36c0c9]'
+                    : 'border-transparent text-[#64748b]'
+                }`}
+              >
+                <span>Upload file</span>
+              </button>
+            </div>
+
+            {/* Strictly Fixed Height Tab Content Panels to keep modal height identical when switching tabs */}
+            <div className="h-[165px] flex flex-col justify-between overflow-hidden">
+              {/* Tab 1: Capture Screen */}
+              {uploadModalTab === 'capture' && (
+                <div className="flex flex-col justify-between h-full gap-2.5 animate-in fade-in duration-150">
+                  <div>
+                    <h4 className="text-sm font-bold text-[#0d212c]">Capture your portal screen</h4>
+                    <p className="text-xs text-[#64748b] mt-0.5">
+                      Open the portal/window/tab you want to share. Capture one frame and send it to the agent.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleCaptureInModal}
+                    className="w-full py-2.5 px-4 rounded-xl bg-[#36c0c9] hover:bg-[#2badb6] text-white font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer border-0 shadow-xs shrink-0"
+                  >
+                    <Camera className="w-4 h-4" />
+                    <span>Capture screen</span>
+                  </button>
+
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-[#64748b] leading-relaxed shrink-0">
+                    <strong>Tip:</strong> Use this to capture your portal/EMR screen — either with the browser capture flow or your OS snipping tool.
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: Paste Image */}
+              {uploadModalTab === 'paste' && (
+                <div className="flex flex-col justify-between h-full gap-2.5 animate-in fade-in duration-150">
+                  <div>
+                    <h4 className="text-sm font-bold text-[#0d212c]">Paste a screenshot</h4>
+                    <p className="text-xs text-[#64748b] mt-0.5">
+                      Take a screenshot with your OS tool, copy it to your clipboard, then paste it here.
+                    </p>
+                  </div>
+
+                  <div
+                    tabIndex={0}
+                    onClick={() => handlePasteImage()}
+                    onPaste={handlePasteImage}
+                    className="flex-1 border-2 border-dashed border-[#cbd5e1] hover:border-[#36c0c9] bg-[#f8fafc] rounded-2xl p-3 text-center flex flex-col items-center justify-center gap-2 cursor-pointer transition outline-none focus:border-[#36c0c9] group"
+                  >
+                    <Clipboard className="w-5 h-5 text-[#64748b] group-hover:text-[#36c0c9] transition" />
+                    <p className="text-xs text-[#64748b]">
+                      Click here, then paste <strong className="text-[#0d212c]">Ctrl + V</strong> or press <strong className="text-[#0d212c]">⌘ + V</strong>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 3: Upload File */}
+              {uploadModalTab === 'upload' && (
+                <div className="flex flex-col justify-between h-full gap-2.5 animate-in fade-in duration-150">
+                  <div>
+                    <h4 className="text-sm font-bold text-[#0d212c]">Upload an image file</h4>
+                    <p className="text-xs text-[#64748b] mt-0.5">
+                      Select or drop an image from your local device storage.
+                    </p>
+                  </div>
+
+                  <input
+                    ref={modalFileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/jpg"
+                    className="hidden"
+                    onChange={handleModalFileUpload}
+                  />
+
+                  <div
+                    onClick={() => modalFileInputRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }}
+                    onDrop={handleModalFileDrop}
+                    className="flex-1 border-2 border-dashed border-[#cbd5e1] hover:border-[#36c0c9] bg-[#f8fafc] rounded-2xl p-3 text-center flex flex-col items-center justify-center gap-1.5 cursor-pointer transition group"
+                  >
+                    <MonitorUp className="w-5 h-5 text-[#64748b] group-hover:text-[#36c0c9] transition" />
+                    <p className="text-xs text-[#64748b]">
+                      <strong className="text-[#0d212c]">Drag &amp; drop an image here</strong> or click to browse files
+                    </p>
+                    <span className="text-[10px] text-[#94a3b8]">
+                      Supported formats: PNG, JPG, JPEG · Maximum file size: 10 MB
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Divider: RECENT UPLOADS */}
+            <div className="relative flex py-1.5 items-center">
+              <div className="flex-grow border-t border-[#e2e8f0]" />
+              <span className="flex-shrink mx-3 text-[10px] font-extrabold tracking-widest text-[#94a3b8] uppercase">
+                RECENT UPLOADS
+              </span>
+              <div className="flex-grow border-t border-[#e2e8f0]" />
+            </div>
+
+            {/* Screens available to agent */}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold text-[#0d212c]">Screens available to agent</span>
+                {availableScreens.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAvailableScreens([])
+                      setSelectedScreenIds([])
+                    }}
+                    className="text-xs font-bold text-[#36c0c9] hover:text-[#0d7280] bg-transparent border-0 cursor-pointer p-0"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+
+              {availableScreens.length === 0 ? (
+                <div className="flex flex-col items-center justify-center text-center py-7 px-4 rounded-2xl bg-[#f8fafc] border border-dashed border-[#e2e8f0] gap-2.5">
+                  <ImageIcon className="w-7 h-7 text-[#94a3b8]" />
+                  <div className="flex flex-col gap-0.5">
+                    <h5 className="text-xs font-bold text-[#0d212c]">No uploads yet</h5>
+                    <p className="text-[11px] text-[#64748b] max-w-xs leading-relaxed">
+                      Upload file or capture a screenshot and send it to the agent for comparison.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3 max-h-44 overflow-y-auto subtle-scrollbar p-0.5">
+                  {availableScreens.map((screen) => {
+                    const isSelected = selectedScreenIds.includes(screen.id)
+                    return (
+                      <div
+                        key={screen.id}
+                        onClick={() => {
+                          setSelectedScreenIds((prev) =>
+                            prev.includes(screen.id)
+                              ? prev.filter((id) => id !== screen.id)
+                              : [...prev, screen.id]
+                          )
+                        }}
+                        className="rounded-2xl border border-[#e2e8f0] bg-white hover:border-[#cbd5e1] transition cursor-pointer p-2 flex flex-col gap-1.5 relative shadow-xs"
+                      >
+                        <div className="relative rounded-xl overflow-hidden border border-[#e2e8f0] bg-slate-100 h-20">
+                          <img
+                            src={screen.url || '/excel_snapshot.png'}
+                            alt={screen.name}
+                            className="w-full h-full object-cover"
+                          />
+                          <div
+                            className={`absolute top-1.5 right-1.5 w-4.5 h-4.5 rounded-full flex items-center justify-center text-white text-[10px] font-bold ${
+                              isSelected ? 'bg-[#36c0c9] shadow-xs' : 'bg-black/30'
+                            }`}
+                          >
+                            {isSelected && <Check className="w-3 h-3 text-white" />}
+                          </div>
+                        </div>
+                        <div className="flex flex-col px-0.5">
+                          <span className="text-xs font-bold text-[#0d212c] truncate" title={screen.name}>
+                            {screen.name}
+                          </span>
+                          <span className="text-[10px] text-[#64748b]">
+                            {screen.size} · {screen.sender}
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Bottom Actions - only rendered when availableScreens > 0 */}
+            {availableScreens.length > 0 && (
+              <div className="flex flex-col gap-2 pt-2 border-t border-[#e2e8f0]">
+                <button
+                  type="button"
+                  disabled={selectedScreenIds.length === 0}
+                  onClick={handleSendScreensToAgent}
+                  className="w-full py-3 px-4 rounded-2xl bg-[#36c0c9] hover:bg-[#2badb6] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer border-0 shadow-md"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Send to agent for comparison</span>
+                </button>
+
+                <p className="text-xs text-[#64748b] text-left leading-relaxed">
+                  Agent will receive the selected {selectedScreenIds.length > 1 ? `${selectedScreenIds.length} images` : 'image'} and compare it against the captured EMR frame.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Persistent Snapshot Previews — Left side of screen, stacked with newest on top */}
       {capturedSnapshots.length > 0 && (
         <div className="fixed left-4 bottom-20 z-50 flex flex-col gap-1.5 items-start">
@@ -1651,9 +2046,20 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
           <button
             id="callroom-upload-btn"
             disabled={!assessmentStarted}
-            onClick={() => assessmentStarted && fileInputRef.current?.click()}
+            onClick={() => {
+              if (!assessmentStarted) return
+              if (userRole === 'admin') {
+                setShowUploadModal(true)
+              } else {
+                fileInputRef.current?.click()
+              }
+            }}
             title={assessmentStarted ? 'Upload document' : 'Available after assessment starts'}
-            className={`w-10 h-10 rounded-full flex items-center justify-center border-0 shadow-sm transition ${assessmentStarted ? 'bg-[#f1f5f9] text-[#334155] hover:bg-[#e2e8f0] cursor-pointer' : 'bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed opacity-50'}`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center border-0 shadow-sm transition ${
+              assessmentStarted
+                ? 'bg-[#f1f5f9] text-[#334155] hover:bg-[#e2e8f0] cursor-pointer'
+                : 'bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed opacity-50'
+            }`}
           >
             <MonitorUp className="w-4 h-4" />
           </button>
