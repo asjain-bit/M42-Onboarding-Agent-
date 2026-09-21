@@ -1260,6 +1260,12 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
             </div>
             <div className="flex items-center gap-3 w-full mt-2">
               <button
+                onClick={() => setShowLeaveConfirm(false)}
+                className="flex-1 bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#0d212c] font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0"
+              >
+                Stay in call
+              </button>
+              <button
                 onClick={() => {
                   setShowLeaveConfirm(false)
                   setRoomState('left')
@@ -1267,12 +1273,6 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0 shadow-2xs"
               >
                 Leave call
-              </button>
-              <button
-                onClick={() => setShowLeaveConfirm(false)}
-                className="flex-1 bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#0d212c] font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0"
-              >
-                Stay in call
               </button>
             </div>
           </div>
@@ -1307,6 +1307,12 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
             </div>
             <div className="flex items-center gap-3 w-full mt-2">
               <button
+                onClick={() => setShowFinaliseConfirm(false)}
+                className="flex-1 bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#0d212c] font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0"
+              >
+                Cancel
+              </button>
+              <button
                 onClick={() => {
                   setShowFinaliseConfirm(false)
                   setRoomState('finalised')
@@ -1314,12 +1320,6 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 className="flex-1 bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0 shadow-2xs"
               >
                 End & Finalise
-              </button>
-              <button
-                onClick={() => setShowFinaliseConfirm(false)}
-                className="flex-1 bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#0d212c] font-bold text-xs py-3 rounded-xl transition cursor-pointer border-0"
-              >
-                Cancel
               </button>
             </div>
           </div>
@@ -2138,7 +2138,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
       </div>
 
       {/* ── BOTTOM TOOLBAR ───────────────────────────────────────────────────────── */}
-      <div className="bg-white border-t border-[#e2e8f0] flex items-center justify-center gap-3 shrink-0 shadow-sm px-6 py-3 overflow-x-auto">
+      <div className="bg-white border-t border-[#e2e8f0] flex items-center justify-center gap-3 shrink-0 shadow-sm px-6 py-3 relative">
         {/* Mute — always active */}
         <div className="flex flex-col items-center gap-0.5">
           <button
@@ -2209,7 +2209,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
             <ScreenShare className="w-4 h-4" />
           </button>
           <span className="text-[9px] text-[#94a3b8] font-medium">
-            {isScreenSharing ? 'Sharing' : 'Screen Share'}
+            {isScreenSharing ? 'Sharing' : 'Share Screen'}
           </span>
           {!assessmentStarted && (
             <div className="pointer-events-none absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#0d212c] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-50">
@@ -2263,7 +2263,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
               id="callroom-hold-btn"
               onClick={handleHoldToggle}
               disabled={!assessmentStarted}
-              title={agentOnHold ? 'Resume Sam' : 'Hold Agent'}
+              title={agentOnHold ? 'Resume Agent' : 'Hold Agent'}
               className={`w-10 h-10 rounded-full flex items-center justify-center border-0 shadow-sm transition ${!assessmentStarted ? 'bg-[#f1f5f9] text-[#cbd5e1] cursor-not-allowed opacity-50' : agentOnHold ? 'bg-[#ddf7f9] text-[#36c0c9] hover:bg-[#b2eff4] cursor-pointer' : 'bg-[#f1f5f9] text-[#334155] hover:bg-[#e2e8f0] cursor-pointer'}`}
             >
               {agentOnHold ? (
@@ -2278,10 +2278,10 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
               <div className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 bg-white border border-[#e2e8f0] shadow-xl rounded-xl px-3.5 py-2.5 w-56 z-50 animate-in fade-in zoom-in-95 duration-200">
                 <div className="flex items-center gap-1.5 mb-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-pulse inline-block" />
-                  <p className="text-xs font-extrabold text-[#0d212c]">Resume Sam</p>
+                  <p className="text-xs font-extrabold text-[#0d212c]">Resume Agent</p>
                 </div>
                 <p className="text-[10px] text-[#64748b] leading-relaxed">
-                  Sam is paused and stopped from speaking. Press to resume.
+                  Agent is paused and stopped from speaking. Press to resume.
                 </p>
                 <div className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-white border-r border-b border-[#e2e8f0] rotate-45" />
               </div>
@@ -2294,7 +2294,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
             )}
           </div>
           <span className="text-[9px] text-[#94a3b8] font-medium">
-            {agentOnHold ? 'Resume Sam' : 'Hold Agent'}
+            {agentOnHold ? 'Resume Agent' : 'Hold Agent'}
           </span>
         </div>
 

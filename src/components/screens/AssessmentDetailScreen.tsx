@@ -74,7 +74,7 @@ interface TestcaseItem {
   type: string
   expectedBehaviour: string
   agentComment: string
-  status: 'Pass' | 'Fail' | 'Blocked' | 'Scheduled' | 'Not Applicable' | 'N/A'
+  status: 'Pass' | 'Fail' | 'Blocked' | 'Scheduled for Later' | 'Not Applicable'
   snapshots: SnapshotFile[]
 }
 
@@ -90,9 +90,11 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   const [expandedSnapshots, setExpandedSnapshots] = useState<Record<number, boolean>>({})
   const [testCasePage, setTestCasePage] = useState(1)
 
-  // Testcase Search & Status Filter (All, Passed, Failed)
+  // Testcase Search & Status Filter (All, Passed, Failed, Blocked, Scheduled for Later, Not Applicable)
   const [testcaseSearchTerm, setTestcaseSearchTerm] = useState('')
-  const [testcaseStatusFilter, setTestcaseStatusFilter] = useState<'all' | 'Pass' | 'Fail'>('all')
+  const [testcaseStatusFilter, setTestcaseStatusFilter] = useState<
+    'all' | 'Pass' | 'Fail' | 'Blocked' | 'Scheduled for Later' | 'Not Applicable'
+  >('all')
 
   const [currentStatus, setCurrentStatus] = useState<
     'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready' | 'cancelled'
@@ -444,8 +446,8 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       expectedBehaviour:
         'Enterprise SSO provider integration, mandatory MFA enforcement, and RBAC least privilege required.',
       agentComment:
-        'RBAC permissions verified, but mandatory MFA enforcement flag was found disabled in identity profile.',
-      status: 'Fail',
+        'Access to identity configuration locked due to missing third-party provider credentials.',
+      status: 'Blocked',
       snapshots: [
         { title: 'Before Snapshot', filename: 'iam_policy_audit_start.png', size: '124 KB', tag: 'Before' },
         { title: 'After Snapshot', filename: 'iam_mfa_missing.png', size: '168 KB', tag: 'After' },
@@ -464,8 +466,8 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       expectedBehaviour:
         'Documented IR playbook with customer breach notification SLA within 72 hours.',
       agentComment:
-        'Dedicated 24/7 SecOps playbook and 72-hour breach notification SLA verified.',
-      status: 'Pass',
+        'Evaluation deferred to Round 2 vendor walkthrough session upon secondary review.',
+      status: 'Scheduled for Later',
       snapshots: [
         { title: 'Before Snapshot', filename: 'ir_playbook_scan.png', size: '148 KB', tag: 'Before' },
         { title: 'After Snapshot', filename: 'ir_sla_verified.png', size: '190 KB', tag: 'After' },
@@ -484,8 +486,8 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       expectedBehaviour:
         'Recent (< 12 months) SOC 2 Type II report or external penetration test summary required.',
       agentComment:
-        'No valid SOC 2 Type II report or external pen-test executive summary attached within 12-month window.',
-      status: 'Fail',
+        'Vendor operates exclusively in self-hosted on-premise mode; cloud SOC 2 controls not applicable.',
+      status: 'Not Applicable',
       snapshots: [
         { title: 'Before Snapshot', filename: 'audit_vault_lookup.png', size: '130 KB', tag: 'Before' },
         { title: 'After Snapshot', filename: 'audit_report_missing.png', size: '162 KB', tag: 'After' },
@@ -536,8 +538,8 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   const passedCount = testcases.filter((q) => q.status === 'Pass').length
   const failedCount = testcases.filter((q) => q.status === 'Fail').length
   const blockedCount = testcases.filter((q) => q.status === 'Blocked').length
-  const scheduledCount = testcases.filter((q) => q.status === 'Scheduled').length
-  const naCount = testcases.filter((q) => q.status === 'N/A' || q.status === 'Not Applicable').length
+  const scheduledForLaterCount = testcases.filter((q) => q.status === 'Scheduled for Later').length
+  const notApplicableCount = testcases.filter((q) => q.status === 'Not Applicable').length
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-[#0d212c] pb-16 font-sans w-full">
@@ -1058,7 +1060,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                 <p className="text-xs text-[#64748b] leading-relaxed">
                   {isScheduled
                     ? 'No summary generated yet. The meeting has not been started.'
-                    : `Assessment evaluation completed across ${testcases.length} testcases: ${passedCount} passed, ${failedCount} failed, ${blockedCount} blocked, ${scheduledCount} scheduled, ${naCount} not applicable.`}
+                    : `Assessment evaluation completed across ${testcases.length} testcases: ${passedCount} passed, ${failedCount} failed, ${blockedCount} blocked, ${scheduledForLaterCount} scheduled for later, ${notApplicableCount} not applicable.`}
                 </p>
               </div>
             </div>
@@ -1107,19 +1109,26 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                 </div>
               </div>
 
-              {/* Sorting Chips: All, Passed, Failed & Chips Legend */}
+              {/* Sorting Chips: All, Passed, Failed, Blocked, Scheduled for Later, Not Applicable & Chips Legend */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   {[
                     { key: 'all', label: 'All', count: testcases.length },
                     { key: 'Pass', label: 'Passed', count: passedCount },
                     { key: 'Fail', label: 'Failed', count: failedCount },
+                    { key: 'Blocked', label: 'Blocked', count: blockedCount },
+                    { key: 'Scheduled for Later', label: 'Scheduled for Later', count: scheduledForLaterCount },
+                    { key: 'Not Applicable', label: 'Not Applicable', count: notApplicableCount },
                   ].map((chip) => {
                     const isSelected = testcaseStatusFilter === chip.key
                     return (
                       <button
                         key={chip.key}
-                        onClick={() => setTestcaseStatusFilter(chip.key as 'all' | 'Pass' | 'Fail')}
+                        onClick={() =>
+                          setTestcaseStatusFilter(
+                            chip.key as 'all' | 'Pass' | 'Fail' | 'Blocked' | 'Scheduled for Later' | 'Not Applicable'
+                          )
+                        }
                         className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
                           isSelected
                             ? 'bg-[#36c0c9] text-white font-bold shadow-2xs border border-[#36c0c9]'
@@ -1140,7 +1149,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                 </div>
 
                 {/* Chips Legend */}
-                <div className="flex items-center gap-3 text-[11px] text-[#64748b] bg-white px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] shadow-2xs self-start sm:self-auto">
+                <div className="flex items-center gap-3 text-[11px] text-[#64748b] bg-white px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] shadow-2xs self-start sm:self-auto shrink-0">
                   <span className="font-bold text-[#0d212c]">Legend:</span>
                   <div className="flex items-center gap-1.5">
                     <span className="font-extrabold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
@@ -1215,12 +1224,18 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                           {!isScheduled && (
                             <span
                               className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center shrink-0 ${
-                                isPass
+                                q.status === 'Pass'
                                   ? 'bg-[#e6f4ea] text-[#137333] border border-[#ceedd5]'
-                                  : 'bg-[#fce8e6] text-[#c5221f] border border-[#f8c4b8]'
+                                  : q.status === 'Fail'
+                                    ? 'bg-[#fce8e6] text-[#c5221f] border border-[#f8c4b8]'
+                                    : q.status === 'Blocked'
+                                      ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                      : q.status === 'Scheduled for Later'
+                                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                        : 'bg-slate-100 text-[#64748b] border border-slate-200'
                               }`}
                             >
-                              {isPass ? 'Pass' : 'Fail'}
+                              {q.status}
                             </span>
                           )}
                         </div>
@@ -1240,13 +1255,13 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
                         {!isScheduled && <div className="border-b border-[#e2e8f0]/60 my-0.5" />}
 
-                        {/* AGENT COMMENT */}
+                        {/* COMMENT */}
                         {!isScheduled && (
                           <div className="flex items-start gap-3">
-                            <Bot className="w-5 h-5 text-[#36c0c9] shrink-0 stroke-[2.2] mt-0.5" />
+                            <MessageSquare className="w-5 h-5 text-[#36c0c9] shrink-0 stroke-[2.2] mt-0.5" />
                             <div className="flex flex-col gap-1 min-w-0">
                               <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748b]">
-                                AGENT COMMENT
+                                COMMENT
                               </span>
                               <p className="text-xs text-[#0d212c] font-normal leading-relaxed">
                                 {q.agentComment}

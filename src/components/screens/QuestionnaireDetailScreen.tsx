@@ -477,7 +477,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             {isEditing ? (
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Testcase name
+                  Workflow
                 </label>
                 <input
                   type="text"
@@ -493,10 +493,10 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               </p>
             )}
 
-            {/* Evaluation Criteria / Cues Block */}
+            {/* Expected behaviour Block */}
             <div className="bg-[#f8fafc] border border-[#e2e8f0] p-4 rounded-xl flex flex-col gap-1.5">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#64748b]">
-                Evaluation Criteria / Required Evidence
+                Expected behaviour
               </span>
               {isEditing ? (
                 <textarea
@@ -561,7 +561,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
 
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Testcase name <span className="text-red-500 font-bold">*</span>
+                  Workflow <span className="text-red-500 font-bold">*</span>
                 </label>
                 <input
                   type="text"
@@ -575,7 +575,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
 
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Evaluation criteria <span className="text-red-500 font-bold">*</span>
+                  Expected behaviour <span className="text-red-500 font-bold">*</span>
                 </label>
                 <textarea
                   placeholder="Instructions or cues for the facility to answer effectively..."
