@@ -1,7 +1,17 @@
 'use client'
 
 import React, { useState } from 'react'
-import { GripVertical, Trash2, ArrowLeft, Check, Pencil, Plus, X, AlertTriangle } from 'lucide-react'
+import {
+  GripVertical,
+  Trash2,
+  ArrowLeft,
+  Check,
+  Pencil,
+  Plus,
+  X,
+  AlertTriangle,
+  Layers,
+} from 'lucide-react'
 import { Checkbox } from '@/components/atoms/Checkbox'
 
 export interface QuestionItem {
@@ -53,7 +63,8 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
   const [newAttachmentRequired, setNewAttachmentRequired] = useState(false)
 
   // Questions list
-  const [questions, setQuestions] = useState<QuestionItem[]>([
+  const [questions, setQuestions] = useState<QuestionItem[]>(
+    questionnaire.title.includes('PPR') ? [] : [
     {
       id: 1,
       question:
@@ -208,6 +219,10 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
 
   const handleSaveOrEdit = () => {
     if (isEditing) {
+      if (questions.length === 0) {
+        showToast('At least 1 testcase must be added before saving.')
+        return
+      }
       setIsEditing(false)
       showToast('Dataset changes saved successfully.')
     } else {
@@ -216,6 +231,10 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
   }
 
   const handlePublish = () => {
+    if (questions.length === 0) {
+      showToast('At least 1 testcase must be added before publishing.')
+      return
+    }
     setStatus('Ready')
     setIsEditing(false)
     showToast('Dataset published successfully!')
@@ -286,7 +305,8 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 </button>
                 <button
                   onClick={handlePublish}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0"
+                  disabled={questions.length === 0}
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Publish dataset
                 </button>
@@ -302,7 +322,8 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 </button>
                 <button
                   onClick={handlePublish}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0"
+                  disabled={questions.length === 0}
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Publish dataset
                 </button>
@@ -319,7 +340,8 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               </button>
               <button
                 onClick={handleSaveOrEdit}
-                className="bg-[#36c0c9] hover:bg-[#2eb0b9] text-white font-bold px-6 py-2 rounded-xl text-xs cursor-pointer shadow-xs border-0 transition"
+                disabled={questions.length === 0}
+                className="bg-[#36c0c9] hover:bg-[#2eb0b9] text-white font-bold px-6 py-2 rounded-xl text-xs cursor-pointer shadow-xs border-0 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save
               </button>
@@ -338,51 +360,76 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
 
       {/* Testcases List */}
       <div className="w-full px-6 lg:px-10 mt-6 flex flex-col gap-5">
-        {/* Top Controls: Select All Action & Chips Legend */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
-          <button
-            type="button"
-            onClick={handleToggleSelectAll}
-            disabled={!isEditing}
-            className="bg-transparent border-0 p-0 shadow-none outline-none flex items-center gap-2.5 text-xs font-bold text-[#0d212c] hover:text-[#0d7280] transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 select-none"
-          >
-            <div
-              className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
-                allIncluded
-                  ? 'border-[#36c0c9] bg-[#36c0c9] text-white'
-                  : 'border-[#cbd5e1] bg-white'
-              }`}
+        {questions.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-dashed border-[#cbd5e1] p-12 flex flex-col items-center justify-center text-center my-4">
+            <div className="w-14 h-14 rounded-2xl bg-slate-50 text-[#64748b] flex items-center justify-center border border-slate-200 mb-4 shadow-2xs">
+              <Layers className="w-7 h-7 text-[#64748b]" />
+            </div>
+            <h3 className="text-base font-extrabold text-[#0d212c] mb-1.5">
+              No testcases in this dataset
+            </h3>
+            <p className="text-xs text-[#64748b] max-w-md mb-6 leading-relaxed">
+              Add at least one test case to perform any action or publish the dataset.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setIsEditing(true)
+                setShowAddQuestionModal(true)
+              }}
+              className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-xs transition cursor-pointer border-0"
             >
-              {allIncluded && <Check className="w-3 h-3 text-white stroke-[3]" />}
-            </div>
-            <span>Select all testcase during assessment</span>
-          </button>
-
-          {/* Chips Legend */}
-          <div className="flex items-center gap-3 text-[11px] text-[#64748b] bg-white px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] shadow-2xs self-start sm:self-auto">
-            <span className="font-bold text-[#0d212c]">Legend:</span>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
-                TC-01
-              </span>
-              <span>Message Type</span>
-            </div>
-            <span className="text-[#cbd5e1]">|</span>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
-                Category
-              </span>
-              <span>Type - Accessible Section</span>
-            </div>
+              <Plus className="w-4 h-4 text-white" />
+              <span>Add testcase</span>
+            </button>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Top Controls: Select All Action & Chips Legend */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
+              <button
+                type="button"
+                onClick={handleToggleSelectAll}
+                disabled={!isEditing}
+                className="bg-transparent border-0 p-0 shadow-none outline-none flex items-center gap-2.5 text-xs font-bold text-[#0d212c] hover:text-[#0d7280] transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 select-none"
+              >
+                <div
+                  className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
+                    allIncluded
+                      ? 'border-[#36c0c9] bg-[#36c0c9] text-white'
+                      : 'border-[#cbd5e1] bg-white'
+                  }`}
+                >
+                  {allIncluded && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                </div>
+                <span>Select all testcase during assessment</span>
+              </button>
 
-        {questions.map((q, idx) => (
-          <div
-            key={q.id}
-            draggable={isEditing}
-            onDragStart={(e) => handleDragStart(e, idx)}
-            onDragOver={(e) => handleDragOver(e, idx)}
+              {/* Chips Legend */}
+              <div className="flex items-center gap-3 text-[11px] text-[#64748b] bg-white px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] shadow-2xs self-start sm:self-auto">
+                <span className="font-bold text-[#0d212c]">Legend:</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-extrabold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
+                    TC-01
+                  </span>
+                  <span>Message Type</span>
+                </div>
+                <span className="text-[#cbd5e1]">|</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
+                    Category
+                  </span>
+                  <span>Type - Accessible Section</span>
+                </div>
+              </div>
+            </div>
+
+            {questions.map((q, idx) => (
+              <div
+                key={q.id}
+                draggable={isEditing}
+                onDragStart={(e) => handleDragStart(e, idx)}
+                onDragOver={(e) => handleDragOver(e, idx)}
             onDragEnd={handleDragEnd}
             className={`bg-white p-6 rounded-2xl border transition flex flex-col gap-4 ${
               draggedIndex === idx
@@ -514,6 +561,8 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             </div>
           </div>
         ))}
+          </>
+        )}
       </div>
 
       {/* Add New Testcase Modal Popup */}

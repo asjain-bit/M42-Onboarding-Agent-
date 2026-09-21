@@ -1210,7 +1210,10 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                         type="text"
                         placeholder="Type facility name & press Enter..."
                         value={findSearchQuery}
-                        onChange={(e) => setFindSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                          setFindSearchQuery(e.target.value)
+                          setSelectedSearchResult(null)
+                        }}
                         onKeyDown={handleFindVendorSearchKeyDown}
                         className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-[#e2e8f0] text-xs text-[#0d212c] outline-none focus:border-[#cbd5e1]"
                       />
@@ -1426,7 +1429,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                       type="button"
                       disabled={
                         isAddingVendor ||
-                        (!findSearchQuery.trim() && !selectedSearchResult) ||
+                        !selectedSearchResult ||
                         findRecipients.length > 5
                       }
                       onClick={handleAddVendorFromFind}
