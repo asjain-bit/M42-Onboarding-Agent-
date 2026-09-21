@@ -824,7 +824,8 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                 </button>
                 <button
                   onClick={() => setShowDatasetPreviewModal(false)}
-                  className="px-6 py-2.5 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0"
+                  disabled={includedCount === 0}
+                  className="px-6 py-2.5 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Save &amp; Apply Selection
                 </button>
