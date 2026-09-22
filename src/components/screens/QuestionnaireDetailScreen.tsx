@@ -140,6 +140,9 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
     }
   }
 
+  const hasEmptyMandatoryFields = questions.some(q => !q.question.trim() || !q.responseCue.trim())
+
+
   // Select All Testcases state & handler
   const allIncluded =
     questions.length > 0 && questions.every((q) => q.includedInAssessment !== false)
@@ -305,7 +308,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 </button>
                 <button
                   onClick={handlePublish}
-                  disabled={questions.length === 0}
+                  disabled={questions.length === 0 || hasEmptyMandatoryFields}
                   className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Publish dataset
@@ -322,7 +325,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 </button>
                 <button
                   onClick={handlePublish}
-                  disabled={questions.length === 0}
+                  disabled={questions.length === 0 || hasEmptyMandatoryFields}
                   className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Publish dataset
@@ -340,7 +343,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               </button>
               <button
                 onClick={handleSaveOrEdit}
-                disabled={questions.length === 0}
+                disabled={questions.length === 0 || hasEmptyMandatoryFields}
                 className="bg-[#36c0c9] hover:bg-[#2eb0b9] text-white font-bold px-6 py-2 rounded-xl text-xs cursor-pointer shadow-xs border-0 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save
@@ -524,7 +527,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             {isEditing ? (
               <div>
                 <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Workflow
+                  Workflow <span className="text-red-500 font-bold">*</span>
                 </label>
                 <input
                   type="text"
@@ -543,7 +546,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             {/* Expected behaviour Block */}
             <div className="bg-[#f8fafc] border border-[#e2e8f0] p-4 rounded-xl flex flex-col gap-1.5">
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#64748b]">
-                Expected behaviour
+                Expected behaviour <span className="text-red-500 font-bold text-xs">*</span>
               </span>
               {isEditing ? (
                 <textarea
