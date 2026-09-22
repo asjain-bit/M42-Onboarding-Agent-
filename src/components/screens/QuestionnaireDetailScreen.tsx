@@ -533,7 +533,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   type="text"
                   value={q.question}
                   onChange={(e) => handleQuestionChange(q.id, 'question', e.target.value)}
-                  className="w-full text-xs font-medium text-[#0d212c] bg-white border border-[#cbd5e1] rounded-xl px-4 py-2.5 outline-none focus:border-[#36c0c9] transition"
+                  className="w-full text-xs font-medium text-[#0d212c] bg-white border border-[#cbd5e1] rounded-xl px-4 py-2.5 outline-none focus:border-[#cbd5e1] transition"
                   placeholder="Enter testcase description..."
                 />
               </div>
@@ -553,7 +553,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   value={q.responseCue}
                   onChange={(e) => handleQuestionChange(q.id, 'responseCue', e.target.value)}
                   rows={2}
-                  className="w-full text-xs text-[#0d212c] bg-white border border-[#cbd5e1] rounded-lg p-2.5 outline-none focus:border-[#36c0c9] transition resize-y font-normal"
+                  className="w-full text-xs text-[#0d212c] bg-white border border-[#cbd5e1] rounded-lg p-2.5 outline-none focus:border-[#cbd5e1] transition resize-y font-normal"
                   placeholder="Describe the expected criteria or proof points..."
                 />
               ) : (
@@ -593,7 +593,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   value={newMessageType}
                   onChange={(e) => setNewMessageType(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#36c0c9] transition"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#cbd5e1] transition"
                 />
               </div>
 
@@ -607,7 +607,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   value={newCategoryType}
                   onChange={(e) => setNewCategoryType(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#36c0c9] transition"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#cbd5e1] transition"
                 />
               </div>
 
@@ -621,7 +621,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   value={newQuestionText}
                   onChange={(e) => setNewQuestionText(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#36c0c9] transition"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#cbd5e1] transition"
                 />
               </div>
 
@@ -635,7 +635,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   onChange={(e) => setNewResponseCue(e.target.value)}
                   required
                   rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white resize-y focus:border-[#36c0c9] transition"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white resize-y focus:border-[#cbd5e1] transition"
                 />
               </div>
 
