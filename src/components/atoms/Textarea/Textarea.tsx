@@ -13,7 +13,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         className={[
           'w-full rounded-xl border bg-white px-3.5 py-2.5 text-xs text-[#0d212c] transition-all outline-none resize-y',
           'placeholder:text-[#94a3b8]',
-          'focus:border-[#cbd5e1] focus:ring-1 focus:ring-[#cbd5e1]',
+          'focus:border-[#e2e8f0]',
           error
             ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
             : 'border-[#e2e8f0]',
