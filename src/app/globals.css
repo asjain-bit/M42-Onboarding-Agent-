@@ -1,11 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 @import 'tailwindcss';
 @import '../styles/tokens/primitives.css';
 @import '../styles/tokens/light.css';
 @import '../styles/tokens/dark.css';
 @import '../styles/tokens/brand.css';
 
+:root {
+  --font-sans: 'Poppins', sans-serif;
+  --font-serif: 'Fraunces', Georgia, serif;
+}
+
 @theme {
-  --font-sans: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Poppins', sans-serif;
   --font-serif: 'Fraunces', Georgia, serif;
 
   --color-bg-default: var(--bg-default);
@@ -75,7 +81,7 @@
 }
 
 body {
-  font-family: var(--font-sans, 'Poppins', system-ui, sans-serif);
+  font-family: 'Poppins', sans-serif !important;
   background-color: var(--bg-default);
   color: var(--text-primary);
   min-height: 100vh;
