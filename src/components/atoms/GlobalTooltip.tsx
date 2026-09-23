@@ -140,7 +140,7 @@ export const GlobalTooltip: React.FC = () => {
             : 'translate(-50%, 0%)',
       }}
     >
-      <div className="bg-[#0d212c] text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-xl border border-white/10 max-w-xs sm:max-w-sm text-center leading-snug whitespace-normal break-words animate-in fade-in zoom-in-95 duration-100">
+      <div className="bg-[#0d212c] text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-xl border border-white/10 max-w-xs sm:max-w-sm text-center leading-snug whitespace-normal break-words animate-in fade-in zoom-in-95 duration-100">
         {tooltip.text}
       </div>
     </div>

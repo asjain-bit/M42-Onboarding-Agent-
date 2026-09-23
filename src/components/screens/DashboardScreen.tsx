@@ -302,7 +302,7 @@ export const DashboardScreen: React.FC = () => {
       <div className="text-xs font-semibold text-[#64748b] flex items-center gap-1.5">
         <span>M42 admin</span>
         <span>/</span>
-        <span className="text-[#36c0c9] font-bold">Dashboard</span>
+        <span className="text-[#36c0c9] font-semibold">Dashboard</span>
       </div>
 
       {/* KPI Cards */}
@@ -312,25 +312,25 @@ export const DashboardScreen: React.FC = () => {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <Users className="w-5 h-5 text-[#0d212c] shrink-0" />
-              <h3 className="font-bold text-xs sm:text-sm text-[#0d212c] truncate">
+              <h3 className="font-semibold text-xs sm:text-sm text-[#0d212c] truncate">
                 Facilities by Pass Rate
               </h3>
             </div>
-            <div className="text-2xl font-extrabold text-[#36c0c9] shrink-0">20</div>
+            <div className="text-2xl font-bold text-[#36c0c9] shrink-0">20</div>
           </div>
 
           <div className="grid grid-cols-3 divide-x divide-[#e2e8f0] pt-3 border-t border-[#e2e8f0]">
             <div className="flex flex-col gap-0.5 pr-2">
-              <span className="text-lg font-bold text-[#137333]">8</span>
-              <span className="text-[11px] text-[#64748b] font-medium">High (80-100%)</span>
+              <span className="text-lg font-semibold text-[#137333]">8</span>
+              <span className="text-[11px] text-[#64748b] font-normal">High (80-100%)</span>
             </div>
             <div className="flex flex-col gap-0.5 px-3">
-              <span className="text-lg font-bold text-[#b45309]">7</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Medium (60-79%)</span>
+              <span className="text-lg font-semibold text-[#b45309]">7</span>
+              <span className="text-[11px] text-[#64748b] font-normal">Medium (60-79%)</span>
             </div>
             <div className="flex flex-col gap-0.5 pl-3">
-              <span className="text-lg font-bold text-[#c5221f]">5</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Low (0-59%)</span>
+              <span className="text-lg font-semibold text-[#c5221f]">5</span>
+              <span className="text-[11px] text-[#64748b] font-normal">Low (0-59%)</span>
             </div>
           </div>
 
@@ -345,25 +345,25 @@ export const DashboardScreen: React.FC = () => {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <RefreshCw className="w-5 h-5 text-[#0d212c] shrink-0" />
-              <h3 className="font-bold text-xs sm:text-sm text-[#0d212c] truncate">
+              <h3 className="font-semibold text-xs sm:text-sm text-[#0d212c] truncate">
                 Average Rounds per Facility
               </h3>
             </div>
-            <div className="text-2xl font-extrabold text-[#36c0c9] shrink-0">2</div>
+            <div className="text-2xl font-bold text-[#36c0c9] shrink-0">2</div>
           </div>
 
           <div className="grid grid-cols-3 divide-x divide-[#e2e8f0] pt-3 border-t border-[#e2e8f0]">
             <div className="flex flex-col gap-0.5 pr-2">
-              <span className="text-lg font-bold text-[#0d212c]">8</span>
-              <span className="text-[11px] text-[#64748b] font-medium">1 Round</span>
+              <span className="text-lg font-semibold text-[#0d212c]">8</span>
+              <span className="text-[11px] text-[#64748b] font-normal">1 Round</span>
             </div>
             <div className="flex flex-col gap-0.5 px-3">
-              <span className="text-lg font-bold text-[#0d212c]">3</span>
-              <span className="text-[11px] text-[#64748b] font-medium">2 Rounds</span>
+              <span className="text-lg font-semibold text-[#0d212c]">3</span>
+              <span className="text-[11px] text-[#64748b] font-normal">2 Rounds</span>
             </div>
             <div className="flex flex-col gap-0.5 pl-3">
-              <span className="text-lg font-bold text-[#0d212c]">1</span>
-              <span className="text-[11px] text-[#64748b] font-medium">3+ Rounds</span>
+              <span className="text-lg font-semibold text-[#0d212c]">1</span>
+              <span className="text-[11px] text-[#64748b] font-normal">3+ Rounds</span>
             </div>
           </div>
 
@@ -378,25 +378,25 @@ export const DashboardScreen: React.FC = () => {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               <Folder className="w-5 h-5 text-[#0d212c] shrink-0" />
-              <h3 className="font-bold text-xs sm:text-sm text-[#0d212c] truncate">
+              <h3 className="font-semibold text-xs sm:text-sm text-[#0d212c] truncate">
                 Sessions Conducted & Planned
               </h3>
             </div>
-            <div className="text-2xl font-extrabold text-[#36c0c9] shrink-0">65</div>
+            <div className="text-2xl font-bold text-[#36c0c9] shrink-0">65</div>
           </div>
 
           <div className="grid grid-cols-3 divide-x divide-[#e2e8f0] pt-3 border-t border-[#e2e8f0]">
             <div className="flex flex-col gap-0.5 pr-2">
-              <span className="text-lg font-bold text-[#36c0c9]">8</span>
-              <span className="text-[11px] text-[#64748b] font-medium">This Week</span>
+              <span className="text-lg font-semibold text-[#36c0c9]">8</span>
+              <span className="text-[11px] text-[#64748b] font-normal">This Week</span>
             </div>
             <div className="flex flex-col gap-0.5 px-3">
-              <span className="text-lg font-bold text-[#0d212c]">12</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Last Week</span>
+              <span className="text-lg font-semibold text-[#0d212c]">12</span>
+              <span className="text-[11px] text-[#64748b] font-normal">Last Week</span>
             </div>
             <div className="flex flex-col gap-0.5 pl-3">
-              <span className="text-lg font-bold text-[#0d212c]">45</span>
-              <span className="text-[11px] text-[#64748b] font-medium">Last Month</span>
+              <span className="text-lg font-semibold text-[#0d212c]">45</span>
+              <span className="text-[11px] text-[#64748b] font-normal">Last Month</span>
             </div>
           </div>
 
@@ -409,7 +409,7 @@ export const DashboardScreen: React.FC = () => {
 
       {/* Assessments Title & Search Bar Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-        <h2 className="text-xl font-extrabold text-[#0d212c]">Assessments</h2>
+        <h2 className="text-xl font-bold text-[#0d212c]">Assessments</h2>
         <div className="w-full sm:w-80 shrink-0">
           <SearchBar
             placeholder="Search facility name, dataset..."
@@ -428,13 +428,13 @@ export const DashboardScreen: React.FC = () => {
               onClick={() => handleFilterClick(chip.key)}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-2 ${
                 isSelected
-                  ? 'bg-[#36c0c9] text-white font-bold shadow-xs'
+                  ? 'bg-[#36c0c9] text-white font-semibold shadow-xs'
                   : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
               }`}
             >
               <span>{chip.label}</span>
               <span
-                className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full ${
                   isSelected ? 'bg-white/25 text-white' : 'bg-[#f1f5f9] text-[#64748b]'
                 }`}
               >
@@ -450,7 +450,7 @@ export const DashboardScreen: React.FC = () => {
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] text-xs font-bold">
+              <tr className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] text-xs font-semibold">
                 <th className="py-3.5 px-4">Facilities</th>
                 <th className="py-3.5 px-4">Dataset</th>
                 <th className="py-3.5 px-4">Round</th>
@@ -496,7 +496,7 @@ export const DashboardScreen: React.FC = () => {
                       {row.questionnaire}
                     </td>
                     <td
-                      className="py-3.5 px-4 text-[#64748b] text-xs font-medium"
+                      className="py-3.5 px-4 text-[#64748b] text-xs font-normal"
                       title={row.round}
                     >
                       {row.round}
@@ -525,7 +525,7 @@ export const DashboardScreen: React.FC = () => {
                       />
                     </td>
                     {/* Pass Rate column: Show only color-coded percentage */}
-                    <td className="py-3.5 px-4 text-xs font-extrabold">
+                    <td className="py-3.5 px-4 text-xs font-bold">
                       {row.passRate !== '-' && row.status !== 'cancelled' ? (
                         (() => {
                           const val = parseInt(row.passRate.replace('%', ''), 10)
@@ -539,7 +539,7 @@ export const DashboardScreen: React.FC = () => {
                             row.passRateReason || `${row.passRate} pass rate based on assessment execution.`
 
                           return (
-                            <span className={`font-extrabold text-xs ${colorClass}`} title={tooltipReason}>
+                            <span className={`font-bold text-xs ${colorClass}`} title={tooltipReason}>
                               {row.passRate}
                             </span>
                           )
@@ -548,7 +548,7 @@ export const DashboardScreen: React.FC = () => {
                         <span className="text-[#64748b] font-normal" title={row.passRateReason}>-</span>
                       )}
                     </td>
-                    <td className="py-3.5 px-4 text-[#64748b] text-xs font-medium">
+                    <td className="py-3.5 px-4 text-[#64748b] text-xs font-normal">
                       {row.createdDate}
                     </td>
                   </tr>
@@ -561,7 +561,7 @@ export const DashboardScreen: React.FC = () => {
         {/* Pagination Footer */}
         {filteredAssessments.length > 0 && (
           <div className="flex items-[#64748b] justify-between px-4 py-3 border-t border-[#e2e8f0] bg-[#f8fafc]">
-            <div className="text-xs text-[#64748b] font-medium">
+            <div className="text-xs text-[#64748b] font-normal">
               Showing page <span className="font-semibold text-[#0d212c]">{currentPage}</span> of{' '}
               <span className="font-semibold text-[#0d212c]">{totalPages}</span>
             </div>
@@ -582,7 +582,7 @@ export const DashboardScreen: React.FC = () => {
                   <button
                     key={pageNum}
                     onClick={() => setCurrentPage(pageNum)}
-                    className={`w-7 h-7 rounded-lg text-xs font-bold transition cursor-pointer ${
+                    className={`w-7 h-7 rounded-lg text-xs font-semibold transition cursor-pointer ${
                       currentPage === pageNum
                         ? 'bg-[#36c0c9] text-white'
                         : 'text-[#64748b] hover:bg-slate-200/60'
@@ -624,7 +624,7 @@ export const DashboardScreen: React.FC = () => {
               <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#0d7280] flex items-center justify-center border border-[#36c0c9]/30 shadow-2xs shrink-0">
                 <CalendarIcon className="w-4.5 h-4.5 text-[#0d7280]" />
               </div>
-              <h3 className="text-lg font-bold text-[#0d212c]">Reschedule meeting</h3>
+              <h3 className="text-lg font-semibold text-[#0d212c]">Reschedule meeting</h3>
             </div>
 
             <div className="flex flex-col gap-4 w-full text-left">
@@ -720,7 +720,7 @@ export const DashboardScreen: React.FC = () => {
                   <span>{rescheduleRecipients.length}/5</span>
                 </div>
                 {recipientError && (
-                  <span className="text-xs text-red-600 font-medium">{recipientError}</span>
+                  <span className="text-xs text-red-600 font-normal">{recipientError}</span>
                 )}
                 {rescheduleRecipients.length > 0 && (
                   <div className="flex items-center gap-2 flex-wrap pt-1">
@@ -761,7 +761,7 @@ export const DashboardScreen: React.FC = () => {
             <div className="flex items-center gap-3 pt-3 border-t border-[#e2e8f0] w-full">
               <button
                 onClick={() => setRescheduleTarget(null)}
-                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer bg-transparent transition hover:bg-slate-50"
+                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] cursor-pointer bg-transparent transition hover:bg-slate-50"
               >
                 Cancel
               </button>
@@ -774,7 +774,7 @@ export const DashboardScreen: React.FC = () => {
                   rescheduleEndTime <= rescheduleStartTime ||
                   rescheduleRecipients.length === 0
                 }
-                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0d7280]"
+                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-semibold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#0d7280]"
               >
                 Confirm Reschedule
               </button>
@@ -800,7 +800,7 @@ export const DashboardScreen: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-1 text-center">
-              <h3 className="text-xl font-extrabold text-[#0d212c]">Cancel meeting</h3>
+              <h3 className="text-xl font-bold text-[#0d212c]">Cancel meeting</h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
                 Are you sure you want to cancel the meeting?
               </p>
@@ -821,13 +821,13 @@ export const DashboardScreen: React.FC = () => {
             <div className="flex items-center justify-center gap-3 w-full pt-1">
               <button
                 onClick={() => setCancelTarget(null)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition hover:bg-slate-50"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition hover:bg-slate-50"
               >
                 Keep Assessment
               </button>
               <button
                 onClick={handleConfirmCancel}
-                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs hover:bg-red-700"
+                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-semibold cursor-pointer flex-1 border-0 transition shadow-2xs hover:bg-red-700"
               >
                 Confirm Cancel
               </button>

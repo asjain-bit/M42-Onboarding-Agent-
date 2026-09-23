@@ -187,7 +187,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
             <span className="text-xs font-semibold text-[#64748b]">
               Facilities / {vendor.name} / New call
             </span>
-            <h1 className="text-xl font-extrabold text-[#0d212c]">Configure Assessment Call</h1>
+            <h1 className="text-xl font-bold text-[#0d212c]">Configure Assessment Call</h1>
           </div>
           <button
             onClick={onClose}
@@ -202,7 +202,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
           {/* Left Column: CALL SETUP STEPS (3 cols) */}
           <div className="lg:col-span-3 flex flex-col gap-6">
             <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-4">
-              <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                 CALL SETUP
               </span>
 
@@ -215,7 +215,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   onClick={() => setCurrentStep(1)}
                 >
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${
                       currentStep === 1
                         ? 'bg-[#36c0c9] text-[#0d212c]'
                         : currentStep > 1
@@ -226,7 +226,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                     {currentStep > 1 ? <Check className="w-4 h-4" /> : '01'}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-xs font-bold text-[#0d212c]">01 Setup</span>
+                    <span className="text-xs font-semibold text-[#0d212c]">01 Setup</span>
                     <span className="text-[11px] text-[#64748b]">Session details</span>
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   onClick={() => setCurrentStep(2)}
                 >
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${
                       currentStep === 2
                         ? 'bg-[#36c0c9] text-[#0d212c]'
                         : currentStep > 2
@@ -250,7 +250,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                     {currentStep > 2 ? <Check className="w-4 h-4" /> : '02'}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-xs font-bold text-[#0d212c]">02 Configure Sam</span>
+                    <span className="text-xs font-semibold text-[#0d212c]">02 Configure Sam</span>
                     <span className="text-[11px] text-[#64748b]">Sam&apos;s voice & timing</span>
                   </div>
                 </div>
@@ -263,7 +263,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   onClick={() => setCurrentStep(3)}
                 >
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${
                       currentStep === 3
                         ? 'bg-[#36c0c9] text-[#0d212c]'
                         : 'bg-[#e2e8f0] text-[#64748b]'
@@ -272,7 +272,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                     03
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-xs font-bold text-[#0d212c]">03 Review & launch</span>
+                    <span className="text-xs font-semibold text-[#0d212c]">03 Review & launch</span>
                     <span className="text-[11px] text-[#64748b]">Confirm and start</span>
                   </div>
                 </div>
@@ -280,7 +280,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
             </div>
 
             <div className="p-4 rounded-2xl bg-white border border-[#e2e8f0] text-xs text-[#64748b]">
-              <span className="font-bold text-[#0d212c] block mb-1">Need help?</span>
+              <span className="font-semibold text-[#0d212c] block mb-1">Need help?</span>
               <a href="#" className="text-[#36c0c9] hover:underline font-semibold">
                 View scheduling guide →
               </a>
@@ -292,7 +292,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
             {currentStep === 1 && (
               <div className="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-6">
                 <div>
-                  <h2 className="text-base font-extrabold text-[#0d212c]">Session setup</h2>
+                  <h2 className="text-base font-bold text-[#0d212c]">Session setup</h2>
                   <p className="text-xs text-[#64748b] mt-0.5">
                     Choose the session type and source material.
                   </p>
@@ -300,14 +300,14 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
 
                 {/* CALL TYPE: Assessment Round Only (Onboarding removed per user instructions) */}
                 <div className="flex flex-col gap-2">
-                  <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                     CALL TYPE
                   </span>
                   <div className="p-4 rounded-2xl border-2 border-[#36c0c9] bg-[#ddf7f9]/20 flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3">
                       <ShieldCheck className="w-5 h-5 text-[#36c0c9] shrink-0 mt-0.5" />
                       <div className="flex flex-col">
-                        <span className="font-bold text-xs text-[#0d212c]">Assessment round</span>
+                        <span className="font-semibold text-xs text-[#0d212c]">Assessment round</span>
                         <span className="text-[11px] text-[#64748b] mt-0.5">
                           Structured assessment evaluation using an approved dataset.
                         </span>
@@ -320,13 +320,13 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                 {/* DATASET SELECT CUSTOM LIGHT DROPDOWN WITH OPEN PREVIEW */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                       DATASET
                     </span>
                     <button
                       type="button"
                       onClick={() => setShowDatasetPreviewModal(true)}
-                      className="text-xs font-bold text-[#36c0c9] hover:text-[#0d7280] flex items-center gap-1 cursor-pointer bg-transparent border-0 transition"
+                      className="text-xs font-semibold text-[#36c0c9] hover:text-[#0d7280] flex items-center gap-1 cursor-pointer bg-transparent border-0 transition"
                     >
                       <span>Open preview</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -371,10 +371,10 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                             }`}
                           >
                             <div className="flex flex-col">
-                              <span className="text-xs font-bold">{opt.title}</span>
+                              <span className="text-xs font-semibold">{opt.title}</span>
                               <span className="text-[10px] text-[#64748b]">{opt.duration}</span>
                             </div>
-                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-[#64748b]">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-[#64748b]">
                               {opt.testcases} testcases
                             </span>
                           </div>
@@ -384,7 +384,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-[#64748b] pl-1">
                     <span>62 testcases in selected dataset</span>
-                    <span className="text-[#36c0c9] font-bold">{includedCount} included for assessment</span>
+                    <span className="text-[#36c0c9] font-semibold">{includedCount} included for assessment</span>
                   </div>
                 </div>
 
@@ -394,12 +394,12 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                     <Clock className="w-4 h-4 text-[#36c0c9]" />
                     <span>Estimated duration</span>
                   </div>
-                  <span className="font-extrabold text-[#0d212c]">135–205 min</span>
+                  <span className="font-bold text-[#0d212c]">135–205 min</span>
                 </div>
 
                 {/* ROUND LABEL */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                     ROUND LABEL
                   </span>
                   <input
@@ -421,7 +421,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   </button>
                   <button
                     onClick={() => setCurrentStep(2)}
-                    className="bg-[#e2e8f0] hover:bg-[#cbd5e1] text-[#0d212c] font-bold text-xs px-5 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2"
+                    className="bg-[#e2e8f0] hover:bg-[#cbd5e1] text-[#0d212c] font-semibold text-xs px-5 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2"
                   >
                     <span>Continue to configure Sam</span>
                     <ArrowRight className="w-4 h-4" />
@@ -433,12 +433,12 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
             {currentStep === 2 && (
               <div className="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-6">
                 <div>
-                  <h2 className="text-base font-extrabold text-[#0d212c]">Configure Sam</h2>
+                  <h2 className="text-base font-bold text-[#0d212c]">Configure Sam</h2>
                 </div>
 
                 {/* SAM'S VOICE */}
                 <div className="flex flex-col gap-3">
-                  <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                     SAM&apos;S VOICE
                   </span>
 
@@ -458,14 +458,14 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                             <Volume2 className="w-4 h-4" />
                           </div>
                           {v.recommended && (
-                            <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-[#ddf7f9] text-[#0f766e]">
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#ddf7f9] text-[#0f766e]">
                               RECOMMENDED
                             </span>
                           )}
                         </div>
 
                         <div>
-                          <h4 className="font-bold text-xs text-[#0d212c]">{v.label}</h4>
+                          <h4 className="font-semibold text-xs text-[#0d212c]">{v.label}</h4>
                           <p className="text-[10px] text-[#64748b] mt-1 line-clamp-2">{v.desc}</p>
                         </div>
                       </div>
@@ -476,7 +476,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowAllVoices(!showAllVoices)}
-                    className="text-xs font-bold text-[#36c0c9] hover:underline text-left cursor-pointer"
+                    className="text-xs font-semibold text-[#36c0c9] hover:underline text-left cursor-pointer"
                   >
                     {showAllVoices ? 'Hide extra voices' : 'View all 10 voices'}
                   </button>
@@ -503,7 +503,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
 
                 {/* WHEN */}
                 <div className="flex flex-col gap-2">
-                  <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                     WHEN
                   </span>
                   <div className="grid grid-cols-2 gap-3">
@@ -515,7 +515,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                           : 'border-[#e2e8f0] bg-white'
                       }`}
                     >
-                      <span className="font-bold text-xs text-[#0d212c]">Start now</span>
+                      <span className="font-semibold text-xs text-[#0d212c]">Start now</span>
                       <span className="text-[10px] text-[#64748b]">
                         Open the call room as soon as setup is complete.
                       </span>
@@ -529,7 +529,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                           : 'border-[#e2e8f0] bg-white'
                       }`}
                     >
-                      <span className="font-bold text-xs text-[#0d212c]">Schedule for later</span>
+                      <span className="font-semibold text-xs text-[#0d212c]">Schedule for later</span>
                       <span className="text-[10px] text-[#64748b]">
                         Choose a date and time for this session.
                       </span>
@@ -539,7 +539,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
 
                 {/* TIMEZONE */}
                 <div className="flex flex-col gap-1.5">
-                  <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                     TIMEZONE
                   </span>
                   <div className="relative">
@@ -566,7 +566,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   </button>
                   <button
                     onClick={() => setCurrentStep(3)}
-                    className="bg-[#e2e8f0] hover:bg-[#cbd5e1] text-[#0d212c] font-bold text-xs px-5 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2"
+                    className="bg-[#e2e8f0] hover:bg-[#cbd5e1] text-[#0d212c] font-semibold text-xs px-5 py-2.5 rounded-xl transition cursor-pointer flex items-center gap-2"
                   >
                     <span>Continue to review</span>
                     <ArrowRight className="w-4 h-4" />
@@ -578,25 +578,25 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
             {currentStep === 3 && (
               <div className="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-6">
                 <div>
-                  <h2 className="text-base font-extrabold text-[#0d212c]">Review & launch</h2>
+                  <h2 className="text-base font-bold text-[#0d212c]">Review & launch</h2>
                 </div>
 
                 <div className="p-4 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex flex-col gap-3 text-xs">
                   <div className="flex justify-between">
                     <span className="text-[#64748b]">Target facility:</span>
-                    <span className="font-bold text-[#0d212c]">{vendor.name}</span>
+                    <span className="font-semibold text-[#0d212c]">{vendor.name}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#64748b]">Selected dataset:</span>
-                    <span className="font-bold text-[#0d212c]">{selectedQuestionnaire}</span>
+                    <span className="font-semibold text-[#0d212c]">{selectedQuestionnaire}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#64748b]">AI Voice:</span>
-                    <span className="font-bold text-[#0d212c]">{selectedVoice}</span>
+                    <span className="font-semibold text-[#0d212c]">{selectedVoice}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[#64748b]">Round:</span>
-                    <span className="font-bold text-[#0d212c]">{roundLabel}</span>
+                    <span className="font-semibold text-[#0d212c]">{roundLabel}</span>
                   </div>
                 </div>
 
@@ -609,7 +609,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   </button>
                   <Button
                     onClick={onComplete}
-                    className="bg-[#e2e8f0] hover:bg-[#cbd5e1] text-[#0d212c] font-bold text-xs px-6 py-2.5 rounded-xl cursor-pointer"
+                    className="bg-[#e2e8f0] hover:bg-[#cbd5e1] text-[#0d212c] font-semibold text-xs px-6 py-2.5 rounded-xl cursor-pointer"
                   >
                     Launch assessment call
                   </Button>
@@ -621,14 +621,14 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
           {/* Right Column: CALL SUMMARY BOX (3 cols) */}
           <div className="lg:col-span-3 flex flex-col gap-6">
             <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-4 text-xs">
-              <span className="font-bold text-[#0d212c]">Call summary</span>
+              <span className="font-semibold text-[#0d212c]">Call summary</span>
 
               <div className="flex items-center gap-3 p-3 rounded-xl bg-[#f8fafc] border border-[#e2e8f0]">
-                <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#36c0c9] font-bold flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#36c0c9] font-semibold flex items-center justify-center shrink-0">
                   {vendor.name.slice(0, 2).toUpperCase()}
                 </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="font-bold text-[#0d212c] truncate">{vendor.name}</span>
+                  <span className="font-semibold text-[#0d212c] truncate">{vendor.name}</span>
                   <span className="text-[11px] text-[#64748b] truncate flex items-center gap-1.5 mt-0.5">
                     <CountryFlag country={vendor.country} />
                     <span>{vendor.country}</span>
@@ -641,31 +641,31 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
               <div className="divide-y divide-[#e2e8f0]/60 flex flex-col">
                 <div className="py-2 flex justify-between">
                   <span className="text-[#64748b]">CALL TYPE</span>
-                  <span className="font-bold text-[#0d212c]">Assessment round</span>
+                  <span className="font-semibold text-[#0d212c]">Assessment round</span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span className="text-[#64748b]">SOURCE</span>
-                  <span className="font-bold text-[#0d212c] truncate max-w-[140px]">
+                  <span className="font-semibold text-[#0d212c] truncate max-w-[140px]">
                     {selectedQuestionnaire}
                   </span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span className="text-[#64748b]">QUESTIONS</span>
-                  <span className="font-bold text-[#0d212c]">62</span>
+                  <span className="font-semibold text-[#0d212c]">62</span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span className="text-[#64748b]">VOICE</span>
-                  <span className="font-bold text-[#0d212c]">{selectedVoice}</span>
+                  <span className="font-semibold text-[#0d212c]">{selectedVoice}</span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span className="text-[#64748b]">TIMING</span>
-                  <span className="font-bold text-[#0d212c]">
+                  <span className="font-semibold text-[#0d212c]">
                     {timing === 'now' ? 'Start now' : 'Scheduled'}
                   </span>
                 </div>
                 <div className="py-2 flex justify-between">
                   <span className="text-[#64748b]">TIMEZONE</span>
-                  <span className="font-bold text-[#0d212c] truncate max-w-[140px]">
+                  <span className="font-semibold text-[#0d212c] truncate max-w-[140px]">
                     {timezone}
                   </span>
                 </div>
@@ -674,14 +674,14 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
               {/* READINESS PROGRESS */}
               <div className="border-t border-[#e2e8f0] pt-3 flex flex-col gap-2">
                 <div className="flex justify-between text-[11px]">
-                  <span className="font-bold text-[#64748b]">READINESS</span>
-                  <span className="font-bold text-[#0d212c]">{currentStep - 1} of 3 complete</span>
+                  <span className="font-semibold text-[#64748b]">READINESS</span>
+                  <span className="font-semibold text-[#0d212c]">{currentStep - 1} of 3 complete</span>
                 </div>
                 <div className="flex flex-col gap-1.5 text-[11px]">
                   <div className="flex justify-between">
                     <span>Setup</span>
                     <span
-                      className={currentStep > 1 ? 'text-[#137333] font-bold' : 'text-[#64748b]'}
+                      className={currentStep > 1 ? 'text-[#137333] font-semibold' : 'text-[#64748b]'}
                     >
                       {currentStep > 1 ? 'Complete' : 'Pending'}
                     </span>
@@ -689,7 +689,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                   <div className="flex justify-between">
                     <span>Configure Sam</span>
                     <span
-                      className={currentStep > 2 ? 'text-[#137333] font-bold' : 'text-[#64748b]'}
+                      className={currentStep > 2 ? 'text-[#137333] font-semibold' : 'text-[#64748b]'}
                     >
                       {currentStep > 2 ? 'Complete' : 'Pending'}
                     </span>
@@ -711,7 +711,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
           <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl border border-[#e2e8f0] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 my-auto">
             {/* Modal Header */}
             <div className="bg-white px-6 py-5 border-b border-[#e2e8f0] flex items-center justify-between shrink-0">
-              <h2 className="text-xl font-extrabold text-[#0d212c]">
+              <h2 className="text-xl font-bold text-[#0d212c]">
                 {selectedQuestionnaire}
               </h2>
               <button
@@ -725,7 +725,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
 
             {/* Modal Subheader Bar */}
             <div className="bg-white px-6 py-3.5 border-b border-[#e2e8f0] flex flex-wrap items-center justify-between gap-3 shrink-0">
-              <h3 className="text-sm font-extrabold text-[#0d212c]">Testcases</h3>
+              <h3 className="text-sm font-bold text-[#0d212c]">Testcases</h3>
 
               {/* Search filter */}
               <div className="relative w-64 sm:w-72">
@@ -761,11 +761,11 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                       {/* Left side: Testcase metadata (Read-only / Non-editable) */}
                       <div className="flex flex-col gap-2.5 min-w-0 flex-1">
                         <div className="flex items-center gap-2.5 flex-wrap">
-                          <span className="text-xs font-extrabold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                          <span className="text-xs font-bold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
                             {tc.code}
                           </span>
                           <span
-                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                            className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${
                               tc.type === 'Problems'
                                 ? 'bg-amber-50 text-amber-800 border-amber-200'
                                 : tc.type === 'Sensitive Info'
@@ -781,7 +781,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
 
                         {/* Title & Description (Non-editable text) */}
                         <div className="flex flex-col gap-1.5">
-                          <h4 className="text-xs font-extrabold text-[#0d212c]">
+                          <h4 className="text-xs font-bold text-[#0d212c]">
                             {tc.title}
                           </h4>
                           <p className="text-[11px] text-[#64748b] leading-relaxed">
@@ -807,11 +807,11 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
             <div className="bg-[#f8fafc] px-6 py-4 border-t border-[#e2e8f0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
               <div className="flex items-center gap-2.5 text-xs text-[#64748b] flex-wrap">
                 <span>
-                  Included in Assessment: <strong className="text-[#0d212c] font-bold">{includedCount} / 7 testcases</strong>
+                  Included in Assessment: <strong className="text-[#0d212c] font-semibold">{includedCount} / 7 testcases</strong>
                 </span>
                 <span>|</span>
                 <span>
-                  Estimated Duration: <strong className="text-[#0d212c] font-bold">135–205 min</strong>
+                  Estimated Duration: <strong className="text-[#0d212c] font-semibold">135–205 min</strong>
                 </span>
               </div>
 
@@ -825,7 +825,7 @@ export const DispatchCallWizard: React.FC<DispatchCallWizardProps> = ({
                 <button
                   onClick={() => setShowDatasetPreviewModal(false)}
                   disabled={includedCount === 0}
-                  className="px-6 py-2.5 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 rounded-xl bg-[#36c0c9] text-white font-semibold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Save &amp; Apply Selection
                 </button>

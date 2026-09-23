@@ -552,7 +552,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       )}
 
       {/* Breadcrumb Menu */}
-      <div className="w-full px-6 lg:px-10 pt-4 pb-1 text-xs font-medium flex items-center gap-1.5 text-[#64748b]">
+      <div className="w-full px-6 lg:px-10 pt-4 pb-1 text-xs font-normal flex items-center gap-1.5 text-[#64748b]">
         <button onClick={onBack} className="hover:text-[#0d7280] cursor-pointer">
           M42 admin
         </button>
@@ -561,7 +561,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
           Dashboard
         </button>
         <span>/</span>
-        <span className="text-[#36c0c9] font-bold">Assessment details</span>
+        <span className="text-[#36c0c9] font-semibold">Assessment details</span>
       </div>
 
       {/* Main Header Container Card matching Image 2 Reference */}
@@ -569,7 +569,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
         <div className="bg-[#f0f9fa]/70 rounded-3xl border border-[#d0f0f4] p-5 sm:p-7 shadow-xs flex flex-col gap-3">
           {/* Title and Subtitle */}
           <div className="flex flex-col gap-1">
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#0d212c]">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0d212c]">
               {assessment.vendor.includes('Presight') ? 'Presight AI | See the Future Today' : assessment.vendor}
             </h1>
             <h2 className="text-xs font-semibold text-[#64748b]">
@@ -581,7 +581,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
           <div className="flex items-center gap-3 flex-wrap pt-1">
             {/* Status Chip */}
             <span
-              className={`text-xs font-bold px-3 py-1 rounded-full ${
+              className={`text-xs font-semibold px-3 py-1 rounded-full ${
                 currentStatus === 'completed'
                   ? 'bg-[#e6f4ea] text-[#137333]'
                   : currentStatus === 'scheduled'
@@ -607,7 +607,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             <span className="text-[#cbd5e1] font-light">|</span>
 
             {/* Round Chip */}
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e0f2fe] text-[#0369a1] text-xs font-bold">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e0f2fe] text-[#0369a1] text-xs font-semibold">
               <Clock className="w-3.5 h-3.5" />
               <span>{assessment.round || 'Round 1'}</span>
             </span>
@@ -616,7 +616,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
             {/* Pass percentage Chip */}
             {currentStatus === 'scheduled' ? (
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-[#64748b]">
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-[#64748b]">
                 Pass rate: -
               </span>
             ) : (
@@ -633,7 +633,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       : 'bg-[#fce8e6] text-[#c5221f]'
 
                 return (
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${confStyle}`}>
+                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${confStyle}`}>
                     Pass rate: {passVal}%
                   </span>
                 )
@@ -650,7 +650,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
           <div className="flex items-center gap-8 border-b border-[#e2e8f0]">
             <button
               onClick={() => setActiveTab('assessment')}
-              className={`pb-3.5 text-sm font-bold flex items-center gap-2.5 transition cursor-pointer border-b-2 -mb-px ${
+              className={`pb-3.5 text-sm font-semibold flex items-center gap-2.5 transition cursor-pointer border-b-2 -mb-px ${
                 activeTab === 'assessment'
                   ? 'border-[#36c0c9] text-[#36c0c9]'
                   : 'border-transparent text-[#64748b] hover:text-[#0d212c]'
@@ -663,7 +663,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('audit_trail')}
-              className={`pb-3.5 text-sm font-bold flex items-center gap-2.5 transition cursor-pointer border-b-2 -mb-px ${
+              className={`pb-3.5 text-sm font-semibold flex items-center gap-2.5 transition cursor-pointer border-b-2 -mb-px ${
                 activeTab === 'audit_trail'
                   ? 'border-[#36c0c9] text-[#36c0c9]'
                   : 'border-transparent text-[#64748b] hover:text-[#0d212c]'
@@ -681,14 +681,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               <>
                 <button
                   onClick={() => alert(`Downloading report for ${assessment.vendor}...`)}
-                  className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-bold text-xs flex items-center gap-2 shadow-2xs cursor-pointer transition"
+                  className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-semibold text-xs flex items-center gap-2 shadow-2xs cursor-pointer transition"
                 >
                   <Download className="w-4 h-4 text-[#0d212c]" />
                   <span>Download report</span>
                 </button>
                 <button
                   onClick={handleFinalize}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2 rounded-xl transition cursor-pointer shadow-2xs border-0"
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-5 py-2 rounded-xl transition cursor-pointer shadow-2xs border-0"
                 >
                   Finalize
                 </button>
@@ -696,7 +696,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             ) : currentStatus === 'finalised' ? (
               <button
                 onClick={() => alert(`Downloading report for ${assessment.vendor}...`)}
-                className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2 rounded-xl flex items-center gap-2 transition cursor-pointer shadow-2xs border-0"
+                className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-5 py-2 rounded-xl flex items-center gap-2 transition cursor-pointer shadow-2xs border-0"
               >
                 <Download className="w-4 h-4 text-white" />
                 <span>Download report</span>
@@ -713,7 +713,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                 <Clock className="w-6 h-6" />
               </div>
               <div className="flex flex-col gap-1 max-w-md">
-                <h4 className="font-extrabold text-sm text-[#0d212c]">Audit log scheduled</h4>
+                <h4 className="font-bold text-sm text-[#0d212c]">Audit log scheduled</h4>
                 <p className="text-xs text-[#64748b] leading-relaxed">
                   The audit trail and call transcript will be generated automatically after the
                   assessment meeting is completed.
@@ -724,7 +724,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-extrabold text-[#0d212c]">
+                  <h3 className="text-base font-bold text-[#0d212c]">
                     Audit Trail
                   </h3>
                 </div>
@@ -747,9 +747,9 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-2.5">
-                            <h4 className="font-extrabold text-sm text-[#0d212c]">{event.title}</h4>
+                            <h4 className="font-bold text-sm text-[#0d212c]">{event.title}</h4>
                             <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                                 event.category === 'Admin'
                                   ? 'bg-purple-100 text-purple-800'
                                   : event.category === 'AI Agent'
@@ -762,7 +762,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                               {event.category}
                             </span>
                           </div>
-                          <span className="text-xs font-medium text-[#64748b] flex items-center gap-1">
+                          <span className="text-xs font-normal text-[#64748b] flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5 text-slate-400" />
                             {event.timestamp}
                           </span>
@@ -772,7 +772,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                           {event.details}
                         </p>
 
-                        <div className="text-[11px] text-[#64748b] font-medium flex items-center gap-1.5 mt-0.5">
+                        <div className="text-[11px] text-[#64748b] font-normal flex items-center gap-1.5 mt-0.5">
                           <User className="w-3 h-3 text-slate-400" />
                           <span>
                             Actor:{' '}
@@ -791,10 +791,10 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             {/* Meeting summary section for Scheduled Assessments */}
             {isScheduled && (
               <div className="flex flex-col gap-2 w-full">
-                <h3 className="text-sm font-bold text-[#0d212c]">Meeting summary</h3>
+                <h3 className="text-sm font-semibold text-[#0d212c]">Meeting summary</h3>
                 <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex flex-col gap-1 min-w-0">
-                    <span className="text-xs font-bold text-[#0d212c]">Scheduled Session Details</span>
+                    <span className="text-xs font-semibold text-[#0d212c]">Scheduled Session Details</span>
                     <span className="text-xs text-[#64748b]">
                       Scheduled Date &amp; Time: <strong className="text-[#0d212c]">{assessment.createdDate}</strong>
                     </span>
@@ -805,7 +805,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                     <button
                       onClick={() => setShowCancelModal(true)}
                       title="If the scheduled meeting is already started the cancel and reschedule button should become disabled as the meeting is already in progress"
-                      className="flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 bg-transparent border-0 cursor-pointer p-0 transition"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-rose-600 hover:text-rose-700 bg-transparent border-0 cursor-pointer p-0 transition"
                     >
                       <XCircle className="w-4 h-4 text-rose-600" />
                       <span>Cancel meeting</span>
@@ -813,7 +813,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                     <button
                       onClick={() => setShowRescheduleModal(true)}
                       title="If the scheduled meeting is already started the cancel and reschedule button should become disabled as the meeting is already in progress"
-                      className="flex items-center gap-1.5 text-xs font-bold text-[#36c0c9] hover:text-[#2badb6] bg-transparent border-0 cursor-pointer p-0 transition"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-[#36c0c9] hover:text-[#2badb6] bg-transparent border-0 cursor-pointer p-0 transition"
                     >
                       <Calendar className="w-4 h-4 text-[#36c0c9]" />
                       <span>Reschedule meeting</span>
@@ -824,7 +824,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             )}
             {/* Section 1: Assessment lifecycle */}
             <div className="flex flex-col gap-2">
-              <h3 className="text-sm font-bold text-[#0d212c]">Assessment lifecycle</h3>
+              <h3 className="text-sm font-semibold text-[#0d212c]">Assessment lifecycle</h3>
               <div className="w-full overflow-x-auto pb-3.5 pt-1 flex items-center gap-3 subtle-scrollbar group/lifecycle">
                 {lifecycleSteps.map((step, idx) => {
                   const isAwaiting = step.status === 'AWAITING'
@@ -837,7 +837,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       >
                         <div className="flex items-center justify-between gap-2">
                           <h4
-                            className="font-bold text-[#0d212c] text-sm truncate"
+                            className="font-semibold text-[#0d212c] text-sm truncate"
                             title={step.title}
                           >
                             {step.title}
@@ -853,13 +853,13 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                           <p className="text-[11px] text-[#64748b]" title={step.actor}>
                             {step.actor}
                           </p>
-                          <p className="text-[10px] text-[#64748b] font-medium">{step.time}</p>
+                          <p className="text-[10px] text-[#64748b] font-normal">{step.time}</p>
                         </div>
 
                         {step.hasMeetingUrl && (
                           <div className="mt-auto pt-1.5 border-t border-[#e2e8f0] flex items-center justify-between gap-1 text-[11px]">
                             <span
-                              className="text-[#36c0c9] font-medium truncate"
+                              className="text-[#36c0c9] font-normal truncate"
                               title={meetingUrl}
                             >
                               {meetingUrl.replace('https://', '')}
@@ -895,7 +895,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               {/* Agent Verdict card */}
               <div className="flex flex-col gap-2 w-full">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-[#0d212c]">Agent Verdict</h3>
+                  <h3 className="text-sm font-semibold text-[#0d212c]">Agent Verdict</h3>
                 </div>
                 <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs w-full flex flex-col gap-5">
                   {isScheduled ? (
@@ -904,7 +904,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         <Clock className="w-5 h-5" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs font-bold text-[#0d212c]">Verdict Pending</span>
+                        <span className="text-xs font-semibold text-[#0d212c]">Verdict Pending</span>
                         <span className="text-[11px] text-[#64748b]">
                           Test cases evaluation will be generated automatically after the assessment meeting completes.
                         </span>
@@ -915,14 +915,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       {/* Column 1: PASSED TESTCASES */}
                       <div className="sm:pr-3 flex flex-col gap-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
+                          <span className="text-[11px] font-semibold uppercase text-[#64748b] tracking-wider">
                             PASSED
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#e6f4ea] text-[#137333]">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#e6f4ea] text-[#137333]">
                             Pass
                           </span>
                         </div>
-                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                        <div className="text-base font-bold text-[#0d212c] mt-0.5">
                           {passedCount} / {testcases.length}
                         </div>
                       </div>
@@ -930,14 +930,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       {/* Column 2: FAILED TESTCASES */}
                       <div className="pt-3 sm:pt-0 sm:px-3 flex flex-col gap-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
+                          <span className="text-[11px] font-semibold uppercase text-[#64748b] tracking-wider">
                             FAILED
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#fce8e6] text-[#c5221f]">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#fce8e6] text-[#c5221f]">
                             Fail
                           </span>
                         </div>
-                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                        <div className="text-base font-bold text-[#0d212c] mt-0.5">
                           {failedCount} / {testcases.length}
                         </div>
                       </div>
@@ -945,14 +945,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       {/* Column 3: BLOCKED TESTCASES */}
                       <div className="pt-3 sm:pt-0 sm:px-3 flex flex-col gap-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
+                          <span className="text-[11px] font-semibold uppercase text-[#64748b] tracking-wider">
                             BLOCKED
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800">
                             Blocked
                           </span>
                         </div>
-                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                        <div className="text-base font-bold text-[#0d212c] mt-0.5">
                           0 / {testcases.length}
                         </div>
                       </div>
@@ -960,14 +960,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       {/* Column 4: SCHEDULED FOR LATER */}
                       <div className="pt-3 sm:pt-0 sm:px-3 flex flex-col gap-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
+                          <span className="text-[11px] font-semibold uppercase text-[#64748b] tracking-wider">
                             SCHEDULED
                           </span>
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e0f2fe] text-[#0369a1]">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#e0f2fe] text-[#0369a1]">
                             Scheduled for later
                           </span>
                         </div>
-                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                        <div className="text-base font-bold text-[#0d212c] mt-0.5">
                           0 / {testcases.length}
                         </div>
                       </div>
@@ -975,14 +975,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       {/* Column 5: NOT APPLICABLE */}
                       <div className="pt-3 sm:pt-0 sm:pl-3 flex flex-col gap-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-bold uppercase text-[#64748b] tracking-wider">
+                          <span className="text-[11px] font-semibold uppercase text-[#64748b] tracking-wider">
                             NOT APPLICABLE
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700">
                             N/A
                           </span>
                         </div>
-                        <div className="text-base font-extrabold text-[#0d212c] mt-0.5">
+                        <div className="text-base font-bold text-[#0d212c] mt-0.5">
                           0 / {testcases.length}
                         </div>
                       </div>
@@ -993,7 +993,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
               {/* Assessment audio card */}
               <div className="flex flex-col gap-2 w-full">
-                <h3 className="text-sm font-bold text-[#0d212c]">Assessment audio</h3>
+                <h3 className="text-sm font-semibold text-[#0d212c]">Assessment audio</h3>
                 <div className="bg-white p-4 sm:p-5 rounded-2xl border border-[#e2e8f0] shadow-xs w-full flex items-center gap-4 min-h-[96px]">
                   {isScheduled ? (
                     <div className="flex items-center gap-3">
@@ -1001,7 +1001,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         <PhoneCall className="w-4 h-4" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs font-bold text-[#0d212c]">No Audio Recording</span>
+                        <span className="text-xs font-semibold text-[#0d212c]">No Audio Recording</span>
                         <span className="text-[11px] text-[#64748b]">
                           Audio recording will be available after the assessment call completes.
                         </span>
@@ -1028,7 +1028,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                             className={`h-full bg-[#36c0c9] ${isPlayingAudio ? 'w-1/3 transition-all duration-1000' : 'w-0'}`}
                           />
                         </div>
-                        <div className="flex justify-between text-[11px] text-[#64748b] font-medium">
+                        <div className="flex justify-between text-[11px] text-[#64748b] font-normal">
                           <span>02:14</span>
                           <span>08:45</span>
                         </div>
@@ -1038,7 +1038,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         <select
                           value={playbackSpeed}
                           onChange={(e) => setPlaybackSpeed(e.target.value)}
-                          className="text-xs font-bold bg-slate-100 text-[#0d212c] px-2 py-1 rounded-lg border-0 cursor-pointer outline-none"
+                          className="text-xs font-semibold bg-slate-100 text-[#0d212c] px-2 py-1 rounded-lg border-0 cursor-pointer outline-none"
                           aria-label="Audio playback speed"
                         >
                           <option value="0.75">0.75x</option>
@@ -1055,7 +1055,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
             {/* Section 4: Summary */}
             <div className="flex flex-col gap-2">
-              <h3 className="text-sm font-bold text-[#0d212c]">Summary</h3>
+              <h3 className="text-sm font-semibold text-[#0d212c]">Summary</h3>
               <div className="bg-white p-6 rounded-2xl border border-[#e2e8f0] shadow-xs">
                 <p className="text-xs text-[#64748b] leading-relaxed">
                   {isScheduled
@@ -1068,7 +1068,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             {/* Section 5: Testcases (7) with Search Bar & Sorting Chips */}
             <div className="flex flex-col gap-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <h3 className="text-base font-extrabold text-[#0d212c]">
+                <h3 className="text-base font-bold text-[#0d212c]">
                   Testcases ({filteredTestcases.length})
                 </h3>
 
@@ -1081,7 +1081,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                       placeholder="Search testcases..."
                       value={testcaseSearchTerm}
                       onChange={(e) => setTestcaseSearchTerm(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#e2e8f0] bg-white text-xs font-medium text-[#0d212c] outline-none focus:border-[#36c0c9] shadow-2xs"
+                      className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#e2e8f0] bg-white text-xs font-normal text-[#0d212c] outline-none focus:border-[#36c0c9] shadow-2xs"
                     />
                   </div>
 
@@ -1131,13 +1131,13 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         }
                         className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 ${
                           isSelected
-                            ? 'bg-[#36c0c9] text-white font-bold shadow-2xs border border-[#36c0c9]'
+                            ? 'bg-[#36c0c9] text-white font-semibold shadow-2xs border border-[#36c0c9]'
                             : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
                         }`}
                       >
                         <span>{chip.label}</span>
                         <span
-                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                          className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full ${
                             isSelected ? 'bg-white/25 text-white' : 'bg-[#f1f5f9] text-[#64748b]'
                           }`}
                         >
@@ -1150,16 +1150,16 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
                 {/* Chips Legend */}
                 <div className="flex items-center gap-3 text-[11px] text-[#64748b] bg-white px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] shadow-2xs self-start sm:self-auto shrink-0">
-                  <span className="font-bold text-[#0d212c]">Legend:</span>
+                  <span className="font-semibold text-[#0d212c]">Legend:</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-extrabold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
+                    <span className="font-bold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
                       TC-01
                     </span>
                     <span>Message Type</span>
                   </div>
                   <span className="text-[#cbd5e1]">|</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
+                    <span className="font-semibold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
                       Category
                     </span>
                     <span>Type - Accessible Section</span>
@@ -1192,7 +1192,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         className="bg-white rounded-2xl border border-[#e2e8f0] p-6 shadow-2xs relative pl-16 flex flex-col gap-4 overflow-hidden"
                       >
                         {/* Numbered Step Circle */}
-                        <div className="absolute left-5 top-6 w-8 h-8 rounded-full bg-[#ddf7f9] text-[#0d7280] font-extrabold text-xs flex items-center justify-center border border-[#36c0c9]/40 z-10 shadow-2xs">
+                        <div className="absolute left-5 top-6 w-8 h-8 rounded-full bg-[#ddf7f9] text-[#0d7280] font-bold text-xs flex items-center justify-center border border-[#36c0c9]/40 z-10 shadow-2xs">
                           {formattedIndex}
                         </div>
 
@@ -1201,11 +1201,11 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                           <div className="flex flex-col min-w-0">
                             {/* Chips ABOVE title: Code chip + Type chip */}
                             <div className="flex items-center gap-1.5 mb-1.5">
-                              <span className="text-xs font-extrabold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                              <span className="text-xs font-bold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
                                 {q.code}
                               </span>
                               <span
-                                className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold inline-flex items-center ${
+                                className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold inline-flex items-center ${
                                   q.type === 'Problems'
                                     ? 'bg-sky-50 text-sky-700 border border-sky-200'
                                     : q.type === 'Sensitive Info'
@@ -1216,14 +1216,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                                 {q.type}
                               </span>
                             </div>
-                            <h4 className="font-extrabold text-[#0d212c] text-base leading-snug">
+                            <h4 className="font-bold text-[#0d212c] text-base leading-snug">
                               {q.title}
                             </h4>
                           </div>
 
                           {!isScheduled && (
                             <span
-                              className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center shrink-0 ${
+                              className={`px-3 py-1 rounded-full text-xs font-semibold inline-flex items-center shrink-0 ${
                                 q.status === 'Pass'
                                   ? 'bg-[#e6f4ea] text-[#137333] border border-[#ceedd5]'
                                   : q.status === 'Fail'
@@ -1244,7 +1244,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         <div className="flex items-start gap-3 pt-1">
                           <FileText className="w-5 h-5 text-[#36c0c9] shrink-0 stroke-[2.2] mt-0.5" />
                           <div className="flex flex-col gap-1 min-w-0">
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748b]">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748b]">
                               EXPECTED BEHAVIOUR
                             </span>
                             <p className="text-xs text-[#0d212c] font-normal leading-relaxed">
@@ -1260,7 +1260,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                           <div className="flex items-start gap-3">
                             <MessageSquare className="w-5 h-5 text-[#36c0c9] shrink-0 stroke-[2.2] mt-0.5" />
                             <div className="flex flex-col gap-1 min-w-0">
-                              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#64748b]">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-[#64748b]">
                                 COMMENT
                               </span>
                               <p className="text-xs text-[#0d212c] font-normal leading-relaxed">
@@ -1275,7 +1275,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                         {/* ATTACHED SNAPSHOTS (Using attached Excel image in attachment box per user request) */}
                         {!isScheduled && (
                           <div className="flex flex-col gap-3 pt-1">
-                            <div className="flex items-center gap-1.5 font-bold text-[#64748b] text-[11px] uppercase tracking-wider">
+                            <div className="flex items-center gap-1.5 font-semibold text-[#64748b] text-[11px] uppercase tracking-wider">
                               <Paperclip className="w-3.5 h-3.5 text-[#64748b]" />
                               <span>ATTACHED SNAPSHOTS ({q.snapshots.length})</span>
                             </div>
@@ -1298,14 +1298,14 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
                                   <div className="flex flex-col min-w-0">
                                     <span
-                                      className="font-bold text-xs text-[#0d212c] truncate max-w-[120px]"
+                                      className="font-semibold text-xs text-[#0d212c] truncate max-w-[120px]"
                                       title={snap.filename}
                                     >
                                       {snap.filename}
                                     </span>
                                     {snap.tag && (
                                       <span
-                                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full w-fit mt-0.5 ${
+                                        className={`text-[10px] font-semibold px-2 py-0.5 rounded-full w-fit mt-0.5 ${
                                           snap.tag === 'After'
                                             ? 'bg-[#e6f4ea] text-[#137333]'
                                             : 'bg-slate-100 text-[#64748b]'
@@ -1333,7 +1333,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                               {hiddenCount > 0 && !isExpanded && (
                                 <button
                                   onClick={() => toggleExpandSnapshots(q.id)}
-                                  className="px-3 py-2 text-[#36c0c9] hover:text-[#0d7280] font-extrabold text-xs transition cursor-pointer shrink-0 bg-transparent border-0"
+                                  className="px-3 py-2 text-[#36c0c9] hover:text-[#0d7280] font-bold text-xs transition cursor-pointer shrink-0 bg-transparent border-0"
                                 >
                                   +{hiddenCount} more
                                 </button>
@@ -1368,7 +1368,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#0d7280] flex items-center justify-center border border-[#36c0c9]/30 shadow-2xs shrink-0">
                 <Calendar className="w-4.5 h-4.5 text-[#0d7280]" />
               </div>
-              <h3 className="text-lg font-bold text-[#0d212c]">Reschedule meeting</h3>
+              <h3 className="text-lg font-semibold text-[#0d212c]">Reschedule meeting</h3>
             </div>
 
             <div className="flex flex-col gap-4 w-full text-left">
@@ -1462,7 +1462,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                   <span>{rescheduleRecipients.length}/5</span>
                 </div>
                 {recipientError && (
-                  <span className="text-xs text-red-600 font-medium">{recipientError}</span>
+                  <span className="text-xs text-red-600 font-normal">{recipientError}</span>
                 )}
                 {rescheduleRecipients.length > 0 && (
                   <div className="flex items-center gap-2 flex-wrap pt-1">
@@ -1503,7 +1503,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             <div className="flex items-center gap-3 pt-3 border-t border-[#e2e8f0] w-full">
               <button
                 onClick={() => setShowRescheduleModal(false)}
-                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer bg-transparent transition"
+                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] cursor-pointer bg-transparent transition"
               >
                 Cancel
               </button>
@@ -1516,7 +1516,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                   rescheduleEndTime <= rescheduleStartTime ||
                   rescheduleRecipients.length === 0
                 }
-                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-semibold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Confirm Reschedule
               </button>
@@ -1542,7 +1542,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             </div>
 
             <div className="flex flex-col gap-1 text-center">
-              <h3 className="text-xl font-extrabold text-[#0d212c]">Cancel meeting</h3>
+              <h3 className="text-xl font-bold text-[#0d212c]">Cancel meeting</h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
                 Are you sure you want to cancel the meeting?
               </p>
@@ -1563,13 +1563,13 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             <div className="flex items-center justify-center gap-3 w-full pt-1">
               <button
                 onClick={() => setShowCancelModal(false)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition"
               >
                 Keep Assessment
               </button>
               <button
                 onClick={handleConfirmCancel}
-                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
+                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-semibold cursor-pointer flex-1 border-0 transition shadow-2xs"
               >
                 Confirm Cancel
               </button>

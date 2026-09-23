@@ -410,13 +410,13 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
           <div className="text-xs font-semibold text-[#64748b] flex items-center gap-1.5">
             <span>M42 admin</span>
             <span>/</span>
-            <span className="text-[#36c0c9] font-bold">Agents</span>
+            <span className="text-[#36c0c9] font-semibold">Agents</span>
           </div>
 
           {/* Title & Search Bar Row */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-extrabold text-[#0d212c]">Agents</h2>
+              <h2 className="text-xl font-bold text-[#0d212c]">Agents</h2>
             </div>
 
             <div className="relative w-full sm:w-72">
@@ -429,7 +429,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   setSearchTerm(e.target.value)
                   setCurrentPage(1)
                 }}
-                className="w-full pl-10 pr-4 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-medium text-[#0d212c] outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 shadow-xs transition"
+                className="w-full pl-10 pr-4 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-normal text-[#0d212c] outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 shadow-xs transition"
               />
             </div>
           </div>
@@ -459,13 +459,13 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   }}
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-2 ${
                     isSelected
-                      ? 'bg-[#36c0c9] text-white font-bold shadow-xs border border-[#36c0c9]'
+                      ? 'bg-[#36c0c9] text-white font-semibold shadow-xs border border-[#36c0c9]'
                       : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
                   }`}
                 >
                   <span>{chip.label}</span>
                   <span
-                    className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                    className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full ${
                       isSelected ? 'bg-white/25 text-white' : 'bg-[#f1f5f9] text-[#64748b]'
                     }`}
                   >
@@ -482,10 +482,10 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-[#e2e8f0] bg-[#fafafa]/50">
-                    <th className="py-4 px-6 text-xs font-bold text-[#64748b]">Agent</th>
-                    <th className="py-4 px-6 text-xs font-bold text-[#64748b]">Kind</th>
-                    <th className="py-4 px-6 text-xs font-bold text-[#64748b]">Version</th>
-                    <th className="py-4 px-6 text-xs font-bold text-[#64748b]">Status</th>
+                    <th className="py-4 px-6 text-xs font-semibold text-[#64748b]">Agent</th>
+                    <th className="py-4 px-6 text-xs font-semibold text-[#64748b]">Kind</th>
+                    <th className="py-4 px-6 text-xs font-semibold text-[#64748b]">Version</th>
+                    <th className="py-4 px-6 text-xs font-semibold text-[#64748b]">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#e2e8f0]/60 text-xs">
@@ -502,11 +502,11 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                         onClick={() => setSelectedAgentId(agent.id)}
                         className="hover:bg-[#f8fafc] cursor-pointer transition-colors duration-150 group"
                       >
-                        <td className="py-4 px-6 font-bold text-[#0d212c] group-hover:text-[#36c0c9] transition">
+                        <td className="py-4 px-6 font-semibold text-[#0d212c] group-hover:text-[#36c0c9] transition">
                           {agent.name}
                         </td>
-                        <td className="py-4 px-6 text-[#334155] font-medium">{agent.kind}</td>
-                        <td className="py-4 px-6 text-[#64748b] font-medium">{agent.version}</td>
+                        <td className="py-4 px-6 text-[#334155] font-normal">{agent.kind}</td>
+                        <td className="py-4 px-6 text-[#64748b] font-normal">{agent.version}</td>
                         <td className="py-4 px-6">
                           {agent.status === 'Modified' ? (
                             <StatusChip label="Modified" status="warning" dot={false} />
@@ -524,7 +524,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
             {/* Pagination Footer */}
             {filteredAgents.length > 0 && (
               <div className="flex items-center justify-between px-5 py-3 border-t border-[#e2e8f0] bg-[#f8fafc]">
-                <div className="text-xs text-[#64748b] font-medium">
+                <div className="text-xs text-[#64748b] font-normal">
                   Showing page <span className="font-semibold text-[#0d212c]">{currentPage}</span>{' '}
                   of <span className="font-semibold text-[#0d212c]">{totalPages}</span>
                 </div>
@@ -545,7 +545,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                       <button
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
-                        className={`w-7 h-7 rounded-lg text-xs font-bold transition cursor-pointer border-0 ${
+                        className={`w-7 h-7 rounded-lg text-xs font-semibold transition cursor-pointer border-0 ${
                           currentPage === pageNum
                             ? 'bg-[#36c0c9] text-white'
                             : 'text-[#64748b] hover:bg-slate-200/60 bg-transparent'
@@ -573,10 +573,10 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
           {/* Prototype Role Switcher Bar with Tooltip (For prototype navigation purposes) */}
           <div className="mt-4 pt-4 border-t border-[#e2e8f0] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#f8fafc] p-4 rounded-2xl border border-[#cbd5e1]/60">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[#0d212c]">Prototype Mode:</span>
-              <span className="text-xs font-medium text-[#64748b]">
+              <span className="text-xs font-semibold text-[#0d212c]">Prototype Mode:</span>
+              <span className="text-xs font-normal text-[#64748b]">
                 Currently viewing as{' '}
-                <span className="font-bold text-[#0d212c]">
+                <span className="font-semibold text-[#0d212c]">
                   {viewRole === 'admin' ? 'Admin View (Full Access)' : 'Evaluator View (Read-Only)'}
                 </span>
               </span>
@@ -593,7 +593,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
 
             <button
               onClick={() => setViewRole(viewRole === 'admin' ? 'evaluator' : 'admin')}
-              className="px-4 py-2 rounded-xl bg-[#0d212c] hover:bg-[#153443] text-white text-xs font-bold transition cursor-pointer border-0 shadow-2xs self-start sm:self-auto"
+              className="px-4 py-2 rounded-xl bg-[#0d212c] hover:bg-[#153443] text-white text-xs font-semibold transition cursor-pointer border-0 shadow-2xs self-start sm:self-auto"
             >
               {viewRole === 'admin' ? 'Switch to Evaluator View' : 'Switch to Admin View'}
             </button>
@@ -618,16 +618,16 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
               Agents
             </button>
             <span>/</span>
-            <span className="text-[#36c0c9] font-bold">{selectedAgent.name}</span>
+            <span className="text-[#36c0c9] font-semibold">{selectedAgent.name}</span>
           </div>
 
           {/* Agent Detail Title Header */}
           <div className="flex items-center justify-between pb-2 border-b border-[#e2e8f0]">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-extrabold text-[#0d212c] tracking-tight">
+              <h1 className="text-2xl font-bold text-[#0d212c] tracking-tight">
                 {selectedAgent.name}
               </h1>
-              <span className="text-[#334155] text-xs font-medium">{selectedAgent.kind}</span>
+              <span className="text-[#334155] text-xs font-normal">{selectedAgent.kind}</span>
               {selectedAgent.status === 'Modified' ? (
                 <StatusChip label="Modified" status="warning" dot={false} />
               ) : (
@@ -638,10 +638,10 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
 
           {/* Prompt Section Container */}
           <div className="bg-white border border-[#e2e8f0] rounded-2xl shadow-xs overflow-hidden">
-            <div className="p-5 font-extrabold text-sm text-[#0d212c] border-b border-[#e2e8f0]">
+            <div className="p-5 font-bold text-sm text-[#0d212c] border-b border-[#e2e8f0]">
               Prompt
             </div>
-            <div className="px-5 py-2.5 bg-[#f8fafc] border-b border-[#e2e8f0] text-[11px] font-mono font-bold text-[#64748b] tracking-wider uppercase">
+            <div className="px-5 py-2.5 bg-[#f8fafc] border-b border-[#e2e8f0] text-[11px] font-mono font-semibold text-[#64748b] tracking-wider uppercase">
               LOCKED — SAFETY CORE
             </div>
             <div className="p-5 font-mono text-xs text-[#1e293b] leading-relaxed whitespace-pre-wrap bg-white outline-none select-text border-0 w-full min-h-[140px] max-h-[380px] overflow-y-auto subtle-scrollbar">
@@ -654,14 +654,14 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
             {/* Left Column: Configuration Form Card */}
             <div className="lg:col-span-2 bg-white border border-[#e2e8f0] rounded-2xl p-6 shadow-xs flex flex-col justify-between gap-6">
               <div className="flex flex-col gap-6">
-                <h2 className="text-base font-extrabold text-[#0d212c]">Configuration</h2>
+                <h2 className="text-base font-bold text-[#0d212c]">Configuration</h2>
 
                 {/* Form Controls */}
                 <div className="flex flex-col gap-6">
                   {/* Voice Agent Specific Controls */}
                   {selectedAgent.kind === 'Voice' && selectedAgent.config.defaultVoice && (
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-[#0d212c]">Default voice</label>
+                      <label className="text-xs font-semibold text-[#0d212c]">Default voice</label>
                       <select
                         disabled={viewRole === 'evaluator'}
                         value={selectedAgent.config.defaultVoice.value}
@@ -689,7 +689,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   {selectedAgent.kind === 'Voice' &&
                     selectedAgent.config.realtimeModelDeployment && (
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-xs font-bold text-[#0d212c]">
+                        <label className="text-xs font-semibold text-[#0d212c]">
                           Realtime model deployment
                         </label>
                         <input
@@ -717,7 +717,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   {/* Model Deployment (Background) */}
                   {selectedAgent.kind === 'Background' && selectedAgent.config.modelDeployment && (
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-[#0d212c]">Model deployment</label>
+                      <label className="text-xs font-semibold text-[#0d212c]">Model deployment</label>
                       <input
                         type="text"
                         disabled={viewRole === 'evaluator'}
@@ -741,7 +741,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   {/* Speaking Speed (Voice) */}
                   {selectedAgent.kind === 'Voice' && selectedAgent.config.speakingSpeed && (
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-[#0d212c]">Speaking speed</label>
+                      <label className="text-xs font-semibold text-[#0d212c]">Speaking speed</label>
                       <input
                         type="text"
                         disabled={viewRole === 'evaluator'}
@@ -763,7 +763,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   {/* Temperature (Background) */}
                   {selectedAgent.kind === 'Background' && selectedAgent.config.temperature && (
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-[#0d212c]">Temperature</label>
+                      <label className="text-xs font-semibold text-[#0d212c]">Temperature</label>
                       <input
                         type="text"
                         disabled={viewRole === 'evaluator'}
@@ -786,7 +786,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                     <div className="flex flex-col gap-1.5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <label className="text-xs font-bold text-[#0d212c]">Turn detection</label>
+                          <label className="text-xs font-semibold text-[#0d212c]">Turn detection</label>
                           {selectedAgent.config.turnDetection.isModified && (
                             <StatusChip label="Modified" status="warning" dot={false} />
                           )}
@@ -826,7 +826,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                     <div className="flex flex-col gap-1.5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <label className="text-xs font-bold text-[#0d212c]">
+                          <label className="text-xs font-semibold text-[#0d212c]">
                             Response eagerness
                           </label>
                           {selectedAgent.config.responseEagerness.isModified && (
@@ -870,7 +870,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                     <div className="flex flex-col gap-1.5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <label className="text-xs font-bold text-[#0d212c]">
+                          <label className="text-xs font-semibold text-[#0d212c]">
                             Input noise reduction
                           </label>
                           {selectedAgent.config.inputNoiseReduction.isModified && (
@@ -911,7 +911,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   {/* Upload Wait Before Reminder (Voice) */}
                   {selectedAgent.config.uploadWaitBeforeReminder && (
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold text-[#0d212c]">
+                      <label className="text-xs font-semibold text-[#0d212c]">
                         Upload wait before reminder (s)
                       </label>
                       <input
@@ -939,7 +939,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   {/* Note Field — Admin only */}
                   {viewRole === 'admin' && (
                     <div className="flex flex-col gap-1.5 pt-2">
-                      <label className="text-xs font-bold text-[#0d212c]">Note</label>
+                      <label className="text-xs font-semibold text-[#0d212c]">Note</label>
                       <input
                         type="text"
                         value={noteInput}
@@ -957,7 +957,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                 <div className="pt-4">
                   <button
                     onClick={handleSaveNewVersion}
-                    className="bg-[#0d212c] hover:bg-[#153443] text-white font-bold text-xs px-6 py-3 rounded-xl transition cursor-pointer shadow-2xs border-0"
+                    className="bg-[#0d212c] hover:bg-[#153443] text-white font-semibold text-xs px-6 py-3 rounded-xl transition cursor-pointer shadow-2xs border-0"
                   >
                     Save as new version
                   </button>
@@ -971,7 +971,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                 selectedAgent.status === 'default' ? 'h-full' : 'self-start'
               }`}
             >
-              <h2 className="text-base font-extrabold text-[#0d212c]">Version history</h2>
+              <h2 className="text-base font-bold text-[#0d212c]">Version history</h2>
 
               <div className="flex flex-col gap-4">
                 {selectedAgent.versionHistory.map((item) => (
@@ -985,9 +985,9 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-xs text-[#0d212c]">{item.version}</span>
+                        <span className="font-semibold text-xs text-[#0d212c]">{item.version}</span>
                         {item.isActive && (
-                          <span className="bg-slate-200 text-slate-700 border border-slate-300 px-2 py-0.5 rounded-md text-[10px] font-bold">
+                          <span className="bg-slate-200 text-slate-700 border border-slate-300 px-2 py-0.5 rounded-md text-[10px] font-semibold">
                             Active
                           </span>
                         )}
@@ -1001,7 +1001,7 @@ export const AgentManagement: React.FC<AgentManagementProps> = ({
                         </button>
                       )}
                     </div>
-                    <p className="text-xs text-[#475569] font-medium leading-relaxed">
+                    <p className="text-xs text-[#475569] font-normal leading-relaxed">
                       {item.note}
                     </p>
                     <p className="text-[11px] text-[#94a3b8] mt-1">

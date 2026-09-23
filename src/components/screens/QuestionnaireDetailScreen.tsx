@@ -256,7 +256,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
       {toastMessage && (
         <div className="fixed top-4 right-4 z-50 bg-[#f0fdf4] text-[#15803d] px-4 py-3 rounded-xl shadow-md border border-[#bbf7d0] flex items-center gap-3 animate-in slide-in-from-top duration-300">
           <Check className="w-4 h-4 text-[#16a34a]" />
-          <span className="text-sm font-medium">{toastMessage}</span>
+          <span className="text-sm font-normal">{toastMessage}</span>
         </div>
       )}
 
@@ -270,14 +270,14 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
           <span>Datasets</span>
         </button>
         <span>/</span>
-        <span className="text-[#36c0c9] font-bold">{questionnaire.title}</span>
+        <span className="text-[#36c0c9] font-semibold">{questionnaire.title}</span>
       </div>
 
       {/* Header Bar */}
       <div className="w-full px-6 lg:px-10 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-xl lg:text-2xl font-extrabold tracking-tight text-[#0d212c]">
+            <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-[#0d212c]">
               {questionnaire.title}
             </h1>
             <span
@@ -289,7 +289,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             </span>
           </div>
           {questionnaire.description && (
-            <p className="text-xs text-[#64748b] font-medium mt-0.5 max-w-3xl">
+            <p className="text-xs text-[#64748b] font-normal mt-0.5 max-w-3xl">
               {questionnaire.description}
             </p>
           )}
@@ -301,7 +301,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               <>
                 <button
                   onClick={() => setShowAddQuestionModal(true)}
-                  className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-bold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
+                  className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-semibold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
                 >
                   <Plus className="w-4 h-4 text-[#0d212c]" />
                   <span>Add testcase</span>
@@ -309,7 +309,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 <button
                   onClick={handlePublish}
                   disabled={questions.length === 0 || hasEmptyMandatoryFields}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Publish dataset
                 </button>
@@ -318,7 +318,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               <>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="text-[#36c0c9] hover:text-[#2cb0b9] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer bg-transparent border-0 p-0"
+                  className="text-[#36c0c9] hover:text-[#2cb0b9] font-semibold text-xs flex items-center gap-1.5 transition cursor-pointer bg-transparent border-0 p-0"
                 >
                   <Pencil className="w-4 h-4 text-[#36c0c9]" />
                   <span>Edit dataset</span>
@@ -326,7 +326,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 <button
                   onClick={handlePublish}
                   disabled={questions.length === 0 || hasEmptyMandatoryFields}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold px-6 py-2 rounded-xl text-xs shadow-xs cursor-pointer transition border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Publish dataset
                 </button>
@@ -336,7 +336,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             <>
               <button
                 onClick={() => setShowAddQuestionModal(true)}
-                className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-bold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
+                className="px-4 py-2 rounded-xl border border-[#cbd5e1] hover:border-[#94a3b8] hover:bg-slate-50 text-[#0d212c] bg-white font-semibold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer transition"
               >
                 <Plus className="w-4 h-4 text-[#0d212c]" />
                 <span>Add testcase</span>
@@ -344,7 +344,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               <button
                 onClick={handleSaveOrEdit}
                 disabled={questions.length === 0 || hasEmptyMandatoryFields}
-                className="bg-[#36c0c9] hover:bg-[#2eb0b9] text-white font-bold px-6 py-2 rounded-xl text-xs cursor-pointer shadow-xs border-0 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-[#36c0c9] hover:bg-[#2eb0b9] text-white font-semibold px-6 py-2 rounded-xl text-xs cursor-pointer shadow-xs border-0 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save
               </button>
@@ -352,7 +352,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
           ) : (
             <button
               onClick={handleSaveOrEdit}
-              className="text-[#36c0c9] hover:text-[#2cb0b9] font-bold text-xs flex items-center gap-1.5 transition cursor-pointer bg-transparent border-0 p-0"
+              className="text-[#36c0c9] hover:text-[#2cb0b9] font-semibold text-xs flex items-center gap-1.5 transition cursor-pointer bg-transparent border-0 p-0"
             >
               <Pencil className="w-4 h-4 text-[#36c0c9]" />
               <span>Edit dataset</span>
@@ -368,7 +368,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             <div className="w-14 h-14 rounded-2xl bg-slate-50 text-[#64748b] flex items-center justify-center border border-slate-200 mb-4 shadow-2xs">
               <Layers className="w-7 h-7 text-[#64748b]" />
             </div>
-            <h3 className="text-base font-extrabold text-[#0d212c] mb-1.5">
+            <h3 className="text-base font-bold text-[#0d212c] mb-1.5">
               No testcases in this dataset
             </h3>
             <p className="text-xs text-[#64748b] max-w-md mb-6 leading-relaxed">
@@ -380,7 +380,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 setIsEditing(true)
                 setShowAddQuestionModal(true)
               }}
-              className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-xs transition cursor-pointer border-0"
+              className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-xs transition cursor-pointer border-0"
             >
               <Plus className="w-4 h-4 text-white" />
               <span>Add testcase</span>
@@ -394,7 +394,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 type="button"
                 onClick={handleToggleSelectAll}
                 disabled={!isEditing}
-                className="bg-transparent border-0 p-0 shadow-none outline-none flex items-center gap-2.5 text-xs font-bold text-[#0d212c] hover:text-[#0d7280] transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 select-none"
+                className="bg-transparent border-0 p-0 shadow-none outline-none flex items-center gap-2.5 text-xs font-semibold text-[#0d212c] hover:text-[#0d7280] transition cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 select-none"
               >
                 <div
                   className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
@@ -410,16 +410,16 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
 
               {/* Chips Legend */}
               <div className="flex items-center gap-3 text-[11px] text-[#64748b] bg-white px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] shadow-2xs self-start sm:self-auto">
-                <span className="font-bold text-[#0d212c]">Legend:</span>
+                <span className="font-semibold text-[#0d212c]">Legend:</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
+                  <span className="font-bold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
                     TC-01
                   </span>
                   <span>Message Type</span>
                 </div>
                 <span className="text-[#cbd5e1]">|</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
+                  <span className="font-semibold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
                     Category
                   </span>
                   <span>Type - Accessible Section</span>
@@ -489,14 +489,14 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
 
                   return (
                     <div className="flex items-center gap-2.5 flex-wrap">
-                      <span className="text-sm font-extrabold text-[#0d212c] tracking-tight">
+                      <span className="text-sm font-bold text-[#0d212c] tracking-tight">
                         Testcase #{idx + 1}
                       </span>
-                      <span className="text-xs font-extrabold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                      <span className="text-xs font-bold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
                         {codeStr}
                       </span>
                       <span
-                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                        className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${
                           typeStr === 'Problems'
                             ? 'bg-amber-50 text-amber-800 border-amber-200'
                             : typeStr === 'Sensitive Info'
@@ -526,27 +526,27 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             {/* Testcase Title/Prompt */}
             {isEditing ? (
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Workflow <span className="text-red-500 font-bold">*</span>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
+                  Workflow <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <input
                   type="text"
                   value={q.question}
                   onChange={(e) => handleQuestionChange(q.id, 'question', e.target.value)}
-                  className="w-full text-xs font-medium text-[#0d212c] bg-white border border-[#cbd5e1] rounded-xl px-4 py-2.5 outline-none focus:border-[#e2e8f0] focus:ring-0 transition"
+                  className="w-full text-xs font-normal text-[#0d212c] bg-white border border-[#cbd5e1] rounded-xl px-4 py-2.5 outline-none focus:border-[#e2e8f0] focus:ring-0 transition"
                   placeholder="Enter testcase description..."
                 />
               </div>
             ) : (
-              <p className="text-xs font-medium text-[#0d212c] leading-relaxed">
+              <p className="text-xs font-normal text-[#0d212c] leading-relaxed">
                 {q.question}
               </p>
             )}
 
             {/* Expected behaviour Block */}
             <div className="bg-[#f8fafc] border border-[#e2e8f0] p-4 rounded-xl flex flex-col gap-1.5">
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#64748b]">
-                Expected behaviour <span className="text-red-500 font-bold text-xs">*</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#64748b]">
+                Expected behaviour <span className="text-red-500 font-semibold text-xs">*</span>
               </span>
               {isEditing ? (
                 <textarea
@@ -573,7 +573,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
         <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-3 mb-4">
-              <h3 className="text-base font-extrabold text-[#0d212c]">Add new testcase</h3>
+              <h3 className="text-base font-bold text-[#0d212c]">Add new testcase</h3>
               <button
                 onClick={() => setShowAddQuestionModal(false)}
                 className="p-1 rounded-lg text-slate-400 hover:text-[#0d212c] transition cursor-pointer"
@@ -584,8 +584,8 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
 
             <form onSubmit={handleAddQuestion} className="flex flex-col gap-4">
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Message type <span className="text-red-500 font-bold">*</span>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
+                  Message type <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <input
                   type="text"
@@ -593,13 +593,13 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   value={newMessageType}
                   onChange={(e) => setNewMessageType(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#e2e8f0] focus:ring-0 transition"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-normal text-[#0d212c] outline-none bg-white focus:border-[#e2e8f0] focus:ring-0 transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Category type <span className="text-red-500 font-bold">*</span>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
+                  Category type <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <input
                   type="text"
@@ -607,13 +607,13 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   value={newCategoryType}
                   onChange={(e) => setNewCategoryType(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#e2e8f0] focus:ring-0 transition"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-normal text-[#0d212c] outline-none bg-white focus:border-[#e2e8f0] focus:ring-0 transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Workflow <span className="text-red-500 font-bold">*</span>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
+                  Workflow <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <input
                   type="text"
@@ -621,13 +621,13 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   value={newQuestionText}
                   onChange={(e) => setNewQuestionText(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white focus:border-[#e2e8f0] focus:ring-0 transition"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-normal text-[#0d212c] outline-none bg-white focus:border-[#e2e8f0] focus:ring-0 transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Expected behaviour <span className="text-red-500 font-bold">*</span>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
+                  Expected behaviour <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <textarea
                   placeholder="Instructions or cues for the facility to answer effectively..."
@@ -635,7 +635,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                   onChange={(e) => setNewResponseCue(e.target.value)}
                   required
                   rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-medium text-[#0d212c] outline-none bg-white resize-y focus:border-[#e2e8f0] focus:ring-0 transition"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#cbd5e1] text-xs font-normal text-[#0d212c] outline-none bg-white resize-y focus:border-[#e2e8f0] focus:ring-0 transition"
                 />
               </div>
 
@@ -650,7 +650,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
                 <button
                   type="submit"
                   disabled={!newQuestionText.trim() || !newResponseCue.trim() || !newMessageType.trim() || !newCategoryType.trim()}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold py-2 px-6 rounded-xl text-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition border-0"
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold py-2 px-6 rounded-xl text-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition border-0"
                 >
                   Add Testcase
                 </button>
@@ -668,7 +668,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-extrabold text-[#0d212c] mb-1.5">Delete Testcase</h3>
+              <h3 className="text-xl font-bold text-[#0d212c] mb-1.5">Delete Testcase</h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
                 Are you sure you want to remove this testcase from the dataset?
               </p>
@@ -676,13 +676,13 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
             <div className="flex items-center justify-center gap-3 w-full mt-2">
               <button
                 onClick={() => setDeletingQuestionId(null)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteQuestion}
-                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
+                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer flex-1 border-0 transition shadow-2xs"
               >
                 Delete
               </button>

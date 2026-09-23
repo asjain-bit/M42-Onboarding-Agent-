@@ -47,7 +47,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
               alt="M42 logo"
               className="h-8 w-auto object-contain shrink-0"
             />
-            <span className="font-bold text-xl text-[#0d212c] tracking-tight">
+            <span className="font-semibold text-xl text-[#0d212c] tracking-tight">
               Onboarding Agent
             </span>
           </div>
@@ -59,8 +59,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 <Users className="w-6 h-6 text-[#0d7280]" />
               </div>
               <div>
-                <h3 className="font-extrabold text-[#0d212c] text-base lg:text-lg">Collaborative Evaluations</h3>
-                <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-medium">
+                <h3 className="font-bold text-[#0d212c] text-base lg:text-lg">Collaborative Evaluations</h3>
+                <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-normal">
                   Facilitators and evaluators work together to run test cases.
                 </p>
               </div>
@@ -71,8 +71,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 <ShieldCheck className="w-6 h-6 text-[#0d7280]" />
               </div>
               <div>
-                <h3 className="font-extrabold text-[#0d212c] text-base lg:text-lg">AI-Powered Analysis</h3>
-                <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-medium">
+                <h3 className="font-bold text-[#0d212c] text-base lg:text-lg">AI-Powered Analysis</h3>
+                <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-normal">
                   Automatically capture snapshots, analyze results, and generate verdicts.
                 </p>
               </div>
@@ -83,8 +83,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 <PieChart className="w-6 h-6 text-[#0d7280]" />
               </div>
               <div>
-                <h3 className="font-extrabold text-[#0d212c] text-base lg:text-lg">Clear &amp; Auditable Results</h3>
-                <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-medium">
+                <h3 className="font-bold text-[#0d212c] text-base lg:text-lg">Clear &amp; Auditable Results</h3>
+                <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-normal">
                   Track test case outcomes and get a final verdict for every dataset.
                 </p>
               </div>
@@ -97,7 +97,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
       <div className="flex-1 bg-white p-8 lg:p-16 flex items-center justify-center">
         <div className="w-full max-w-md bg-white rounded-2xl border border-gray-100 p-8 sm:p-12 text-center shadow-xs flex flex-col items-center">
           {/* Welcome Text */}
-          <h2 className="text-2xl font-bold text-[#0d212c] mb-2 tracking-tight">Welcome</h2>
+          <h2 className="text-2xl font-semibold text-[#0d212c] mb-2 tracking-tight">Welcome</h2>
           <p className="text-slate-500 text-sm mb-8 leading-relaxed max-w-sm mx-auto">
             Sign in with your organisational account
           </p>

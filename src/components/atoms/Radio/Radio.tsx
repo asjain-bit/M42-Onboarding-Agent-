@@ -13,7 +13,7 @@ export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
       <label
         htmlFor={generatedId}
         className={[
-          'inline-flex items-center gap-2.5 cursor-pointer select-none text-sm font-medium text-[#0d212c]',
+          'inline-flex items-center gap-2.5 cursor-pointer select-none text-sm font-normal text-[#0d212c]',
           disabled ? 'cursor-not-allowed opacity-50' : 'hover:text-[#0d212c]',
           className,
         ]

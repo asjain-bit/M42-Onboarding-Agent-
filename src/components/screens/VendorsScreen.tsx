@@ -543,13 +543,13 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
       {toastMessage && (
         <div className="fixed top-4 right-4 z-50 bg-[#f0fdf4] text-[#15803d] px-4 py-3 rounded-xl shadow-md border border-[#bbf7d0] flex items-center gap-3 animate-in slide-in-from-top duration-300">
           <CheckCircle2 className="w-4 h-4 text-[#16a34a]" />
-          <span className="text-sm font-medium">{toastMessage}</span>
+          <span className="text-sm font-normal">{toastMessage}</span>
         </div>
       )}
 
       {/* Dispatch Success Banner Toast — subtle light semantic styling */}
       {dispatchSuccessToast && (
-        <div className="fixed top-5 right-5 z-50 bg-[#f0fdf4] text-[#15803d] text-xs font-bold px-5 py-3.5 rounded-xl shadow-md border border-[#bbf7d0] flex items-center gap-3 animate-in fade-in slide-in-from-top-3 duration-200">
+        <div className="fixed top-5 right-5 z-50 bg-[#f0fdf4] text-[#15803d] text-xs font-semibold px-5 py-3.5 rounded-xl shadow-md border border-[#bbf7d0] flex items-center gap-3 animate-in fade-in slide-in-from-top-3 duration-200">
           <div className="w-7 h-7 rounded-full bg-[#dcfce7] flex items-center justify-center shrink-0">
             <PhoneCall className="w-3.5 h-3.5 text-[#16a34a]" />
           </div>
@@ -561,13 +561,13 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
       <div className="text-xs font-semibold text-[#64748b] flex items-center gap-1.5">
         <span>M42 admin</span>
         <span>/</span>
-        <span className="text-[#36c0c9] font-bold">Facilities</span>
+        <span className="text-[#36c0c9] font-semibold">Facilities</span>
       </div>
 
       {/* Header Bar with Search Bar placed on the LEFT side of the Add Facility CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-0.5">
-          <h2 className="text-xl font-extrabold text-[#0d212c]">Facilities</h2>
+          <h2 className="text-xl font-bold text-[#0d212c]">Facilities</h2>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -581,16 +581,25 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                 setSearchTerm(e.target.value)
                 setCurrentPage(1)
               }}
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-medium text-[#0d212c] outline-none focus:border-[#cbd5e1] shadow-xs"
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-normal text-[#0d212c] outline-none focus:border-[#cbd5e1] shadow-xs"
             />
           </div>
 
           <button
             onClick={() => {
               setOnboardingMode('find')
+              setFindSearchQuery('')
+              setIsSearchingVendor(false)
+              setHasSearched(false)
+              setSelectedSearchResult(null)
+              setFindCountry('United Arab Emirates')
+              setFindWebsite('')
+              setFindRecipients([])
+              setFindRecipientInput('')
+              setFindRecipientError(null)
               setShowAddVendorModal(true)
             }}
-            className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold py-2 px-5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition cursor-pointer border-0 shrink-0"
+            className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold py-2 px-5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition cursor-pointer border-0 shrink-0"
           >
             <Plus className="w-4 h-4 text-white" />
             <span>Add Facility</span>
@@ -623,13 +632,13 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
               }}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-2 ${
                 isSelected
-                  ? 'bg-[#36c0c9] text-white font-bold shadow-xs'
+                  ? 'bg-[#36c0c9] text-white font-semibold shadow-xs'
                   : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
               }`}
             >
               <span>{chip.label}</span>
               <span
-                className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full ${
                   isSelected ? 'bg-white/25 text-white' : 'bg-[#f1f5f9] text-[#64748b]'
                 }`}
               >
@@ -645,7 +654,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] text-xs font-bold">
+              <tr className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] text-xs font-semibold">
                 <th className="py-3.5 px-5">Facility Name</th>
                 <th className="py-3.5 px-5">Domain</th>
                 <th className="py-3.5 px-5">Recipients</th>
@@ -661,8 +670,8 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                     <div className="flex items-center gap-2.5">
                       <Loader2 className="w-4 h-4 animate-spin text-[#36c0c9] shrink-0" />
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-extrabold">{addingVendorName || 'New Vendor'}</span>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ddf7f9] text-[#0f766e] flex items-center gap-1 border border-[#36c0c9]/30 w-fit">
+                        <span className="font-bold">{addingVendorName || 'New Vendor'}</span>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#ddf7f9] text-[#0f766e] flex items-center gap-1 border border-[#36c0c9]/30 w-fit">
                           <Loader2 className="w-3 h-3 animate-spin" /> Adding item to list...
                         </span>
                       </div>
@@ -699,13 +708,13 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                     <td className="py-4 px-5">
                       <div className="flex flex-col min-w-0 gap-[2px]">
                         <span
-                          className="font-bold text-[#0d212c] text-xs group-hover:text-[#36c0c9] transition truncate"
+                          className="font-semibold text-[#0d212c] text-xs group-hover:text-[#36c0c9] transition truncate"
                           title={vendor.name}
                         >
                           {vendor.name}
                         </span>
                         <span
-                          className="text-[11px] font-medium text-[#64748b] truncate mt-[2px]"
+                          className="text-[11px] font-normal text-[#64748b] truncate mt-[2px]"
                           title={vendor.legalName}
                         >
                           {vendor.legalName}
@@ -719,19 +728,19 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                           href={`https://${vendor.domain}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[#0d212c] font-medium underline hover:text-[#36c0c9] transition truncate block max-w-[160px]"
+                          className="text-[#0d212c] font-normal underline hover:text-[#36c0c9] transition truncate block max-w-[160px]"
                           title={vendor.domain}
                         >
                           {vendor.domain}
                         </a>
                       ) : (
-                        <span className="text-[#64748b] font-medium">-</span>
+                        <span className="text-[#64748b] font-normal">-</span>
                       )}
                     </td>
 
                     <td className="py-4 px-5 text-xs" onClick={(e) => e.stopPropagation()}>
                       {!vendor.recipients || vendor.recipients.length === 0 ? (
-                        <span className="text-[#64748b] font-medium">-</span>
+                        <span className="text-[#64748b] font-normal">-</span>
                       ) : (
                         <div className="flex flex-wrap items-center gap-1.5 min-w-[320px] max-w-[380px]">
                           {(expandedRecipients[vendor.id]
@@ -740,7 +749,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                           ).map((recEmail, idx) => (
                             <span
                               key={idx}
-                              className="inline-block bg-[#f1f5f9] text-[#0d212c] font-medium px-2 py-0.5 rounded-md text-[11px] border border-[#e2e8f0] truncate max-w-[180px]"
+                              className="inline-block bg-[#f1f5f9] text-[#0d212c] font-normal px-2 py-0.5 rounded-md text-[11px] border border-[#e2e8f0] truncate max-w-[180px]"
                               title={recEmail}
                             >
                               {recEmail}
@@ -755,7 +764,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                                   [vendor.id]: true,
                                 }))
                               }}
-                              className="inline-block bg-transparent border-0 text-[#64748b] hover:text-[#0d212c] font-bold text-[11px] px-1 py-0.5 transition cursor-pointer shrink-0"
+                              className="inline-block bg-transparent border-0 text-[#64748b] hover:text-[#0d212c] font-semibold text-[11px] px-1 py-0.5 transition cursor-pointer shrink-0"
                               title="Click to view all recipients"
                             >
                               +{vendor.recipients.length - 3}
@@ -766,7 +775,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                     </td>
 
                     <td
-                      className="py-4 px-5 text-xs text-[#0d212c] font-medium truncate"
+                      className="py-4 px-5 text-xs text-[#0d212c] font-normal truncate"
                       title={`${vendor.country}`}
                     >
                       <div className="inline-flex items-center gap-2">
@@ -884,7 +893,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
         {/* Pagination Footer */}
         {filteredVendors.length > 0 && (
           <div className="flex items-center justify-between px-5 py-3 border-t border-[#e2e8f0] bg-[#f8fafc]">
-            <div className="text-xs text-[#64748b] font-medium">
+            <div className="text-xs text-[#64748b] font-normal">
               Showing page <span className="font-semibold text-[#0d212c]">{currentPage}</span> of{' '}
               <span className="font-semibold text-[#0d212c]">{totalPages}</span>
             </div>
@@ -905,7 +914,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                   <button
                     key={pageNum}
                     onClick={() => setCurrentPage(pageNum)}
-                    className={`w-7 h-7 rounded-lg text-xs font-bold transition cursor-pointer border-0 ${
+                    className={`w-7 h-7 rounded-lg text-xs font-semibold transition cursor-pointer border-0 ${
                       currentPage === pageNum
                         ? 'bg-[#36c0c9] text-white'
                         : 'text-[#64748b] hover:bg-slate-200/60 bg-transparent'
@@ -935,7 +944,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
         <div className="fixed inset-0 z-50 bg-[#0d212c]/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-[#e2e8f0] mb-5">
-              <h3 className="text-lg font-bold text-[#0d212c]">Edit facility details</h3>
+              <h3 className="text-lg font-semibold text-[#0d212c]">Edit facility details</h3>
               <button
                 type="button"
                 onClick={() => {
@@ -953,8 +962,8 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
             <form onSubmit={handleSaveEditedVendor} className="flex flex-col gap-4">
               {/* Facility name */}
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                  Facility name <span className="text-red-500 font-bold">*</span>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
+                  Facility name <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <input
                   type="text"
@@ -967,7 +976,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
 
               {/* Country */}
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">Country</label>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">Country</label>
                 <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] bg-white focus-within:border-[#cbd5e1]">
                   <CountryFlag country={editingVendor.country} />
                   <select
@@ -993,7 +1002,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
 
               {/* Website URL */}
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-1.5">Website URL</label>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">Website URL</label>
                 <input
                   type="url"
                   placeholder="https://example.com"
@@ -1005,7 +1014,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
 
               {/* Recipients tag input */}
               <div className="flex flex-col gap-1.5">
-                <label className="block text-xs font-bold text-[#0d212c]">Recipients</label>
+                <label className="block text-xs font-semibold text-[#0d212c]">Recipients</label>
                 <input
                   type="text"
                   placeholder={
@@ -1099,7 +1108,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                 <button
                   type="submit"
                   disabled={(editingVendor.recipients || []).length > 5}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-5 py-2 rounded-xl cursor-pointer border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-5 py-2 rounded-xl cursor-pointer border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Save changes
                 </button>
@@ -1131,7 +1140,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-extrabold text-[#0d212c] mb-1.5">
+              <h3 className="text-xl font-bold text-[#0d212c] mb-1.5">
                 {confirmStatusVendor.targetStatus === 'Deactivated'
                   ? 'Deactivate Facility'
                   : 'Reactivate Facility'}
@@ -1146,7 +1155,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
               <button
                 type="button"
                 onClick={() => setConfirmStatusVendor(null)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
               >
                 Cancel
               </button>
@@ -1156,7 +1165,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                   toggleVendorStatus(confirmStatusVendor.vendor)
                   setConfirmStatusVendor(null)
                 }}
-                className={`px-6 py-3 rounded-xl text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs ${
+                className={`px-6 py-3 rounded-xl text-white text-xs font-semibold cursor-pointer flex-1 border-0 transition shadow-2xs ${
                   confirmStatusVendor.targetStatus === 'Deactivated'
                     ? 'bg-red-600 hover:bg-red-700'
                     : 'bg-[#36c0c9] hover:bg-[#2badb6]'
@@ -1175,7 +1184,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between pb-4 border-b border-[#e2e8f0] mb-5">
               <div>
-                <h3 className="text-lg font-extrabold text-[#0d212c]">Add Facility</h3>
+                <h3 className="text-lg font-bold text-[#0d212c]">Add Facility</h3>
               </div>
 
               <button
@@ -1193,8 +1202,8 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col gap-1 relative">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <label className="block text-xs font-bold text-[#0d212c]">
-                        Facility legal name <span className="text-red-500 font-bold">*</span>
+                      <label className="block text-xs font-semibold text-[#0d212c]">
+                        Facility legal name <span className="text-red-500 font-semibold">*</span>
                       </label>
                       <div className="relative group cursor-pointer">
                         <Info className="w-3.5 h-3.5 text-[#64748b]" />
@@ -1213,6 +1222,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                         onChange={(e) => {
                           setFindSearchQuery(e.target.value)
                           setSelectedSearchResult(null)
+                          setFindWebsite('')
                         }}
                         onKeyDown={handleFindVendorSearchKeyDown}
                         className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-[#e2e8f0] text-xs text-[#0d212c] outline-none focus:border-[#cbd5e1]"
@@ -1225,7 +1235,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                     {/* Floating Custom Dropdown List (does not increase modal height) */}
                     {hasSearched && (
                       <div className="absolute top-full left-0 right-0 z-50 mt-1.5 flex flex-col gap-1.5 bg-white p-3 rounded-2xl border border-[#e2e8f0] shadow-2xl max-h-56 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
-                        <span className="text-[10px] font-extrabold uppercase text-[#64748b] tracking-wider mb-1">
+                        <span className="text-[10px] font-bold uppercase text-[#64748b] tracking-wider mb-1">
                           SELECT MATCHING VENDOR RESULT (
                           {searchVendorResults.filter(
                             (r) =>
@@ -1271,7 +1281,12 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                                 setFindSearchQuery(res.name) // Adds vendor name to input field
                                 setHasSearched(false) // Closes the search results list
                                 if (res.domain) {
-                                  setFindWebsite(`https://${res.domain}`)
+                                  const formattedUrl =
+                                    res.domain.startsWith('http://') ||
+                                    res.domain.startsWith('https://')
+                                      ? res.domain
+                                      : `https://${res.domain}`
+                                  setFindWebsite(formattedUrl)
                                 }
                               }}
                               className={`p-3 rounded-xl border transition cursor-pointer flex items-center justify-between gap-3 ${
@@ -1282,7 +1297,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                             >
                               <div className="flex flex-col min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-bold text-xs text-[#0d212c] truncate">
+                                  <span className="font-semibold text-xs text-[#0d212c] truncate">
                                     {res.name}
                                   </span>
                                   {isSelected && (
@@ -1308,7 +1323,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
 
                   {/* Country */}
                   <div>
-                    <label className="block text-xs font-bold text-[#0d212c] mb-1.5">Country</label>
+                    <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">Country</label>
                     <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] bg-white focus-within:border-[#cbd5e1]">
                       <CountryFlag country={findCountry} />
                       <select
@@ -1327,21 +1342,22 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
 
                   {/* Website URL on next line */}
                   <div>
-                    <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
+                    <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
                       Website URL
                     </label>
                     <input
                       type="text"
                       placeholder="https://"
                       value={findWebsite}
-                      onChange={(e) => setFindWebsite(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#e2e8f0] text-xs text-[#0d212c] outline-none focus:border-[#cbd5e1]"
+                      readOnly
+                      disabled
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#e2e8f0] text-xs text-[#0d212c] outline-none bg-[#f8fafc] text-[#64748b] cursor-not-allowed select-none"
                     />
                   </div>
 
                   {/* Recipients tag-input (find flow) */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="block text-xs font-bold text-[#0d212c] mb-0.5">
+                    <label className="block text-xs font-semibold text-[#0d212c] mb-0.5">
                       Recipients
                     </label>
                     <input
@@ -1369,7 +1385,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                       <span>{findRecipients.length}/5</span>
                     </div>
                     {findRecipientError && (
-                      <span className="text-xs text-red-600 font-medium">{findRecipientError}</span>
+                      <span className="text-xs text-red-600 font-normal">{findRecipientError}</span>
                     )}
                     {findRecipients.length > 5 && (
                       <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-semibold flex items-start gap-2">
@@ -1412,7 +1428,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                     className="text-xs cursor-pointer transition bg-transparent border-0 self-center p-0 flex items-center gap-1"
                   >
                     <span className="text-[#64748b]">Can&apos;t find facility?</span>
-                    <span className="text-[#36c0c9] font-bold hover:underline">
+                    <span className="text-[#36c0c9] font-semibold hover:underline">
                       Add facility manually
                     </span>
                   </button>
@@ -1433,7 +1449,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                         findRecipients.length > 5
                       }
                       onClick={handleAddVendorFromFind}
-                      className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-6 py-2.5 rounded-xl transition cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed border-0 flex items-center justify-center gap-2"
+                      className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed border-0 flex items-center justify-center gap-2"
                     >
                       {isAddingVendor ? (
                         <>
@@ -1453,8 +1469,8 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                 <div className="flex flex-col gap-4">
                   {/* Display name */}
                   <div>
-                    <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
-                      Display name <span className="text-red-500 font-bold">*</span>
+                    <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
+                      Display name <span className="text-red-500 font-semibold">*</span>
                     </label>
                     <input
                       type="text"
@@ -1468,7 +1484,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
 
                   {/* Legal name */}
                   <div>
-                    <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
+                    <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
                       Legal name
                     </label>
                     <input
@@ -1483,7 +1499,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                   {/* Country + Website on same row */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
+                      <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
                         Country
                       </label>
                       <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] bg-white focus-within:border-[#cbd5e1]">
@@ -1503,7 +1519,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-[#0d212c] mb-1.5">
+                      <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
                         Website
                       </label>
                       <input
@@ -1518,7 +1534,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
 
                   {/* Recipients tag-input (manual flow) */}
                   <div className="flex flex-col gap-1.5">
-                    <label className="block text-xs font-bold text-[#0d212c] mb-0.5">
+                    <label className="block text-xs font-semibold text-[#0d212c] mb-0.5">
                       Recipients
                     </label>
                     <input
@@ -1546,7 +1562,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                       <span>{manualRecipients.length}/5</span>
                     </div>
                     {manualRecipientError && (
-                      <span className="text-xs text-red-600 font-medium">
+                      <span className="text-xs text-red-600 font-normal">
                         {manualRecipientError}
                       </span>
                     )}
@@ -1605,7 +1621,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                       disabled={
                         isAddingVendor || !manualDisplayName.trim() || manualRecipients.length > 5
                       }
-                      className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-6 py-2.5 rounded-xl transition cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed border-0 flex items-center justify-center gap-2"
+                      className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-6 py-2.5 rounded-xl transition cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed border-0 flex items-center justify-center gap-2"
                     >
                       {isAddingVendor ? (
                         <>

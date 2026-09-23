@@ -242,7 +242,7 @@ export const QuestionnairesScreen: React.FC = () => {
       {toastMessage && (
         <div className="fixed top-4 right-4 z-50 bg-[#f0fdf4] text-[#15803d] px-4 py-3 rounded-xl shadow-md border border-[#bbf7d0] flex items-center gap-3 animate-in slide-in-from-top duration-300">
           <FileText className="w-4 h-4 text-[#16a34a]" />
-          <span className="text-sm font-medium">{toastMessage}</span>
+          <span className="text-sm font-normal">{toastMessage}</span>
         </div>
       )}
 
@@ -250,13 +250,13 @@ export const QuestionnairesScreen: React.FC = () => {
       <div className="text-xs font-semibold text-[#64748b] flex items-center gap-1.5">
         <span>M42 admin</span>
         <span>/</span>
-        <span className="text-[#36c0c9] font-bold">Datasets</span>
+        <span className="text-[#36c0c9] font-semibold">Datasets</span>
       </div>
 
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-0.5">
-          <h2 className="text-xl font-extrabold text-[#0d212c]">Datasets</h2>
+          <h2 className="text-xl font-bold text-[#0d212c]">Datasets</h2>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -270,13 +270,13 @@ export const QuestionnairesScreen: React.FC = () => {
                 setSearchTerm(e.target.value)
                 setCurrentPage(1)
               }}
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-medium text-[#0d212c] outline-none focus:border-[#cbd5e1] shadow-xs"
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-normal text-[#0d212c] outline-none focus:border-[#cbd5e1] shadow-xs"
             />
           </div>
 
           <button
             onClick={() => setShowUploadModal(true)}
-            className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold py-2.5 px-5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition cursor-pointer border-0 shrink-0"
+            className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold py-2.5 px-5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs transition cursor-pointer border-0 shrink-0"
           >
             <Upload className="w-4 h-4 text-white" />
             <span>Add Dataset</span>
@@ -309,13 +309,13 @@ export const QuestionnairesScreen: React.FC = () => {
               }}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer flex items-center gap-2 ${
                 isSelected
-                  ? 'bg-[#36c0c9] text-white font-bold shadow-xs border border-[#36c0c9]'
+                  ? 'bg-[#36c0c9] text-white font-semibold shadow-xs border border-[#36c0c9]'
                   : 'bg-white text-[#64748b] border border-[#e2e8f0] hover:bg-[#f8fafc]'
               }`}
             >
               <span>{chip.label}</span>
               <span
-                className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                className={`text-[10px] font-semibold px-1.5 py-0.2 rounded-full ${
                   isSelected ? 'bg-white/25 text-white' : 'bg-[#f1f5f9] text-[#64748b]'
                 }`}
               >
@@ -331,7 +331,7 @@ export const QuestionnairesScreen: React.FC = () => {
         <div className="overflow-x-auto w-full">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] text-xs font-bold">
+              <tr className="bg-[#f8fafc] border-b border-[#e2e8f0] text-[#64748b] text-xs font-semibold">
                 <th className="py-3.5 px-4">Dataset Name</th>
                 <th className="py-3.5 px-4">Description</th>
                 <th className="py-3.5 px-4">Testcases</th>
@@ -345,10 +345,10 @@ export const QuestionnairesScreen: React.FC = () => {
                   <td className="py-3.5 px-4 font-semibold text-xs text-[#0d212c]">
                     <div className="flex items-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin text-[#36c0c9] shrink-0" />
-                      <span className="font-extrabold">
+                      <span className="font-bold">
                         {newQuestionnaireTitle || 'New Dataset'}
                       </span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#ddf7f9] text-[#0f766e] flex items-center gap-1 border border-[#36c0c9]/30">
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#ddf7f9] text-[#0f766e] flex items-center gap-1 border border-[#36c0c9]/30">
                         <Loader2 className="w-3 h-3 animate-spin" /> Adding item to list...
                       </span>
                     </div>
@@ -458,7 +458,7 @@ export const QuestionnairesScreen: React.FC = () => {
         {/* Table Pagination Footer */}
         {filteredQuestionnaires.length > 0 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[#e2e8f0] bg-[#f8fafc]">
-            <div className="text-xs text-[#64748b] font-medium">
+            <div className="text-xs text-[#64748b] font-normal">
               Showing page <span className="font-semibold text-[#0d212c]">{currentPage}</span> of{' '}
               <span className="font-semibold text-[#0d212c]">{totalPages}</span>
             </div>
@@ -479,7 +479,7 @@ export const QuestionnairesScreen: React.FC = () => {
                   <button
                     key={pageNum}
                     onClick={() => setCurrentPage(pageNum)}
-                    className={`w-7 h-7 rounded-lg text-xs font-bold transition cursor-pointer ${
+                    className={`w-7 h-7 rounded-lg text-xs font-semibold transition cursor-pointer ${
                       currentPage === pageNum
                         ? 'bg-[#36c0c9] text-white'
                         : 'text-[#64748b] hover:bg-slate-200/60'
@@ -510,8 +510,8 @@ export const QuestionnairesScreen: React.FC = () => {
           <div className="bg-white rounded-3xl max-w-3xl w-full p-8 shadow-2xl border border-[#e2e8f0] animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-4 mb-6">
               <div>
-                <h3 className="text-lg font-extrabold text-[#0d212c]">Add Dataset</h3>
-                <p className="text-xs text-[#64748b] mt-0.5 font-medium">
+                <h3 className="text-lg font-bold text-[#0d212c]">Add Dataset</h3>
+                <p className="text-xs text-[#64748b] mt-0.5 font-normal">
                   Configure new dataset template and set up testcases for automated evaluation.
                 </p>
               </div>
@@ -527,8 +527,8 @@ export const QuestionnairesScreen: React.FC = () => {
 
             <form onSubmit={handleUpload} className="flex flex-col gap-5">
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-2">
-                  Dataset Name <span className="text-red-500 font-bold">*</span>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-2">
+                  Dataset Name <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <Input
                   placeholder="e.g. Clinical EHR & Patient Records Dataset"
@@ -540,7 +540,7 @@ export const QuestionnairesScreen: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0d212c] mb-2">Description</label>
+                <label className="block text-xs font-semibold text-[#0d212c] mb-2">Description</label>
                 <Textarea
                   placeholder="Brief summary of what this dataset covers..."
                   value={description}
@@ -552,9 +552,9 @@ export const QuestionnairesScreen: React.FC = () => {
 
               <div>
                 <div className="flex items-center gap-1.5 mb-2">
-                  <label className="block text-xs font-bold text-[#0d212c]">
+                  <label className="block text-xs font-semibold text-[#0d212c]">
                     Document upload (Excel .xlsx, .xls, .csv - Max 1 file, up to 25 MB){' '}
-                    <span className="text-red-500 font-bold">*</span>
+                    <span className="text-red-500 font-semibold">*</span>
                   </label>
                   <div className="relative group cursor-pointer">
                     <Info className="w-3.5 h-3.5 text-[#64748b]" />
@@ -567,7 +567,7 @@ export const QuestionnairesScreen: React.FC = () => {
                 {!uploadedFile ? (
                   <label className="border-2 border-dashed border-[#e2e8f0] hover:border-[#cbd5e1] bg-[#f8fafc] hover:bg-[#f1f5f9] rounded-2xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition text-center min-h-[140px]">
                     <Upload className="w-7 h-7 text-[#0d212c]" />
-                    <span className="text-xs font-bold text-[#0d212c]">
+                    <span className="text-xs font-semibold text-[#0d212c]">
                       Click to choose file or drag and drop
                     </span>
                     <span className="text-[11px] text-[#64748b]">
@@ -586,7 +586,7 @@ export const QuestionnairesScreen: React.FC = () => {
                     <div className="flex items-center gap-3 min-w-0">
                       <FileText className="w-5 h-5 text-[#0d212c] shrink-0" />
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-[#0d212c] truncate">
+                        <p className="text-xs font-semibold text-[#0d212c] truncate">
                           {uploadedFile.name}
                         </p>
                         <span className="text-[10px] text-[#64748b]">
@@ -617,7 +617,7 @@ export const QuestionnairesScreen: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleDownloadTemplate}
-                  className="text-xs font-bold text-[#0d7280] hover:text-[#09515b] flex items-center gap-1.5 w-fit cursor-pointer bg-transparent border-0 p-0 transition"
+                  className="text-xs font-semibold text-[#0d7280] hover:text-[#09515b] flex items-center gap-1.5 w-fit cursor-pointer bg-transparent border-0 p-0 transition"
                 >
                   <Download className="w-4 h-4 text-[#0d7280]" />
                   <span>Download dataset template</span>
@@ -635,7 +635,7 @@ export const QuestionnairesScreen: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isUploading || !title.trim() || !uploadedFile}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold py-2.5 px-7 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition border-0"
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold py-2.5 px-7 rounded-xl text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition border-0"
                 >
                   {isUploading ? (
                     <>
@@ -660,7 +660,7 @@ export const QuestionnairesScreen: React.FC = () => {
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-extrabold text-[#0d212c] mb-1.5">Confirm deletion</h3>
+              <h3 className="text-xl font-bold text-[#0d212c] mb-1.5">Confirm deletion</h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
                 Are you sure you want to remove this dataset template from your active
                 workspace?
@@ -669,13 +669,13 @@ export const QuestionnairesScreen: React.FC = () => {
             <div className="flex items-center justify-center gap-3 w-full mt-2">
               <button
                 onClick={() => setDeletingId(null)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
-                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
+                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer flex-1 border-0 transition shadow-2xs"
               >
                 Delete template
               </button>

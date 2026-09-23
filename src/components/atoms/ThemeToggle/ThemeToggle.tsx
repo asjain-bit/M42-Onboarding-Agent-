@@ -32,7 +32,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ showLabel = false, cla
       aria-label={`Current theme: ${theme}. Click to change theme.`}
       title={`Theme: ${theme}`}
       className={[
-        'inline-flex items-center gap-2 h-9 px-3 text-sm font-medium rounded-md bg-bg-surface-2 hover:bg-bg-hover text-text-primary border border-border-default transition-colors cursor-pointer',
+        'inline-flex items-center gap-2 h-9 px-3 text-sm font-normal rounded-md bg-bg-surface-2 hover:bg-bg-hover text-text-primary border border-border-default transition-colors cursor-pointer',
         className,
       ]
         .filter(Boolean)

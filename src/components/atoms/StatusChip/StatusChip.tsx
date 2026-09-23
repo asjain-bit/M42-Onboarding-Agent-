@@ -54,7 +54,7 @@ export const StatusChip: React.FC<StatusChipProps> = ({
   return (
     <span
       className={[
-        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border select-none transition-colors',
+        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-normal border select-none transition-colors',
         getStyles(),
         className,
       ]

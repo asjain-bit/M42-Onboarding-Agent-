@@ -5,6 +5,9 @@
 @import '../styles/tokens/brand.css';
 
 @theme {
+  --font-sans: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Fraunces', Georgia, serif;
+
   --color-bg-default: var(--bg-default);
   --color-bg-surface-1: var(--bg-surface-1);
   --color-bg-surface-2: var(--bg-surface-2);
@@ -72,7 +75,7 @@
 }
 
 body {
-  font-family: var(--font-sans, system-ui, sans-serif);
+  font-family: var(--font-sans, 'Poppins', system-ui, sans-serif);
   background-color: var(--bg-default);
   color: var(--text-primary);
   min-height: 100vh;

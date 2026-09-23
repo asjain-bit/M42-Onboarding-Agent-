@@ -25,7 +25,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   return (
     <div className={['flex flex-col gap-1.5 w-full', className].filter(Boolean).join(' ')}>
       {label && (
-        <label htmlFor={inputId} className="text-xs font-bold text-[#0d212c] tracking-normal select-none">
+        <label htmlFor={inputId} className="text-xs font-semibold text-[#0d212c] tracking-normal select-none">
           {label}
           {required && <span className="text-[#d92d20] ml-1">*</span>}
         </label>
@@ -34,7 +34,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       <Input id={inputId} error={hasError} {...inputProps} />
 
       {errorMessage ? (
-        <span className="text-xs text-[#d92d20] font-medium mt-0.5">{errorMessage}</span>
+        <span className="text-xs text-[#d92d20] font-normal mt-0.5">{errorMessage}</span>
       ) : helperText ? (
         <span className="text-xs text-[#64748b] mt-0.5">{helperText}</span>
       ) : null}

@@ -172,7 +172,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           <div className="w-8 h-8 rounded-full bg-[#ddf7f9] text-[#36c0c9] flex items-center justify-center shrink-0">
             <Check className="w-4 h-4 stroke-[3]" />
           </div>
-          <span className="font-extrabold text-xl lg:text-2xl tracking-tight text-[#0d212c]">
+          <span className="font-bold text-xl lg:text-2xl tracking-tight text-[#0d212c]">
             {timing === 'later' ? 'Call scheduled' : 'Call dispatched'}
           </span>
         </div>
@@ -541,7 +541,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               <div className="w-14 h-14 rounded-2xl bg-[#ddf7f9] text-[#0d7280] flex items-center justify-center border border-[#36c0c9]/30 shadow-2xs">
                 <Calendar className="w-7 h-7 text-[#0d7280]" />
               </div>
-              <h3 className="text-xl font-extrabold text-[#0d212c]">Reschedule meeting</h3>
+              <h3 className="text-xl font-bold text-[#0d212c]">Reschedule meeting</h3>
             </div>
 
             <div className="flex flex-col gap-4 w-full text-left">
@@ -588,7 +588,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <div className="flex items-center gap-3 pt-3 border-t border-[#e2e8f0] w-full">
               <button
                 onClick={() => setShowRescheduleModal(false)}
-                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer bg-transparent transition"
+                className="flex-1 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] cursor-pointer bg-transparent transition"
               >
                 Cancel
               </button>
@@ -599,7 +599,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   setStartTime(rescheduleTime)
                 }}
                 disabled={!rescheduleDate.trim() || !rescheduleTime.trim() || !rescheduleReason.trim()}
-                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-bold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-3 rounded-xl bg-[#36c0c9] text-white font-semibold text-xs transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Confirm Reschedule
               </button>
@@ -625,7 +625,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             </div>
 
             <div className="flex flex-col gap-1 text-center">
-              <h3 className="text-xl font-extrabold text-[#0d212c]">Cancel meeting</h3>
+              <h3 className="text-xl font-bold text-[#0d212c]">Cancel meeting</h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
                 Are you sure you want to cancel the meeting?
               </p>
@@ -646,7 +646,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <div className="flex items-center justify-center gap-3 w-full pt-1">
               <button
                 onClick={() => setShowCancelModal(false)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition hover:bg-slate-50"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] cursor-pointer flex-1 bg-transparent transition hover:bg-slate-50"
               >
                 Keep Assessment
               </button>
@@ -655,7 +655,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   setShowCancelModal(false)
                   setIsMeetingCancelled(true)
                 }}
-                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs hover:bg-red-700"
+                className="px-6 py-3 rounded-xl bg-red-600 text-white text-xs font-semibold cursor-pointer flex-1 border-0 transition shadow-2xs hover:bg-red-700"
               >
                 Confirm Cancel
               </button>
@@ -683,7 +683,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           <span>/</span>
           <span>{vendor.name}</span>
           <span>/</span>
-          <span className="text-[#36c0c9] font-bold">
+          <span className="text-[#36c0c9] font-semibold">
             {isScheduledLater ? 'Call scheduled' : 'Call dispatched'}
           </span>
         </div>
@@ -695,7 +695,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           <div className="bg-white p-8 rounded-3xl border border-[#e2e8f0] shadow-xs flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                <span className="text-[11px] font-bold text-[#64748b] uppercase tracking-wider">
                   JOIN LINK
                 </span>
                 {!isScheduledLater && (
@@ -736,7 +736,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       setShowCallRoom(true)
                     }
                   }}
-                  className={`w-full font-bold text-xs py-3.5 px-6 rounded-xl transition border-0 ${timing === 'later'
+                  className={`w-full font-semibold text-xs py-3.5 px-6 rounded-xl transition border-0 ${timing === 'later'
                       ? 'bg-[#0d212c]/40 text-white/70 cursor-not-allowed shadow-none'
                       : 'bg-[#0d212c] hover:bg-[#122e3d] text-white cursor-pointer shadow-xs'
                     }`}
@@ -754,26 +754,26 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
             <div className="py-4 grid grid-cols-2 gap-y-4 gap-x-6 text-xs">
               <div>
-                <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider block mb-1">
+                <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider block mb-1">
                   ROUND
                 </span>
-                <span className="font-bold text-[#0d212c]">{roundLabel || 'Round 1'}</span>
+                <span className="font-semibold text-[#0d212c]">{roundLabel || 'Round 1'}</span>
               </div>
 
               <div>
-                <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider block mb-1">
+                <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider block mb-1">
                   DATASET
                 </span>
-                <span className="font-bold text-[#0d212c]">{selectedQuestionnaire}</span>
+                <span className="font-semibold text-[#0d212c]">{selectedQuestionnaire}</span>
               </div>
             </div>
 
             <div className="flex flex-col gap-3 pt-4 border-t border-[#e2e8f0]">
-              <span className="text-xs font-bold text-[#0d212c]">What to do next</span>
+              <span className="text-xs font-semibold text-[#0d212c]">What to do next</span>
 
               <div className="flex flex-col gap-3 text-xs">
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full border border-[#cbd5e1] bg-[#f8fafc] text-[#64748b] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full border border-[#cbd5e1] bg-[#f8fafc] text-[#64748b] font-semibold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                     1
                   </div>
                   <p className="leading-relaxed text-[#64748b]">
@@ -784,7 +784,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full border border-[#cbd5e1] bg-[#f8fafc] text-[#64748b] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full border border-[#cbd5e1] bg-[#f8fafc] text-[#64748b] font-semibold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                     2
                   </div>
                   <p className="leading-relaxed text-[#64748b]">
@@ -793,7 +793,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full border border-[#cbd5e1] bg-[#f8fafc] text-[#64748b] font-bold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full border border-[#cbd5e1] bg-[#f8fafc] text-[#64748b] font-semibold text-[11px] flex items-center justify-center shrink-0 mt-0.5">
                     3
                   </div>
                   <p className="leading-relaxed text-[#64748b]">
@@ -808,7 +808,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           <div className="flex flex-col items-center gap-4 mt-6">
             <button
               onClick={onBack}
-              className="text-xs font-bold text-[#36c0c9] hover:text-[#2badb6] transition cursor-pointer bg-transparent border-0"
+              className="text-xs font-semibold text-[#36c0c9] hover:text-[#2badb6] transition cursor-pointer bg-transparent border-0"
             >
               Schedule another call
             </button>
@@ -822,7 +822,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   setHideChangeRole(false)
                   setShowCallRoom(true)
                 }}
-                className="w-full bg-[#f8fafc] hover:bg-[#ddf7f9]/50 text-[#0d7280] font-bold text-xs py-2.5 px-4 rounded-xl transition cursor-pointer border border-[#36c0c9]/40 flex items-center justify-center gap-1.5 shadow-2xs"
+                className="w-full bg-[#f8fafc] hover:bg-[#ddf7f9]/50 text-[#0d7280] font-semibold text-xs py-2.5 px-4 rounded-xl transition cursor-pointer border border-[#36c0c9]/40 flex items-center justify-center gap-1.5 shadow-2xs"
               >
                 View facility&apos;s call room flow
               </button>
@@ -854,12 +854,12 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           {vendor.name}
         </button>
         <span>/</span>
-        <span className="text-[#36c0c9] font-bold">New call</span>
+        <span className="text-[#36c0c9] font-semibold">New call</span>
       </div>
 
       {/* Main Page Title Header */}
       <div className="w-full px-6 lg:px-10 py-3 flex flex-col gap-1">
-        <h1 className="text-xl lg:text-2xl font-extrabold tracking-tight text-[#0d212c]">
+        <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-[#0d212c]">
           Configure Assessment Call
         </h1>
         <p className="text-xs text-[#64748b]">
@@ -870,7 +870,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
       {/* TOP FULL WIDTH HORIZONTAL STEP INDICATORS BAR */}
       <div className="w-full px-6 lg:px-10 mt-4">
         <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-3">
-          <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
             CALL SETUP STAGES
           </span>
 
@@ -886,7 +886,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               onClick={() => setCurrentStep(1)}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${currentStep === 1
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${currentStep === 1
                     ? 'bg-[#36c0c9] text-white'
                     : currentStep > 1
                       ? 'bg-[#137333] text-white'
@@ -896,7 +896,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 {currentStep > 1 ? <Check className="w-4 h-4" /> : '01'}
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-bold text-[#0d212c]">01 Setup</span>
+                <span className="text-xs font-semibold text-[#0d212c]">01 Setup</span>
                 <span className="text-[11px] text-[#64748b]">Session details</span>
               </div>
             </div>
@@ -915,7 +915,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 }`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${currentStep === 2
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${currentStep === 2
                     ? 'bg-[#36c0c9] text-white'
                     : currentStep > 2 || hasCompletedStep2
                       ? 'bg-[#137333] text-white'
@@ -925,7 +925,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 {currentStep > 2 || hasCompletedStep2 ? <Check className="w-4 h-4" /> : '02'}
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-bold text-[#0d212c]">02 Configure Agent</span>
+                <span className="text-xs font-semibold text-[#0d212c]">02 Configure Agent</span>
                 <span className="text-[11px] text-[#64748b]">Agent voice & timing</span>
               </div>
             </button>
@@ -942,13 +942,13 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 }`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${currentStep === 3 ? 'bg-[#36c0c9] text-white' : 'bg-[#e2e8f0] text-[#64748b]'
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${currentStep === 3 ? 'bg-[#36c0c9] text-white' : 'bg-[#e2e8f0] text-[#64748b]'
                   }`}
               >
                 03
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-bold text-[#0d212c]">03 Review & launch</span>
+                <span className="text-xs font-semibold text-[#0d212c]">03 Review & launch</span>
                 <span className="text-[11px] text-[#64748b]">Confirm and start</span>
               </div>
             </button>
@@ -976,20 +976,20 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
-                  <h2 className="text-base font-extrabold text-[#0d212c]">Session setup</h2>
+                  <h2 className="text-base font-bold text-[#0d212c]">Session setup</h2>
                 </div>
               </div>
 
               {/* CALL TYPE */}
               <div className="flex flex-col gap-2">
-                <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                  CALL TYPE <span className="text-red-500 font-bold">*</span>
+                <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
+                  CALL TYPE <span className="text-red-500 font-semibold">*</span>
                 </span>
                 <div className="p-4 rounded-2xl border border-[#e2e8f0] bg-white flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
                     <ShieldCheck className="w-5 h-5 text-[#0d212c] shrink-0 mt-0.5" />
                     <div className="flex flex-col">
-                      <span className="font-bold text-xs text-[#0d212c]">Assessment round</span>
+                      <span className="font-semibold text-xs text-[#0d212c]">Assessment round</span>
                       <span className="text-[11px] text-[#64748b] mt-0.5">
                         Structured due-diligence interview using an approved dataset.
                       </span>
@@ -1009,14 +1009,14 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               {/* DATASET SELECT CUSTOM LIGHT DROPDOWN WITH OPEN PREVIEW */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                    DATASET <span className="text-red-500 font-bold">*</span>
+                  <label className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
+                    DATASET <span className="text-red-500 font-semibold">*</span>
                   </label>
                   {selectedQuestionnaire && (
                     <button
                       type="button"
                       onClick={handleOpenDatasetPreview}
-                      className="text-xs font-bold text-[#36c0c9] hover:text-[#0d7280] flex items-center gap-1 cursor-pointer bg-transparent border-0 transition"
+                      className="text-xs font-semibold text-[#36c0c9] hover:text-[#0d7280] flex items-center gap-1 cursor-pointer bg-transparent border-0 transition"
                     >
                       <span>Open preview</span>
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -1035,7 +1035,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   >
                     <div className="flex items-center gap-2 truncate">
                       <FileText className="w-4 h-4 text-[#64748b] shrink-0" />
-                      <span className={selectedQuestionnaire ? 'text-[#0d212c] font-bold' : 'text-[#94a3b8]'}>
+                      <span className={selectedQuestionnaire ? 'text-[#0d212c] font-semibold' : 'text-[#94a3b8]'}>
                         {selectedQuestionnaire || 'Select dataset...'}
                       </span>
                     </div>
@@ -1060,8 +1060,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                               : 'hover:bg-slate-50 text-[#0d212c]'
                             }`}
                         >
-                          <span className="text-xs font-bold">{opt}</span>
-                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-[#64748b]">
+                          <span className="text-xs font-semibold">{opt}</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-[#64748b]">
                             {opt === 'ADT-Family History'
                               ? '24 testcases'
                               : opt === 'ORU-Laboratory'
@@ -1090,8 +1090,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
               {/* Requirement 5: ESTIMATED DURATION field with Note below */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                  ESTIMATED DURATION <span className="text-red-500 font-bold">*</span>
+                <label className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
+                  ESTIMATED DURATION <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <div className="relative flex items-center w-full">
                   <input
@@ -1142,8 +1142,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
               {/* ROUND LABEL */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
-                  ROUND LABEL <span className="text-red-500 font-bold">*</span>
+                <label className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
+                  ROUND LABEL <span className="text-red-500 font-semibold">*</span>
                 </label>
                 <input
                   type="text"
@@ -1156,7 +1156,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
               {/* RECIPIENTS */}
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                <label className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                   RECIPIENTS <span className="text-red-500">*</span>
                 </label>
 
@@ -1181,7 +1181,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 />
 
                 <div
-                  className={`flex items-center justify-between text-[11px] ${recipients.length > 5 ? 'text-red-600 font-bold' : 'text-[#64748b]'
+                  className={`flex items-center justify-between text-[11px] ${recipients.length > 5 ? 'text-red-600 font-semibold' : 'text-[#64748b]'
                     }`}
                 >
                   <span>Maximum 5 recipients can be added</span>
@@ -1199,7 +1199,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 )}
 
                 {recipientError && (
-                  <span className="text-xs font-medium text-red-600 animate-in fade-in duration-150">
+                  <span className="text-xs font-normal text-red-600 animate-in fade-in duration-150">
                     {recipientError}
                   </span>
                 )}
@@ -1237,7 +1237,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 <button
                   disabled={!isStep1Valid}
                   onClick={() => isStep1Valid && setCurrentStep(2)}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-6 py-3 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-xs disabled:opacity-40 disabled:cursor-not-allowed border-0"
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-6 py-3 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-xs disabled:opacity-40 disabled:cursor-not-allowed border-0"
                 >
                   <span>Continue to configure Agent</span>
                   <ArrowRight className="w-4 h-4" />
@@ -1257,7 +1257,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
-                  <h2 className="text-base font-extrabold text-[#0d212c]">Configure Agent</h2>
+                  <h2 className="text-base font-bold text-[#0d212c]">Configure Agent</h2>
                   <p className="text-xs text-[#64748b] mt-0.5">
                     Choose Agent voice and when the session should begin.
                   </p>
@@ -1266,7 +1266,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
               {/* AGENT VOICE */}
               <div className="flex flex-col gap-3">
-                <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                   AGENT VOICE
                 </span>
 
@@ -1283,9 +1283,9 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       {/* Requirement 6: Recommended chip */}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-                          <h4 className="font-bold text-xs text-[#0d212c] shrink-0">{v.label}</h4>
+                          <h4 className="font-semibold text-xs text-[#0d212c] shrink-0">{v.label}</h4>
                           {v.recommended && (
-                            <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-[#ddf7f9] text-[#0f766e] whitespace-nowrap shrink-0">
+                            <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[#ddf7f9] text-[#0f766e] whitespace-nowrap shrink-0">
                               Recommended
                             </span>
                           )}
@@ -1316,7 +1316,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 <button
                   type="button"
                   onClick={() => setShowAllVoices(!showAllVoices)}
-                  className="text-xs font-bold text-[#36c0c9] hover:underline text-left cursor-pointer pt-1 bg-transparent border-0"
+                  className="text-xs font-semibold text-[#36c0c9] hover:underline text-left cursor-pointer pt-1 bg-transparent border-0"
                 >
                   {showAllVoices ? 'Hide extra voices' : 'View all 10 voices'}
                 </button>
@@ -1328,7 +1328,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                         key={ev.id}
                         onClick={() => setSelectedVoice(ev.id)}
                         className={`p-3 rounded-xl border text-xs cursor-pointer flex items-center justify-between gap-2 ${selectedVoice === ev.id
-                            ? 'bg-[#ddf7f9]/30 border-[#36c0c9] text-[#0d212c] font-bold'
+                            ? 'bg-[#ddf7f9]/30 border-[#36c0c9] text-[#0d212c] font-semibold'
                             : 'bg-white border-[#e2e8f0] text-[#64748b] hover:bg-[#f1f5f9]'
                           }`}
                       >
@@ -1356,7 +1356,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
               {/* WHEN */}
               <div className="flex flex-col gap-2">
-                <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                   WHEN
                 </span>
                 <div className="grid grid-cols-2 gap-3">
@@ -1367,7 +1367,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                         : 'border-[#e2e8f0] bg-white'
                       }`}
                   >
-                    <span className="font-bold text-xs text-[#0d212c]">Start now</span>
+                    <span className="font-semibold text-xs text-[#0d212c]">Start now</span>
                     <span className="text-[10px] text-[#64748b]">
                       Open the call room as soon as setup is complete.
                     </span>
@@ -1380,7 +1380,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                         : 'border-[#e2e8f0] bg-white'
                       }`}
                   >
-                    <span className="font-bold text-xs text-[#0d212c]">Schedule for later</span>
+                    <span className="font-semibold text-xs text-[#0d212c]">Schedule for later</span>
                     <span className="text-[10px] text-[#64748b]">
                       Choose a date and time for this session.
                     </span>
@@ -1392,7 +1392,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   <div className="p-4 rounded-2xl bg-[#f8fafc] border border-[#e2e8f0] flex flex-col gap-3 mt-2">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
-                        <label className="block text-[11px] font-bold text-[#0d212c] mb-1">
+                        <label className="block text-[11px] font-semibold text-[#0d212c] mb-1">
                           Meeting date
                         </label>
                         <input
@@ -1405,13 +1405,13 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-[#0d212c] mb-1">
+                        <label className="block text-[11px] font-semibold text-[#0d212c] mb-1">
                           Start time
                         </label>
                         <select
                           value={startTime}
                           onChange={(e) => handleStartTimeChange(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs text-[#0d212c] outline-none focus:border-[#cbd5e1] cursor-pointer font-medium"
+                          className="w-full px-3 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs text-[#0d212c] outline-none focus:border-[#cbd5e1] cursor-pointer font-normal"
                         >
                           <option value="">Select start time</option>
                           {timeSlots.map((t) => (
@@ -1423,7 +1423,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-[#0d212c] mb-1">
+                        <label className="block text-[11px] font-semibold text-[#0d212c] mb-1">
                           End time
                         </label>
                         <select
@@ -1434,7 +1434,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                               ? 'opacity-40 cursor-not-allowed bg-slate-50 border-[#e2e8f0] text-[#94a3b8]'
                               : isTimeInvalid
                                 ? 'border-red-500 text-red-700 font-semibold cursor-pointer'
-                                : 'border-[#e2e8f0] text-[#0d212c] cursor-pointer font-medium'
+                                : 'border-[#e2e8f0] text-[#0d212c] cursor-pointer font-normal'
                             }`}
                         >
                           <option value="">
@@ -1460,7 +1460,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     </div>
 
                     {durationText && (
-                      <div className="flex items-center gap-1.5 text-xs text-[#0d7280] font-bold bg-[#ddf7f9] px-3 py-1.5 rounded-xl self-start border border-[#b2ecf2]">
+                      <div className="flex items-center gap-1.5 text-xs text-[#0d7280] font-semibold bg-[#ddf7f9] px-3 py-1.5 rounded-xl self-start border border-[#b2ecf2]">
                         <Clock className="w-3.5 h-3.5" />
                         <span>Calculated duration: {durationText}</span>
                       </div>
@@ -1485,7 +1485,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
               {/* TIMEZONE */}
               <div className="flex flex-col gap-1.5">
-                <span className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                   TIMEZONE
                 </span>
                 <div className="relative">
@@ -1514,7 +1514,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   <div className="flex items-center gap-3">
                     <SlidersHorizontal className="w-4 h-4 text-[#64748b]" />
                     <div className="flex flex-col">
-                      <span className="font-bold text-xs text-[#0d212c]">Advanced settings</span>
+                      <span className="font-semibold text-xs text-[#0d212c]">Advanced settings</span>
                       <span className="text-[11px] text-[#64748b]">
                         Document reminders and room behaviour
                       </span>
@@ -1531,14 +1531,14 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
                 {showAdvancedSettings && (
                   <div className="p-4 border-t border-[#e2e8f0] bg-[#f8fafc] flex flex-col gap-2">
-                    <label className="text-[10px] font-extrabold text-[#64748b] uppercase tracking-wider">
+                    <label className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
                       UPLOAD WAIT BEFORE NUDGE (SECONDS)
                     </label>
                     <input
                       type="number"
                       value={nudgeWaitSeconds}
                       onChange={(e) => setNudgeWaitSeconds(e.target.value)}
-                      className="w-full px-4 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-bold text-[#0d212c] outline-none focus:border-[#cbd5e1]"
+                      className="w-full px-4 py-2 rounded-xl border border-[#e2e8f0] bg-white text-xs font-semibold text-[#0d212c] outline-none focus:border-[#cbd5e1]"
                     />
                     <p className="text-[11px] text-[#64748b] mt-0.5">
                       How long Agent waits after asking for a document before nudging the room.
@@ -1563,7 +1563,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       setCurrentStep(3)
                     }
                   }}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-6 py-3 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-xs disabled:opacity-40 disabled:cursor-not-allowed border-0"
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-6 py-3 rounded-xl transition cursor-pointer flex items-center gap-2 shadow-xs disabled:opacity-40 disabled:cursor-not-allowed border-0"
                 >
                   <span>Continue to review</span>
                   <ArrowRight className="w-4 h-4" />
@@ -1584,7 +1584,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     <ArrowLeft className="w-5 h-5" />
                   </button>
                   <div>
-                    <h2 className="text-base font-extrabold text-[#0d212c]">Review & launch</h2>
+                    <h2 className="text-base font-bold text-[#0d212c]">Review & launch</h2>
                     <p className="text-xs text-[#64748b] mt-0.5">
                       Confirm configuration and initiate automated facility assessment call.
                     </p>
@@ -1594,7 +1594,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 <div className="divide-y divide-[#e2e8f0]/80 flex flex-col text-xs">
                   <div className="py-3 flex justify-between">
                     <span className="text-[#64748b]">Target facility:</span>
-                    <span className="font-bold text-[#0d212c]">{vendor.name}</span>
+                    <span className="font-semibold text-[#0d212c]">{vendor.name}</span>
                   </div>
                   {recipients.length > 0 && (
                     <div className="py-3 flex items-start justify-between gap-3">
@@ -1603,7 +1603,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                         {recipients.map((recEmail, idx) => (
                           <span
                             key={idx}
-                            className="inline-block bg-[#f1f5f9] text-[#0d212c] font-medium px-2 py-0.5 rounded-md text-[11px] border border-[#e2e8f0] truncate max-w-[180px]"
+                            className="inline-block bg-[#f1f5f9] text-[#0d212c] font-normal px-2 py-0.5 rounded-md text-[11px] border border-[#e2e8f0] truncate max-w-[180px]"
                             title={recEmail}
                           >
                             {recEmail}
@@ -1614,11 +1614,11 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                   )}
                   <div className="py-3 flex justify-between">
                     <span className="text-[#64748b]">Selected dataset:</span>
-                    <span className="font-bold text-[#0d212c]">{selectedQuestionnaire || 'ADT-Family History'}</span>
+                    <span className="font-semibold text-[#0d212c]">{selectedQuestionnaire || 'ADT-Family History'}</span>
                   </div>
                   <div className="py-3 flex justify-between">
                     <span className="text-[#64748b]">Agent Voice:</span>
-                    <span className="font-bold text-[#0d212c]">{selectedVoice}</span>
+                    <span className="font-semibold text-[#0d212c]">{selectedVoice}</span>
                   </div>
                 </div>
               </div>
@@ -1632,7 +1632,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 </button>
                 <Button
                   onClick={() => setIsDispatched(true)}
-                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-bold text-xs px-6 py-3 rounded-xl cursor-pointer"
+                  className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-6 py-3 rounded-xl cursor-pointer"
                 >
                   Launch assessment call
                 </Button>
@@ -1649,14 +1649,14 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             className={`bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-4 text-xs ${currentStep === 3 ? 'h-full justify-between' : 'h-auto justify-start'
               }`}
           >
-            <span className="font-bold text-[#0d212c]">Call summary</span>
+            <span className="font-semibold text-[#0d212c]">Call summary</span>
 
             <div className="flex items-center gap-3 p-3 rounded-xl bg-[#f8fafc] border border-[#e2e8f0]">
-              <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#0d7280] font-extrabold text-xs flex items-center justify-center shrink-0 border border-[#36c0c9]/30">
+              <div className="w-9 h-9 rounded-xl bg-[#ddf7f9] text-[#0d7280] font-bold text-xs flex items-center justify-center shrink-0 border border-[#36c0c9]/30">
                 {vendor.name ? vendor.name.slice(0, 2).toUpperCase() : 'FC'}
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="font-bold text-[#0d212c] truncate">{vendor.name}</span>
+                <span className="font-semibold text-[#0d212c] truncate">{vendor.name}</span>
                 <span className="text-[11px] text-[#64748b] truncate flex items-center gap-1.5 mt-0.5">
                   <CountryFlag country={vendor.country} />
                   <span>{vendor.country}</span>
@@ -1669,17 +1669,17 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <div className="divide-y divide-[#e2e8f0]/60 flex flex-col">
               <div className="py-2.5 flex justify-between">
                 <span className="text-[#64748b]">CALL TYPE</span>
-                <span className="font-bold text-[#0d212c]">Assessment round</span>
+                <span className="font-semibold text-[#0d212c]">Assessment round</span>
               </div>
               <div className="py-2.5 flex justify-between">
                 <span className="text-[#64748b]">TESTCASES</span>
-                <span className="font-bold text-[#0d212c]">
+                <span className="font-semibold text-[#0d212c]">
                   {selectedQuestionnaire ? includedCount : '-'}
                 </span>
               </div>
               <div className="py-2.5 flex justify-between gap-2">
                 <span className="text-[#64748b] shrink-0">MEETING TIME</span>
-                <span className="font-bold text-[#0d212c] text-right truncate">
+                <span className="font-semibold text-[#0d212c] text-right truncate">
                   {formattedTimeRange}
                 </span>
               </div>
@@ -1687,8 +1687,8 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
             <div className="border-t border-[#e2e8f0] pt-3 flex flex-col gap-2">
               <div className="flex justify-between text-[11px]">
-                <span className="font-bold text-[#64748b]">READINESS</span>
-                <span className="font-bold text-[#0d212c]">
+                <span className="font-semibold text-[#64748b]">READINESS</span>
+                <span className="font-semibold text-[#0d212c]">
                   {isStep1Valid
                     ? currentStep === 3
                       ? '3 of 3 complete'
@@ -1699,13 +1699,13 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
               <div className="flex flex-col gap-1.5 text-[11px]">
                 <div className="flex justify-between">
                   <span>Setup</span>
-                  <span className={isStep1Valid ? 'text-[#137333] font-bold' : 'text-[#64748b]'}>
+                  <span className={isStep1Valid ? 'text-[#137333] font-semibold' : 'text-[#64748b]'}>
                     {isStep1Valid ? 'Complete' : 'Pending'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Configure Agent</span>
-                  <span className={currentStep > 2 ? 'text-[#137333] font-bold' : 'text-[#64748b]'}>
+                  <span className={currentStep > 2 ? 'text-[#137333] font-semibold' : 'text-[#64748b]'}>
                     {currentStep > 2 ? 'Complete' : 'Pending'}
                   </span>
                 </div>
@@ -1725,7 +1725,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
           <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl border border-[#e2e8f0] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-150 my-auto">
             {/* Modal Header */}
             <div className="bg-white px-6 py-5 flex items-center justify-between shrink-0">
-              <h2 className="text-xl font-extrabold text-[#0d212c]">
+              <h2 className="text-xl font-bold text-[#0d212c]">
                 {selectedQuestionnaire || 'Dataset Details'}
               </h2>
               <button
@@ -1740,7 +1740,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             {/* Modal Subheader Bar */}
             <div className="bg-white px-6 py-3.5 border-b border-[#e2e8f0] flex flex-col gap-3 shrink-0">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h3 className="text-sm font-extrabold text-[#0d212c]">Testcases</h3>
+                <h3 className="text-sm font-bold text-[#0d212c]">Testcases</h3>
 
                 {/* Search filter */}
                 <div className="relative w-64 sm:w-72">
@@ -1760,7 +1760,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                 <button
                   type="button"
                   onClick={toggleSelectAllDraftTestcases}
-                  className="bg-transparent border-0 p-0 shadow-none outline-none flex items-center gap-2.5 text-xs font-bold text-[#0d212c] hover:text-[#0d7280] transition cursor-pointer select-none"
+                  className="bg-transparent border-0 p-0 shadow-none outline-none flex items-center gap-2.5 text-xs font-semibold text-[#0d212c] hover:text-[#0d7280] transition cursor-pointer select-none"
                 >
                   <div
                     className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${allDraftTestcasesIncluded
@@ -1775,16 +1775,16 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
                 {/* Chips Legend */}
                 <div className="flex items-center gap-3 text-[11px] text-[#64748b] bg-white px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] shadow-2xs self-start sm:self-auto">
-                  <span className="font-bold text-[#0d212c]">Legend:</span>
+                  <span className="font-semibold text-[#0d212c]">Legend:</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-extrabold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
+                    <span className="font-bold text-[#0d212c] bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200 text-[10px]">
                       TC-01
                     </span>
                     <span>Message Type</span>
                   </div>
                   <span className="text-[#cbd5e1]">|</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
+                    <span className="font-semibold px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 text-[10px]">
                       Category
                     </span>
                     <span>Type - Accessible Section</span>
@@ -1821,11 +1821,11 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                       {/* Right side: Testcase metadata (Read-only / Non-editable) */}
                       <div className="flex flex-col gap-2.5 min-w-0 flex-1">
                         <div className="flex items-center gap-2.5 flex-wrap">
-                          <span className="text-xs font-extrabold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                          <span className="text-xs font-bold text-[#0d212c] bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
                             {tc.code}
                           </span>
                           <span
-                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${tc.type === 'Problems'
+                            className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${tc.type === 'Problems'
                                 ? 'bg-amber-50 text-amber-800 border-amber-200'
                                 : tc.type === 'Sensitive Info'
                                   ? 'bg-purple-50 text-purple-800 border-purple-200'
@@ -1840,7 +1840,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
                         {/* Title & Description (Non-editable text) */}
                         <div className="flex flex-col gap-1.5">
-                          <h4 className="text-xs font-extrabold text-[#0d212c]">
+                          <h4 className="text-xs font-bold text-[#0d212c]">
                             {tc.title}
                           </h4>
                           <p className="text-[11px] text-[#64748b] leading-relaxed">
@@ -1857,11 +1857,11 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
             <div className="bg-[#f8fafc] px-6 py-4 border-t border-[#e2e8f0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
               <div className="flex items-center gap-2.5 text-xs text-[#64748b] flex-wrap">
                 <span>
-                  Included in Assessment: <strong className="text-[#0d212c] font-bold">{draftIncludedCount} / 7 testcases</strong>
+                  Included in Assessment: <strong className="text-[#0d212c] font-semibold">{draftIncludedCount} / 7 testcases</strong>
                 </span>
                 <span>|</span>
                 <span>
-                  Estimated Duration: <strong className="text-[#0d212c] font-bold">{estimatedDuration}</strong>
+                  Estimated Duration: <strong className="text-[#0d212c] font-semibold">{estimatedDuration}</strong>
                 </span>
               </div>
 
@@ -1879,7 +1879,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
                     setShowDatasetPreviewModal(false)
                   }}
                   disabled={draftIncludedCount === 0}
-                  className="px-6 py-2.5 rounded-xl bg-[#36c0c9] text-white font-bold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 rounded-xl bg-[#36c0c9] text-white font-semibold text-xs hover:bg-[#0d7280] transition cursor-pointer shadow-2xs border-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Save
                 </button>

@@ -28,14 +28,14 @@ export const KPICard: React.FC<KPICardProps> = ({
         .join(' ')}
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-[#64748b] tracking-wide">
+        <span className="text-xs font-semibold text-[#64748b] tracking-wide">
           {title}
         </span>
         {badgeText && <Badge variant={badgeVariant}>{badgeText}</Badge>}
       </div>
 
       <div className="flex items-baseline justify-between mt-1">
-        <span className="text-2xl font-extrabold text-[#0d212c] font-sans">{value}</span>
+        <span className="text-2xl font-bold text-[#0d212c] font-sans">{value}</span>
         {change && (
           <span
             className={[

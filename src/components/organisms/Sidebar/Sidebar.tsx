@@ -65,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   alt="M42 logo"
                   className="h-5 w-auto object-contain shrink-0"
                 />
-                <span className="font-extrabold text-xs tracking-tight text-white truncate leading-none">
+                <span className="font-bold text-xs tracking-tight text-white truncate leading-none">
                   Onboarding Agent
                 </span>
               </div>
@@ -127,7 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   className="bg-[#153443] text-white border-white/20 shrink-0"
                 />
                 <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-white truncate">{userName}</span>
+                  <span className="text-xs font-semibold text-white truncate">{userName}</span>
                   <span className="text-[10px] text-slate-400 truncate">{userEmail}</span>
                 </div>
               </div>
@@ -168,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <LogOut className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-extrabold text-[#0d212c] mb-1.5">Confirm Logout</h3>
+              <h3 className="text-xl font-bold text-[#0d212c] mb-1.5">Confirm Logout</h3>
               <p className="text-xs text-[#64748b] leading-relaxed max-w-md">
                 Are you sure you want to log out of M42 Onboarding Agent?
               </p>
@@ -176,7 +176,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex items-center justify-center gap-3 w-full mt-2">
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-bold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
+                className="px-6 py-3 rounded-xl border border-[#e2e8f0] text-xs font-semibold text-[#0d212c] hover:bg-slate-50 cursor-pointer flex-1 bg-transparent transition"
               >
                 Cancel
               </button>
@@ -185,7 +185,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   setShowLogoutConfirm(false)
                   onSignOut?.()
                 }}
-                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer flex-1 border-0 transition shadow-2xs"
+                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold cursor-pointer flex-1 border-0 transition shadow-2xs"
               >
                 Logout
               </button>
