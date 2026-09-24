@@ -129,6 +129,10 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
   const [assessmentStarted, setAssessmentStarted] = useState(false)
   const [agentOnHold, setAgentOnHold] = useState(false)
 
+  // AI Disclosure checkboxes
+  const [adminChecked, setAdminChecked] = useState(false)
+  const [vendorChecked, setVendorChecked] = useState(false)
+
   // Leave confirmation popup
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
 
@@ -788,14 +792,42 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                 />
               </div>
 
-              <p className="text-[11px] text-[#64748b] leading-relaxed">
-                This call is recorded and transcribed for assessment purposes. By joining you
-                consent to recording.
-              </p>
+              <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 flex flex-col gap-2">
+                <span className="text-[10px] font-bold tracking-wider text-[#0d212c] uppercase">
+                  AI DISCLOSURE
+                </span>
+                <p className="text-[11px] text-[#64748b] leading-relaxed">
+                  I am an AI agent — not a human. I am conducting this structured assessment on behalf of Malaffi & M42 across the relevant domain teams. This call is recorded and transcribed for assessment purposes. By joining you consent to recording.
+                </p>
+              </div>
+
+              <div className="flex items-start gap-3 relative">
+                <div className="relative flex items-center justify-center mt-0.5 shrink-0">
+                  <input
+                    type="checkbox"
+                    id="ai-disclosure-admin"
+                    checked={adminChecked}
+                    onChange={(e) => setAdminChecked(e.target.checked)}
+                    className="absolute opacity-0 w-full h-full cursor-pointer z-10 m-0"
+                  />
+                  <div
+                    className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-colors ${
+                      adminChecked
+                        ? 'bg-[#36c0c9] border-[#36c0c9]'
+                        : 'bg-white border-[#cbd5e1] hover:border-[#94a3b8]'
+                    }`}
+                  >
+                    {adminChecked && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                  </div>
+                </div>
+                <label htmlFor="ai-disclosure-admin" className="text-xs text-[#0d212c] leading-relaxed cursor-pointer select-none">
+                  I acknowledge I am speaking with an AI agent conducting this assessment on behalf of Malaffi & M42
+                </label>
+              </div>
 
               <button
                 id="callroom-join-btn"
-                disabled={!yourName.trim()}
+                disabled={!yourName.trim() || !adminChecked}
                 onClick={() => setRoomState('waiting')}
                 className="w-full bg-[#36c0c9] hover:bg-[#2badb6] disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm py-3 rounded-xl transition cursor-pointer border-0 shadow-md"
               >
@@ -881,9 +913,42 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                     )}
                   </div>
 
+                  <div className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 flex flex-col gap-2 mt-2">
+                    <span className="text-[10px] font-bold tracking-wider text-[#0d212c] uppercase">
+                      AI DISCLOSURE
+                    </span>
+                    <p className="text-[11px] text-[#64748b] leading-relaxed">
+                      I am an AI agent — not a human. I am conducting this structured assessment on behalf of Malaffi & M42 across the relevant domain teams. This call is recorded and transcribed for assessment purposes. By joining you consent to recording.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-3 relative">
+                    <div className="relative flex items-center justify-center mt-0.5 shrink-0">
+                      <input
+                        type="checkbox"
+                        id="ai-disclosure-vendor"
+                        checked={vendorChecked}
+                        onChange={(e) => setVendorChecked(e.target.checked)}
+                        className="absolute opacity-0 w-full h-full cursor-pointer z-10 m-0"
+                      />
+                      <div
+                        className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-colors ${
+                          vendorChecked
+                            ? 'bg-[#36c0c9] border-[#36c0c9]'
+                            : 'bg-white border-[#cbd5e1] hover:border-[#94a3b8]'
+                        }`}
+                      >
+                        {vendorChecked && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
+                      </div>
+                    </div>
+                    <label htmlFor="ai-disclosure-vendor" className="text-xs text-[#0d212c] leading-relaxed cursor-pointer select-none">
+                      I acknowledge I am speaking with an AI agent conducting this assessment on behalf of Malaffi & M42
+                    </label>
+                  </div>
+
                   <button
                     id="vendor-send-otp-btn"
-                    disabled={!isFormValid}
+                    disabled={!isFormValid || !vendorChecked}
                     onClick={() => {
                       setOtpDigits(['', '', '', ''])
                       setOtpError('')
@@ -1000,7 +1065,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                   setUserRole('vendor')
                   setRoomState('waiting')
                 }}
-                className="w-full bg-[#36c0c9] hover:bg-[#2badb6] text-white font-semibold text-sm py-3 rounded-xl transition cursor-pointer border-0 shadow-md"
+                className="w-full bg-[#36c0c9] hover:bg-[#2badb6] disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm py-3 rounded-xl transition cursor-pointer border-0 shadow-md"
               >
                 Verify &amp; Enter Call Room
               </button>

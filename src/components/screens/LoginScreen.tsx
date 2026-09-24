@@ -59,7 +59,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 <Users className="w-6 h-6 text-[#0d7280]" />
               </div>
               <div>
-                <h3 className="font-bold text-[#0d212c] text-base lg:text-lg">Collaborative Evaluations</h3>
+                <h3 className="font-semibold text-[#0d212c] text-base lg:text-lg">Collaborative Evaluations</h3>
                 <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-normal">
                   Facilitators and evaluators work together to run test cases.
                 </p>
@@ -71,7 +71,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 <ShieldCheck className="w-6 h-6 text-[#0d7280]" />
               </div>
               <div>
-                <h3 className="font-bold text-[#0d212c] text-base lg:text-lg">AI-Powered Analysis</h3>
+                <h3 className="font-semibold text-[#0d212c] text-base lg:text-lg">AI-Powered Analysis</h3>
                 <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-normal">
                   Automatically capture snapshots, analyze results, and generate verdicts.
                 </p>
@@ -83,7 +83,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 <PieChart className="w-6 h-6 text-[#0d7280]" />
               </div>
               <div>
-                <h3 className="font-bold text-[#0d212c] text-base lg:text-lg">Clear &amp; Auditable Results</h3>
+                <h3 className="font-semibold text-[#0d212c] text-base lg:text-lg">Clear &amp; Auditable Results</h3>
                 <p className="text-slate-600 text-xs lg:text-sm mt-1 leading-relaxed font-normal">
                   Track test case outcomes and get a final verdict for every dataset.
                 </p>

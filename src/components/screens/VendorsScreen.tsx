@@ -41,6 +41,7 @@ interface SearchVendorResult {
   domain: string
   confidence: 'High confidence' | 'Medium confidence' | 'Low confidence'
   confidenceType: 'success' | 'warning' | 'error'
+  country?: string
 }
 
 interface VendorsScreenProps {
@@ -68,7 +69,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
   const [selectedSearchResult, setSelectedSearchResult] = useState<SearchVendorResult | null>(null)
 
   // Find vendor manual fields (NO auto-population)
-  const [findCountry, setFindCountry] = useState('United Arab Emirates')
+  const [findCountry, setFindCountry] = useState('')
   const [findWebsite, setFindWebsite] = useState('')
 
   // Find vendor recipients tag-input state
@@ -79,7 +80,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
   // Manual vendor tab inputs
   const [manualDisplayName, setManualDisplayName] = useState('')
   const [manualLegalName, setManualLegalName] = useState('')
-  const [manualCountry, setManualCountry] = useState('United Arab Emirates')
+  const [manualCountry, setManualCountry] = useState('')
   const [manualWebsite, setManualWebsite] = useState('')
 
   // Manual vendor recipients tag-input state
@@ -103,14 +104,14 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
   const [expandedRecipients, setExpandedRecipients] = useState<Record<string, boolean>>({})
 
   const worldCountryOptions = [
-    { name: 'United Arab Emirates', flag: '🇦🇪' },
-    { name: 'United States', flag: '🇺🇸' },
-    { name: 'United Kingdom', flag: '🇬🇧' },
+    { name: 'France', flag: '🇫🇷' },
     { name: 'Germany', flag: '🇩🇪' },
     { name: 'Netherlands', flag: '🇳🇱' },
-    { name: 'France', flag: '🇫🇷' },
-    { name: 'Singapore', flag: '🇸🇬' },
     { name: 'Saudi Arabia', flag: '🇸🇦' },
+    { name: 'Singapore', flag: '🇸🇬' },
+    { name: 'United Arab Emirates', flag: '🇦🇪' },
+    { name: 'United Kingdom', flag: '🇬🇧' },
+    { name: 'United States', flag: '🇺🇸' },
   ]
 
   // Mock search results list
@@ -121,6 +122,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
       domain: 'clevelandclinicabudhabi.ae',
       confidence: 'High confidence',
       confidenceType: 'success',
+      country: 'United Arab Emirates',
     },
     {
       id: 'sr-2',
@@ -128,6 +130,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
       domain: 'ssmc.ae',
       confidence: 'High confidence',
       confidenceType: 'success',
+      country: 'United Arab Emirates',
     },
     {
       id: 'sr-3',
@@ -135,6 +138,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
       domain: 'mubadalahealth.ae',
       confidence: 'Medium confidence',
       confidenceType: 'warning',
+      country: 'United Arab Emirates',
     },
     {
       id: 'sr-4',
@@ -142,6 +146,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
       domain: 'danatalemarat.ae',
       confidence: 'Medium confidence',
       confidenceType: 'warning',
+      country: 'United Arab Emirates',
     },
     {
       id: 'sr-5',
@@ -149,6 +154,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
       domain: 'healthpoint.ae',
       confidence: 'Low confidence',
       confidenceType: 'warning',
+      country: 'United Arab Emirates',
     },
   ]
 
@@ -592,7 +598,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
               setIsSearchingVendor(false)
               setHasSearched(false)
               setSelectedSearchResult(null)
-              setFindCountry('United Arab Emirates')
+              setFindCountry('')
               setFindWebsite('')
               setFindRecipients([])
               setFindRecipientInput('')
@@ -978,7 +984,6 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
               <div>
                 <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">Country</label>
                 <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] bg-white focus-within:border-[#cbd5e1]">
-                  <CountryFlag country={editingVendor.country} />
                   <select
                     value={editingVendor.country}
                     onChange={(e) => {
@@ -989,11 +994,14 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                         flag: cObj ? cObj.flag : '🌐',
                       })
                     }}
-                    className="w-full text-xs text-[#0d212c] bg-transparent outline-none cursor-pointer py-1"
+                    className={`w-full text-xs bg-transparent outline-none cursor-pointer py-1 ${
+                      editingVendor.country ? 'text-[#0d212c]' : 'text-[#94a3b8]'
+                    }`}
                   >
+                    <option value="" disabled>Select Country</option>
                     {worldCountryOptions.map((c) => (
                       <option key={c.name} value={c.name}>
-                        {c.name}
+                        {c.flag} {c.name}
                       </option>
                     ))}
                   </select>
@@ -1280,6 +1288,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                                 setSelectedSearchResult(res)
                                 setFindSearchQuery(res.name) // Adds vendor name to input field
                                 setHasSearched(false) // Closes the search results list
+                                setFindCountry(res.country || '')
                                 if (res.domain) {
                                   const formattedUrl =
                                     res.domain.startsWith('http://') ||
@@ -1325,15 +1334,17 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                   <div>
                     <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">Country</label>
                     <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] bg-white focus-within:border-[#cbd5e1]">
-                      <CountryFlag country={findCountry} />
                       <select
                         value={findCountry}
                         onChange={(e) => setFindCountry(e.target.value)}
-                        className="w-full text-xs text-[#0d212c] bg-transparent outline-none cursor-pointer py-1"
+                        className={`w-full text-xs bg-transparent outline-none cursor-pointer py-1 ${
+                          findCountry ? 'text-[#0d212c]' : 'text-[#94a3b8]'
+                        }`}
                       >
+                        <option value="" disabled>Select Country</option>
                         {worldCountryOptions.map((c) => (
                           <option key={c.name} value={c.name}>
-                            {c.name}
+                            {c.flag} {c.name}
                           </option>
                         ))}
                       </select>
@@ -1503,15 +1514,17 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                         Country
                       </label>
                       <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] bg-white focus-within:border-[#cbd5e1]">
-                        <CountryFlag country={manualCountry} />
                         <select
                           value={manualCountry}
                           onChange={(e) => setManualCountry(e.target.value)}
-                          className="w-full text-xs text-[#0d212c] bg-transparent outline-none cursor-pointer py-1"
+                          className={`w-full text-xs bg-transparent outline-none cursor-pointer py-1 ${
+                            manualCountry ? 'text-[#0d212c]' : 'text-[#94a3b8]'
+                          }`}
                         >
+                          <option value="" disabled>Select Country</option>
                           {worldCountryOptions.map((c) => (
                             <option key={c.name} value={c.name}>
-                              {c.name}
+                              {c.flag} {c.name}
                             </option>
                           ))}
                         </select>
