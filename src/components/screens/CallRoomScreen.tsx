@@ -797,7 +797,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                   AI DISCLOSURE
                 </span>
                 <p className="text-[11px] text-[#64748b] leading-relaxed">
-                  I am an AI agent — not a human. I am conducting this structured assessment on behalf of Malaffi & M42 across the relevant domain teams. This call is recorded and transcribed for assessment purposes. By joining you consent to recording.
+                  I am an AI agent — not a human. I am conducting this structured assessment on behalf of M42/Malaffi across the relevant domain teams. This call is recorded and transcribed for assessment purposes. By joining you consent to recording.
                 </p>
               </div>
 
@@ -821,7 +821,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                   </div>
                 </div>
                 <label htmlFor="ai-disclosure-admin" className="text-xs text-[#0d212c] leading-relaxed cursor-pointer select-none">
-                  I acknowledge I am speaking with an AI agent conducting this assessment on behalf of Malaffi & M42
+                  I acknowledge I am speaking with an AI agent conducting this assessment on behalf of M42/Malaffi
                 </label>
               </div>
 
@@ -918,7 +918,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                       AI DISCLOSURE
                     </span>
                     <p className="text-[11px] text-[#64748b] leading-relaxed">
-                      I am an AI agent — not a human. I am conducting this structured assessment on behalf of Malaffi & M42 across the relevant domain teams. This call is recorded and transcribed for assessment purposes. By joining you consent to recording.
+                      I am an AI agent — not a human. I am conducting this structured assessment on behalf of M42/Malaffi across the relevant domain teams. This call is recorded and transcribed for assessment purposes. By joining you consent to recording.
                     </p>
                   </div>
 
@@ -942,7 +942,7 @@ export const CallRoomScreen: React.FC<CallRoomScreenProps> = ({
                       </div>
                     </div>
                     <label htmlFor="ai-disclosure-vendor" className="text-xs text-[#0d212c] leading-relaxed cursor-pointer select-none">
-                      I acknowledge I am speaking with an AI agent conducting this assessment on behalf of Malaffi & M42
+                      I acknowledge I am speaking with an AI agent conducting this assessment on behalf of M42/Malaffi
                     </label>
                   </div>
 
