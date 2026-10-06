@@ -19,6 +19,7 @@ import {
 
 import { StatusChip } from '@/components/atoms/StatusChip'
 import { CountryFlag } from '@/components/atoms/CountryFlag'
+import { CountrySelect, DEFAULT_COUNTRY_OPTIONS } from '@/components/atoms/CountrySelect'
 import { ConfigureVendorCallScreen, VendorDispatchData } from './ConfigureVendorCallScreen'
 
 interface VendorRow {
@@ -103,16 +104,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
   // Recipients column expand/collapse toggle state
   const [expandedRecipients, setExpandedRecipients] = useState<Record<string, boolean>>({})
 
-  const worldCountryOptions = [
-    { name: 'France', flag: '🇫🇷' },
-    { name: 'Germany', flag: '🇩🇪' },
-    { name: 'Netherlands', flag: '🇳🇱' },
-    { name: 'Saudi Arabia', flag: '🇸🇦' },
-    { name: 'Singapore', flag: '🇸🇬' },
-    { name: 'United Arab Emirates', flag: '🇦🇪' },
-    { name: 'United Kingdom', flag: '🇬🇧' },
-    { name: 'United States', flag: '🇺🇸' },
-  ]
+  const worldCountryOptions = DEFAULT_COUNTRY_OPTIONS
 
   // Mock search results list
   const searchVendorResults: SearchVendorResult[] = [
@@ -983,29 +975,18 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
               {/* Country */}
               <div>
                 <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">Country</label>
-                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] bg-white focus-within:border-[#cbd5e1]">
-                  <select
-                    value={editingVendor.country}
-                    onChange={(e) => {
-                      const cObj = worldCountryOptions.find((c) => c.name === e.target.value)
-                      setEditingVendor({
-                        ...editingVendor,
-                        country: e.target.value,
-                        flag: cObj ? cObj.flag : '🌐',
-                      })
-                    }}
-                    className={`w-full text-xs bg-transparent outline-none cursor-pointer py-1 ${
-                      editingVendor.country ? 'text-[#0d212c]' : 'text-[#94a3b8]'
-                    }`}
-                  >
-                    <option value="" disabled>Select Country</option>
-                    {worldCountryOptions.map((c) => (
-                      <option key={c.name} value={c.name}>
-                        {c.flag} {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <CountrySelect
+                  value={editingVendor.country}
+                  onChange={(selectedCountry) => {
+                    const cObj = worldCountryOptions.find((c) => c.name === selectedCountry)
+                    setEditingVendor({
+                      ...editingVendor,
+                      country: selectedCountry,
+                      flag: cObj?.flag || '🌐',
+                    })
+                  }}
+                  placeholder="Select Country"
+                />
               </div>
 
               {/* Website URL */}
@@ -1333,22 +1314,11 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                   {/* Country */}
                   <div>
                     <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">Country</label>
-                    <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] bg-white focus-within:border-[#cbd5e1]">
-                      <select
-                        value={findCountry}
-                        onChange={(e) => setFindCountry(e.target.value)}
-                        className={`w-full text-xs bg-transparent outline-none cursor-pointer py-1 ${
-                          findCountry ? 'text-[#0d212c]' : 'text-[#94a3b8]'
-                        }`}
-                      >
-                        <option value="" disabled>Select Country</option>
-                        {worldCountryOptions.map((c) => (
-                          <option key={c.name} value={c.name}>
-                            {c.flag} {c.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <CountrySelect
+                      value={findCountry}
+                      onChange={setFindCountry}
+                      placeholder="Select Country"
+                    />
                   </div>
 
                   {/* Website URL on next line */}
@@ -1513,22 +1483,11 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
                       <label className="block text-xs font-semibold text-[#0d212c] mb-1.5">
                         Country
                       </label>
-                      <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[#e2e8f0] bg-white focus-within:border-[#cbd5e1]">
-                        <select
-                          value={manualCountry}
-                          onChange={(e) => setManualCountry(e.target.value)}
-                          className={`w-full text-xs bg-transparent outline-none cursor-pointer py-1 ${
-                            manualCountry ? 'text-[#0d212c]' : 'text-[#94a3b8]'
-                          }`}
-                        >
-                          <option value="" disabled>Select Country</option>
-                          {worldCountryOptions.map((c) => (
-                            <option key={c.name} value={c.name}>
-                              {c.flag} {c.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <CountrySelect
+                        value={manualCountry}
+                        onChange={setManualCountry}
+                        placeholder="Select Country"
+                      />
                     </div>
 
                     <div>

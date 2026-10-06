@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Globe } from 'lucide-react'
 
 export interface CountryFlagProps {
@@ -32,7 +32,15 @@ const COUNTRY_CODE_MAP: Record<string, string> = {
 export const getCountryCode = (country?: string, code?: string): string => {
   if (code) return code.toLowerCase()
   if (!country) return 'un'
-  return COUNTRY_CODE_MAP[country] || 'un'
+  if (COUNTRY_CODE_MAP[country]) return COUNTRY_CODE_MAP[country]
+
+  const lower = country.toLowerCase().trim()
+  const matched = Object.entries(COUNTRY_CODE_MAP).find(
+    ([k]) => k.toLowerCase() === lower
+  )
+  if (matched) return matched[1]
+  if (lower.length === 2) return lower
+  return 'un'
 }
 
 export const CountryFlag: React.FC<CountryFlagProps> = ({
@@ -43,6 +51,10 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
 }) => {
   const [imgError, setImgError] = useState(false)
   const countryCode = getCountryCode(country, code)
+
+  useEffect(() => {
+    setImgError(false)
+  }, [country, code])
 
   const sizeClasses = {
     sm: 'w-4 h-3',
