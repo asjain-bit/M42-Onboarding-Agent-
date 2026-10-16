@@ -802,15 +802,15 @@ export const UsageInsightsScreen: React.FC = () => {
               ).map((item) => (
                 <div
                   key={item.id}
-                  className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-3 group relative"
+                  className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-6 group relative"
                 >
                   <span
-                    className="text-xs text-[#0d212c] truncate font-normal"
+                    className="text-xs text-[#0d212c] truncate max-w-[170px] sm:max-w-[185px] xl:max-w-[210px] font-normal"
                     title={item.name}
                   >
                     {item.name}
                   </span>
-                  <span className="text-xs font-medium text-[#36c0c9] shrink-0">
+                  <span className="text-xs font-medium text-[#36c0c9] shrink-0 text-right">
                     {item.round}
                   </span>
                 </div>
@@ -828,15 +828,15 @@ export const UsageInsightsScreen: React.FC = () => {
               ).map((item) => (
                 <div
                   key={item.id}
-                  className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-3 group relative"
+                  className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-6 group relative"
                 >
                   <span
-                    className="text-xs text-[#0d212c] truncate font-normal"
+                    className="text-xs text-[#0d212c] truncate max-w-[170px] sm:max-w-[185px] xl:max-w-[210px] font-normal"
                     title={item.name}
                   >
                     {item.name}
                   </span>
-                  <span className="text-xs font-medium text-[#36c0c9] shrink-0">
+                  <span className="text-xs font-medium text-[#36c0c9] shrink-0 text-right">
                     {item.round}
                   </span>
                 </div>
@@ -854,15 +854,15 @@ export const UsageInsightsScreen: React.FC = () => {
               ).map((item) => (
                 <div
                   key={item.id}
-                  className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-3 group relative"
+                  className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-6 group relative"
                 >
                   <span
-                    className="text-xs text-[#0d212c] truncate font-normal"
+                    className="text-xs text-[#0d212c] truncate max-w-[170px] sm:max-w-[185px] xl:max-w-[210px] font-normal"
                     title={item.name}
                   >
                     {item.name}
                   </span>
-                  <span className="text-xs font-medium text-[#36c0c9] shrink-0">
+                  <span className="text-xs font-medium text-[#36c0c9] shrink-0 text-right">
                     {item.round}
                   </span>
                 </div>
