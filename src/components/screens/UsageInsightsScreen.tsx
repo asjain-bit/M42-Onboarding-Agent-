@@ -791,88 +791,90 @@ export const UsageInsightsScreen: React.FC = () => {
         </div>
 
         {/* 3-Column Card */}
-        <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 shadow-xs grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Column 1: Completed */}
-          <div className="flex flex-col">
-            <h3 className="text-sm font-semibold text-[#0d212c] mb-3">Completed</h3>
-            <div className="flex flex-col">
-              {(isExpandedAll
-                ? currentWeek.assessments.completed
-                : currentWeek.assessments.completed.slice(0, 4)
-              ).map((item) => (
-                <div
-                  key={item.id}
-                  className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-6 group relative"
-                >
-                  <span
-                    className="text-xs text-[#0d212c] truncate max-w-[170px] sm:max-w-[185px] xl:max-w-[210px] font-normal"
-                    title={item.name}
+        <div className="bg-white rounded-2xl border border-[#e2e8f0] p-6 shadow-xs flex flex-col gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 md:divide-x md:divide-[#e2e8f0] gap-8 md:gap-0">
+            {/* Column 1: Completed */}
+            <div className="flex flex-col md:pr-6">
+              <h3 className="text-sm font-semibold text-[#0d212c] mb-3">Completed</h3>
+              <div className="flex flex-col">
+                {(isExpandedAll
+                  ? currentWeek.assessments.completed
+                  : currentWeek.assessments.completed.slice(0, 4)
+                ).map((item) => (
+                  <div
+                    key={item.id}
+                    className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-6 group relative"
                   >
-                    {item.name}
-                  </span>
-                  <span className="text-xs font-medium text-[#36c0c9] shrink-0 text-right">
-                    {item.round}
-                  </span>
-                </div>
-              ))}
+                    <span
+                      className="text-xs text-[#0d212c] truncate max-w-[170px] sm:max-w-[185px] xl:max-w-[210px] font-normal"
+                      title={item.name}
+                    >
+                      {item.name}
+                    </span>
+                    <span className="text-xs font-medium text-[#36c0c9] shrink-0 text-right">
+                      {item.round}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Column 2: Scheduled */}
-          <div className="flex flex-col">
-            <h3 className="text-sm font-semibold text-[#0d212c] mb-3">Scheduled</h3>
-            <div className="flex flex-col">
-              {(isExpandedAll
-                ? currentWeek.assessments.scheduled
-                : currentWeek.assessments.scheduled.slice(0, 4)
-              ).map((item) => (
-                <div
-                  key={item.id}
-                  className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-6 group relative"
-                >
-                  <span
-                    className="text-xs text-[#0d212c] truncate max-w-[170px] sm:max-w-[185px] xl:max-w-[210px] font-normal"
-                    title={item.name}
+            {/* Column 2: Scheduled */}
+            <div className="flex flex-col md:px-6">
+              <h3 className="text-sm font-semibold text-[#0d212c] mb-3">Scheduled</h3>
+              <div className="flex flex-col">
+                {(isExpandedAll
+                  ? currentWeek.assessments.scheduled
+                  : currentWeek.assessments.scheduled.slice(0, 4)
+                ).map((item) => (
+                  <div
+                    key={item.id}
+                    className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-6 group relative"
                   >
-                    {item.name}
-                  </span>
-                  <span className="text-xs font-medium text-[#36c0c9] shrink-0 text-right">
-                    {item.round}
-                  </span>
-                </div>
-              ))}
+                    <span
+                      className="text-xs text-[#0d212c] truncate max-w-[170px] sm:max-w-[185px] xl:max-w-[210px] font-normal"
+                      title={item.name}
+                    >
+                      {item.name}
+                    </span>
+                    <span className="text-xs font-medium text-[#36c0c9] shrink-0 text-right">
+                      {item.round}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Column 3: Finalised */}
-          <div className="flex flex-col">
-            <h3 className="text-sm font-semibold text-[#0d212c] mb-3">Finalised</h3>
-            <div className="flex flex-col">
-              {(isExpandedAll
-                ? currentWeek.assessments.finalised
-                : currentWeek.assessments.finalised.slice(0, 4)
-              ).map((item) => (
-                <div
-                  key={item.id}
-                  className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-6 group relative"
-                >
-                  <span
-                    className="text-xs text-[#0d212c] truncate max-w-[170px] sm:max-w-[185px] xl:max-w-[210px] font-normal"
-                    title={item.name}
+            {/* Column 3: Finalised */}
+            <div className="flex flex-col md:pl-6">
+              <h3 className="text-sm font-semibold text-[#0d212c] mb-3">Finalised</h3>
+              <div className="flex flex-col">
+                {(isExpandedAll
+                  ? currentWeek.assessments.finalised
+                  : currentWeek.assessments.finalised.slice(0, 4)
+                ).map((item) => (
+                  <div
+                    key={item.id}
+                    className="py-2.5 border-b border-slate-50 last:border-0 flex items-center justify-between gap-6 group relative"
                   >
-                    {item.name}
-                  </span>
-                  <span className="text-xs font-medium text-[#36c0c9] shrink-0 text-right">
-                    {item.round}
-                  </span>
-                </div>
-              ))}
+                    <span
+                      className="text-xs text-[#0d212c] truncate max-w-[170px] sm:max-w-[185px] xl:max-w-[210px] font-normal"
+                      title={item.name}
+                    >
+                      {item.name}
+                    </span>
+                    <span className="text-xs font-medium text-[#36c0c9] shrink-0 text-right">
+                      {item.round}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Centered Single "See more" / "See less" Button for all 3 columns */}
           {hasMoreItems && (
-            <div className="col-span-1 md:col-span-3 flex justify-center pt-2 border-t border-slate-50">
+            <div className="flex justify-center pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setIsExpandedAll((prev) => !prev)}
