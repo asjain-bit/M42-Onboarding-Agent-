@@ -16,7 +16,7 @@ export const SiteHeader: React.FC<SiteHeaderProps> = ({
   return (
     <header
       className={[
-        'w-full bg-white border-b border-[#e2e8f0] px-6 lg:px-10 py-5 flex items-center justify-between sticky top-0 z-40 text-[#0d212c] shadow-xs',
+        'w-full bg-white border-b border-[#e2e8f0] px-6 py-5 flex items-center justify-between sticky top-0 z-40 text-[#0d212c] shadow-xs',
         className,
       ]
         .filter(Boolean)

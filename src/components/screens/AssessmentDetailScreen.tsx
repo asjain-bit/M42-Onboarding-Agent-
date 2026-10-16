@@ -552,7 +552,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       )}
 
       {/* Breadcrumb Menu */}
-      <div className="w-full px-6 lg:px-10 pt-4 pb-1 text-xs font-normal flex items-center gap-1.5 text-[#64748b]">
+      <div className="w-full px-6 pt-4 pb-1 text-xs font-normal flex items-center gap-1.5 text-[#64748b]">
         <button onClick={onBack} className="hover:text-[#0d7280] cursor-pointer">
           M42 admin
         </button>
@@ -565,7 +565,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       </div>
 
       {/* Main Header Container Card matching Image 2 Reference */}
-      <div className="w-full px-4 sm:px-6 lg:px-10 pt-3">
+      <div className="w-full px-6 pt-3">
         <div className="bg-[#f0f9fa]/70 rounded-3xl border border-[#d0f0f4] p-5 sm:p-7 shadow-xs flex flex-col gap-3">
           {/* Title and Subtitle */}
           <div className="flex flex-col gap-1">
@@ -644,7 +644,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       </div>
 
       {/* Main Content Area */}
-      <div className="w-full px-6 lg:px-10 mt-6 flex flex-col gap-6">
+      <div className="w-full px-6 mt-6 flex flex-col gap-6">
         {/* Navigation Tabs Bar */}
         <div className="flex items-center justify-between pb-0">
           <div className="flex items-center gap-8 border-b border-[#e2e8f0]">

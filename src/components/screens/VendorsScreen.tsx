@@ -536,7 +536,7 @@ export const VendorsScreen: React.FC<VendorsScreenProps> = ({ onHeaderChange }) 
   }
 
   return (
-    <div className="flex flex-col gap-5 w-full px-6 lg:px-10 py-4 text-[#0d212c]">
+    <div className="flex flex-col gap-5 w-full px-6 py-4 text-[#0d212c]">
       {/* Toast Notification — subtle light semantic styling */}
       {toastMessage && (
         <div className="fixed top-4 right-4 z-50 bg-[#f0fdf4] text-[#15803d] px-4 py-3 rounded-xl shadow-md border border-[#bbf7d0] flex items-center gap-3 animate-in slide-in-from-top duration-300">

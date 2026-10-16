@@ -672,7 +672,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
     return (
       <div className="min-h-screen bg-[#f8fafc] text-[#0d212c] pb-16 font-sans w-full flex flex-col items-center">
-        <div className="w-full px-6 lg:px-10 pt-4 pb-2 text-xs font-semibold flex items-center gap-1.5 text-[#64748b]">
+        <div className="w-full px-6 pt-4 pb-2 text-xs font-semibold flex items-center gap-1.5 text-[#64748b]">
           <button
             onClick={onBack}
             className="hover:text-[#36c0c9] cursor-pointer flex items-center gap-1"
@@ -841,7 +841,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
   return (
     <div className="min-h-screen bg-[#f8fafc] text-[#0d212c] pb-16 font-sans w-full">
       {/* Breadcrumb Header */}
-      <div className="w-full px-6 lg:px-10 pt-4 pb-2 text-xs font-semibold flex items-center gap-1.5 text-[#64748b]">
+      <div className="w-full px-6 pt-4 pb-2 text-xs font-semibold flex items-center gap-1.5 text-[#64748b]">
         <button
           onClick={onBack}
           className="hover:text-[#36c0c9] cursor-pointer flex items-center gap-1"
@@ -858,7 +858,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
       </div>
 
       {/* Main Page Title Header */}
-      <div className="w-full px-6 lg:px-10 py-3 flex flex-col gap-1">
+      <div className="w-full px-6 py-3 flex flex-col gap-1">
         <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-[#0d212c]">
           Configure Assessment Call
         </h1>
@@ -868,7 +868,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
       </div>
 
       {/* TOP FULL WIDTH HORIZONTAL STEP INDICATORS BAR */}
-      <div className="w-full px-6 lg:px-10 mt-4">
+      <div className="w-full px-6 mt-4">
         <div className="bg-white p-5 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col gap-3">
           <span className="text-[10px] font-bold text-[#64748b] uppercase tracking-wider">
             CALL SETUP STAGES
@@ -958,7 +958,7 @@ export const ConfigureVendorCallScreen: React.FC<ConfigureVendorCallScreenProps>
 
       {/* Main Content Layout Grid */}
       <div
-        className={`w-full px-6 lg:px-10 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 ${currentStep === 3 ? 'items-stretch' : 'items-start'
+        className={`w-full px-6 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 ${currentStep === 3 ? 'items-stretch' : 'items-start'
           }`}
       >
         {/* Left Column: STEP CONTENT (8 cols) */}

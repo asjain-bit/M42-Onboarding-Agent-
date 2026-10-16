@@ -6,7 +6,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { LayoutDashboard, FileText, Building2, Bot, PanelLeftClose, LogOut, X } from 'lucide-react'
+import { LayoutDashboard, FileText, Building2, Bot, PanelLeftClose, LogOut, X, BarChart3 } from 'lucide-react'
 import { Avatar } from '@/components/atoms/Avatar'
 
 export interface SidebarProps {
@@ -35,6 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'questionnaires', label: 'Datasets', icon: FileText },
     { id: 'vendors', label: 'Facilities', icon: Building2 },
     { id: 'agents', label: 'Agents', icon: Bot },
+    { id: 'usage-insights', label: 'Usage Insights', icon: BarChart3 },
   ]
 
   const userInitials = userName

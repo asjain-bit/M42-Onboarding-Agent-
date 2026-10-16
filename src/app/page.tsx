@@ -6,6 +6,7 @@ import { DashboardScreen } from '@/components/screens/DashboardScreen'
 import { QuestionnairesScreen } from '@/components/screens/QuestionnairesScreen'
 import { VendorsScreen } from '@/components/screens/VendorsScreen'
 import { AgentsScreen } from '@/components/screens/AgentsScreen'
+import { UsageInsightsScreen } from '@/components/screens/UsageInsightsScreen'
 import { Sidebar } from '@/components/organisms/Sidebar'
 import { SiteHeader } from '@/components/organisms/SiteHeader'
 import { PageSkeletonLoader } from '@/components/molecules/PageSkeletonLoader'
@@ -13,9 +14,9 @@ import { PageSkeletonLoader } from '@/components/molecules/PageSkeletonLoader'
 export default function HomePage() {
   // Default to false so the user lands on the SSO Login Screen first
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'questionnaires' | 'vendors' | 'agents'>(
-    'dashboard'
-  )
+  const [activeTab, setActiveTab] = useState<
+    'dashboard' | 'questionnaires' | 'vendors' | 'agents' | 'usage-insights'
+  >('dashboard')
   const [isPageLoading, setIsPageLoading] = useState(false)
   const [userEmail, setUserEmail] = useState('zaid.alali@m42.ae')
 
@@ -24,7 +25,9 @@ export default function HomePage() {
 
   const [customHeaderTitle, setCustomHeaderTitle] = useState<React.ReactNode | null>(null)
 
-  const handleTabChange = (tab: 'dashboard' | 'questionnaires' | 'vendors' | 'agents') => {
+  const handleTabChange = (
+    tab: 'dashboard' | 'questionnaires' | 'vendors' | 'agents' | 'usage-insights'
+  ) => {
     if (tab === activeTab && !isPageLoading) return
     setCustomHeaderTitle(null)
     setIsPageLoading(true)
@@ -72,6 +75,11 @@ export default function HomePage() {
           title: 'Agents',
           subtitle: '',
         }
+      case 'usage-insights':
+        return {
+          title: 'Usage Insights',
+          subtitle: '',
+        }
       case 'dashboard':
       default:
         return {
@@ -89,7 +97,9 @@ export default function HomePage() {
       <Sidebar
         activeTab={activeTab}
         onTabChange={(tab) =>
-          handleTabChange(tab as 'dashboard' | 'questionnaires' | 'vendors' | 'agents')
+          handleTabChange(
+            tab as 'dashboard' | 'questionnaires' | 'vendors' | 'agents' | 'usage-insights'
+          )
         }
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -120,6 +130,7 @@ export default function HomePage() {
               {activeTab === 'questionnaires' && <QuestionnairesScreen />}
               {activeTab === 'vendors' && <VendorsScreen onHeaderChange={setCustomHeaderTitle} />}
               {activeTab === 'agents' && <AgentsScreen />}
+              {activeTab === 'usage-insights' && <UsageInsightsScreen />}
             </>
           )}
         </main>

@@ -261,7 +261,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
       )}
 
       {/* Breadcrumb Header */}
-      <div className="w-full px-6 lg:px-10 pt-4 pb-2 text-xs font-semibold flex items-center gap-1.5 text-[#64748b]">
+      <div className="w-full px-6 pt-4 pb-2 text-xs font-semibold flex items-center gap-1.5 text-[#64748b]">
         <button
           onClick={onBack}
           className="hover:text-[#36c0c9] cursor-pointer flex items-center gap-1"
@@ -274,7 +274,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
       </div>
 
       {/* Header Bar */}
-      <div className="w-full px-6 lg:px-10 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="w-full px-6 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-xl lg:text-2xl font-bold tracking-tight text-[#0d212c]">
@@ -362,7 +362,7 @@ export const QuestionnaireDetailScreen: React.FC<QuestionnaireDetailScreenProps>
       </div>
 
       {/* Testcases List */}
-      <div className="w-full px-6 lg:px-10 mt-6 flex flex-col gap-5">
+      <div className="w-full px-6 mt-6 flex flex-col gap-5">
         {questions.length === 0 ? (
           <div className="bg-white rounded-2xl border border-dashed border-[#cbd5e1] p-12 flex flex-col items-center justify-center text-center my-4">
             <div className="w-14 h-14 rounded-2xl bg-slate-50 text-[#64748b] flex items-center justify-center border border-slate-200 mb-4 shadow-2xs">
