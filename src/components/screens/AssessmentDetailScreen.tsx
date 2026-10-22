@@ -434,18 +434,6 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
     setTimeout(() => setCopiedUrl(false), 2000)
   }
 
-  const handleFinalize = () => {
-    const nextStatus = currentStatus === 'completed' ? 'finalised' : 'completed'
-    setCurrentStatus(nextStatus)
-    if (onStatusChange) {
-      onStatusChange(nextStatus)
-    }
-    setToastMessage(
-      `Assessment finalized! Status updated to ${nextStatus === 'finalised' ? 'Finalised' : 'Completed'}.`
-    )
-    setTimeout(() => setToastMessage(null), 3500)
-  }
-
   const toggleExpandSnapshots = (id: number) => {
     setExpandedSnapshots((prev) => ({
       ...prev,
@@ -756,7 +744,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                   <span>Download report</span>
                 </button>
                 <button
-                  onClick={handleFinalize}
+                  type="button"
                   className="bg-[#0d212c] hover:bg-[#122e3d] text-white font-semibold text-xs px-5 py-2 rounded-xl transition cursor-pointer shadow-2xs border-0"
                 >
                   Finalize
