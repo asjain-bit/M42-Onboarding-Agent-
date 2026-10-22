@@ -13,6 +13,8 @@ import {
   Calendar,
   Check,
   RefreshCw,
+  LineChart,
+  Menu,
 } from 'lucide-react'
 
 // Week definition interface
@@ -197,6 +199,112 @@ const WEEKS_DATA: WeekOption[] = [
   },
 ]
 
+interface NumericStepperInputProps {
+  value: number
+  onChange: (val: number) => void
+  unit: string
+  prefix?: string
+  step?: number
+  min?: number
+  max?: number
+  precision?: number
+}
+
+const NumericStepperInput: React.FC<NumericStepperInputProps> = ({
+  value,
+  onChange,
+  unit,
+  prefix,
+  step = 1,
+  min = 0,
+  max = 9999,
+  precision = 0,
+}) => {
+  const formatVal = (v: number) => (precision > 0 ? v.toFixed(precision) : String(v))
+  const [localStr, setLocalStr] = useState<string>(() => formatVal(value))
+  const [prevVal, setPrevVal] = useState<number>(value)
+
+  if (prevVal !== value) {
+    setPrevVal(value)
+    setLocalStr(formatVal(value))
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9.]/g, '')
+    setLocalStr(raw)
+    const num = parseFloat(raw)
+    if (!isNaN(num)) {
+      onChange(Math.max(min, Math.min(max, num)))
+    } else if (raw === '') {
+      onChange(min)
+    }
+  }
+
+  const handleBlur = () => {
+    const num = parseFloat(localStr)
+    if (isNaN(num)) {
+      setLocalStr(formatVal(min))
+      onChange(min)
+    } else {
+      const clamped = Math.max(min, Math.min(max, num))
+      setLocalStr(formatVal(clamped))
+      onChange(clamped)
+    }
+  }
+
+  const increment = () => {
+    const next = Math.min(max, parseFloat((value + step).toFixed(precision || 2)))
+    onChange(next)
+    setLocalStr(formatVal(next))
+  }
+
+  const decrement = () => {
+    const next = Math.max(min, parseFloat((value - step).toFixed(precision || 2)))
+    onChange(next)
+    setLocalStr(formatVal(next))
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex items-center border border-[#e2e8f0] rounded-lg bg-white px-2 py-1 w-[92px] justify-between transition focus-within:border-[#36c0c9] focus-within:bg-[#f8fafc] shadow-2xs">
+        {prefix && (
+          <span className="text-xs text-[#94a3b8] font-normal mr-0.5 select-none">
+            {prefix}
+          </span>
+        )}
+        <input
+          type="text"
+          value={localStr}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          className="w-full text-xs font-semibold text-[#0d212c] text-center outline-none bg-transparent"
+        />
+        <div className="flex flex-col shrink-0 ml-1">
+          <button
+            type="button"
+            onClick={increment}
+            className="text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer border-0 bg-transparent p-0 leading-none"
+            aria-label="Increase"
+          >
+            <ChevronUp className="w-3 h-3" />
+          </button>
+          <button
+            type="button"
+            onClick={decrement}
+            className="text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer border-0 bg-transparent p-0 leading-none"
+            aria-label="Decrease"
+          >
+            <ChevronDown className="w-3 h-3" />
+          </button>
+        </div>
+      </div>
+      <span className="text-xs text-[#64748b] font-normal w-10 text-left select-none">
+        {unit}
+      </span>
+    </div>
+  )
+}
+
 export const UsageInsightsScreen: React.FC = () => {
   // Current active week index (default: week-3 / index 2)
   const [selectedWeekIndex, setSelectedWeekIndex] = useState<number>(2)
@@ -208,12 +316,22 @@ export const UsageInsightsScreen: React.FC = () => {
   // Assumptions input states (staged/editing)
   const [hoursSpent, setHoursSpent] = useState<number>(4)
   const [costPerHour, setCostPerHour] = useState<number>(30)
-  const [tokenPrice, setTokenPrice] = useState<number>(4.0)
+  const [inputTokenPrice, setInputTokenPrice] = useState<number>(1.25)
+  const [outputTokenPrice, setOutputTokenPrice] = useState<number>(10.0)
+  const [inputVoiceTokenPrice, setInputVoiceTokenPrice] = useState<number>(10.0)
+  const [outputVoiceTokenPrice, setOutputVoiceTokenPrice] = useState<number>(20.0)
 
   // Applied values used for calculations
   const [appliedHoursSpent, setAppliedHoursSpent] = useState<number>(4)
   const [appliedCostPerHour, setAppliedCostPerHour] = useState<number>(30)
-  const [appliedTokenPrice, setAppliedTokenPrice] = useState<number>(4.0)
+  const [appliedInputTokenPrice, setAppliedInputTokenPrice] = useState<number>(1.25)
+  const [appliedOutputTokenPrice, setAppliedOutputTokenPrice] = useState<number>(10.0)
+  const [appliedInputVoiceTokenPrice, setAppliedInputVoiceTokenPrice] = useState<number>(10.0)
+  const [appliedOutputVoiceTokenPrice, setAppliedOutputVoiceTokenPrice] = useState<number>(20.0)
+
+  // View mode for Right Card (Graph view vs Data view) - Default to Graph view
+  const [roiViewMode, setRoiViewMode] = useState<'graph' | 'data'>('graph')
+  const [hoveredPointIndex, setHoveredPointIndex] = useState<number | null>(null)
 
   // Recalculation animation state
   const [isRecalculating, setIsRecalculating] = useState<boolean>(false)
@@ -226,15 +344,24 @@ export const UsageInsightsScreen: React.FC = () => {
     return (
       hoursSpent !== appliedHoursSpent ||
       costPerHour !== appliedCostPerHour ||
-      tokenPrice !== appliedTokenPrice
+      inputTokenPrice !== appliedInputTokenPrice ||
+      outputTokenPrice !== appliedOutputTokenPrice ||
+      inputVoiceTokenPrice !== appliedInputVoiceTokenPrice ||
+      outputVoiceTokenPrice !== appliedOutputVoiceTokenPrice
     )
   }, [
     hoursSpent,
     costPerHour,
-    tokenPrice,
+    inputTokenPrice,
+    outputTokenPrice,
+    inputVoiceTokenPrice,
+    outputVoiceTokenPrice,
     appliedHoursSpent,
     appliedCostPerHour,
-    appliedTokenPrice,
+    appliedInputTokenPrice,
+    appliedOutputTokenPrice,
+    appliedInputVoiceTokenPrice,
+    appliedOutputVoiceTokenPrice,
   ])
 
   // Close week dropdown on click outside
@@ -276,7 +403,10 @@ export const UsageInsightsScreen: React.FC = () => {
     setTimeout(() => {
       setAppliedHoursSpent(hoursSpent)
       setAppliedCostPerHour(costPerHour)
-      setAppliedTokenPrice(tokenPrice)
+      setAppliedInputTokenPrice(inputTokenPrice)
+      setAppliedOutputTokenPrice(outputTokenPrice)
+      setAppliedInputVoiceTokenPrice(inputVoiceTokenPrice)
+      setAppliedOutputVoiceTokenPrice(outputVoiceTokenPrice)
       setIsRecalculating(false)
     }, 800)
   }
@@ -286,8 +416,19 @@ export const UsageInsightsScreen: React.FC = () => {
   const totalHours = currentWeek.outputCalls * appliedHoursSpent
   const manualCost = totalHours * appliedCostPerHour
 
-  // AI Cost = Tokens (in Millions) × Token Price per 1M
-  const rawAICost = currentWeek.tokensM * appliedTokenPrice
+  // AI Cost across categories:
+  // Text Input tokens (40%), Text Output tokens (15%), Voice Input tokens (25%), Voice Output tokens (20%)
+  const tokensM = currentWeek.tokensM
+  const inputTokensM = tokensM * 0.4
+  const outputTokensM = tokensM * 0.15
+  const voiceInputTokensM = tokensM * 0.25
+  const voiceOutputTokensM = tokensM * 0.2
+
+  const rawAICost =
+    inputTokensM * appliedInputTokenPrice +
+    outputTokensM * appliedOutputTokenPrice +
+    voiceInputTokensM * appliedInputVoiceTokenPrice +
+    voiceOutputTokensM * appliedOutputVoiceTokenPrice
   const aiCost = Math.round(rawAICost)
 
   // Estimated ROI = Manual Cost ÷ AI Cost
@@ -296,6 +437,55 @@ export const UsageInsightsScreen: React.FC = () => {
   // Estimated Savings = Manual Cost − AI Cost
   const rawSavings = manualCost - rawAICost
   const estimatedSavings = Math.round(rawSavings)
+
+  // Comparison Historical Data for Line Chart matching current month's weeks
+  const comparisonData = useMemo(() => {
+    return WEEKS_DATA.map((w, idx) => {
+      const isSelected = idx === selectedWeekIndex
+      if (isSelected) {
+        return {
+          id: w.id,
+          date: w.shortRange.replace(', 2026', ''),
+          fullLabel: w.label,
+          manual: manualCost,
+          ai: Math.round(rawAICost * 100) / 100,
+          isCurrent: w.isCurrent,
+          isSelected: true,
+        }
+      }
+      const outputs = w.outputCalls
+      const mCost = Math.round(outputs * appliedHoursSpent * appliedCostPerHour)
+      const t = w.tokensM
+      const wAiCost =
+        Math.round(
+          (t * 0.4 * appliedInputTokenPrice +
+            t * 0.15 * appliedOutputTokenPrice +
+            t * 0.25 * appliedInputVoiceTokenPrice +
+            t * 0.2 * appliedOutputVoiceTokenPrice) *
+            100
+        ) / 100
+
+      return {
+        id: w.id,
+        date: w.shortRange.replace(', 2026', ''),
+        fullLabel: w.label,
+        manual: mCost,
+        ai: wAiCost,
+        isCurrent: w.isCurrent,
+        isSelected: false,
+      }
+    })
+  }, [
+    selectedWeekIndex,
+    manualCost,
+    rawAICost,
+    appliedHoursSpent,
+    appliedCostPerHour,
+    appliedInputTokenPrice,
+    appliedOutputTokenPrice,
+    appliedInputVoiceTokenPrice,
+    appliedOutputVoiceTokenPrice,
+  ])
 
   const hasMoreItems =
     currentWeek.assessments.completed.length > 4 ||
@@ -458,7 +648,7 @@ export const UsageInsightsScreen: React.FC = () => {
             </div>
             <div className="border-t border-[#e2e8f0] pt-2">
               <span className="text-[11px] text-[#64748b] font-normal">
-                week of {currentWeek.shortRange} · @ ${appliedTokenPrice.toFixed(0)} / 1M tokens
+                week of {currentWeek.shortRange} · Text &amp; Voice tokens
               </span>
             </div>
           </div>
@@ -471,10 +661,10 @@ export const UsageInsightsScreen: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-stretch">
           {/* Left Card: Assumptions Table */}
-          <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 shadow-xs flex flex-col justify-between min-h-[220px]">
-            <div className="flex flex-col gap-3">
+          <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 shadow-xs flex flex-col justify-between min-h-[460px]">
+            <div className="divide-y divide-slate-100 flex-1 flex flex-col justify-between py-0.5">
               {/* Row 1: Hours spent on manual assessments */}
-              <div className="flex items-center justify-between py-1 border-b border-slate-50">
+              <div className="py-2.5 flex items-center justify-between gap-3 first:pt-0">
                 <div className="flex flex-col">
                   <span className="text-xs font-semibold text-[#0d212c]">
                     Hours spent on manual assessments
@@ -483,148 +673,129 @@ export const UsageInsightsScreen: React.FC = () => {
                     (per assessment)
                   </span>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center border border-[#e2e8f0] rounded-lg bg-white px-2.5 py-1 w-[88px] justify-between transition focus-within:border-[#cbd5e1] focus-within:bg-[#f8fafc]">
-                    <input
-                      type="number"
-                      step={1}
-                      min={1}
-                      max={40}
-                      value={hoursSpent}
-                      onChange={(e) => {
-                        const val = parseFloat(e.target.value)
-                        setHoursSpent(isNaN(val) ? 0 : val)
-                      }}
-                      className="w-full text-xs font-semibold text-[#0d212c] text-center outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <div className="flex flex-col shrink-0 ml-1">
-                      <button
-                        type="button"
-                        onClick={() => setHoursSpent((h) => Math.min(40, h + 1))}
-                        className="text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer border-0 bg-transparent p-0 leading-none"
-                      >
-                        <ChevronUp className="w-3 h-3" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setHoursSpent((h) => Math.max(1, h - 1))}
-                        className="text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer border-0 bg-transparent p-0 leading-none"
-                      >
-                        <ChevronDown className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                  <span className="text-xs text-[#64748b] font-normal w-10 text-left">
-                    hours
-                  </span>
-                </div>
+                <NumericStepperInput
+                  value={hoursSpent}
+                  onChange={setHoursSpent}
+                  unit="hours"
+                  step={1}
+                  min={1}
+                  max={40}
+                  precision={0}
+                />
               </div>
 
               {/* Row 2: Cost per hour */}
-              <div className="flex items-center justify-between py-1 border-b border-slate-50">
+              <div className="py-2.5 flex items-center justify-between gap-3">
                 <div className="flex flex-col">
                   <span className="text-xs font-semibold text-[#0d212c]">
                     Cost per hour
                   </span>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center border border-[#e2e8f0] rounded-lg bg-white px-2.5 py-1 w-[88px] justify-between transition focus-within:border-[#cbd5e1] focus-within:bg-[#f8fafc]">
-                    <span className="text-xs text-[#94a3b8] font-normal mr-1">$</span>
-                    <input
-                      type="number"
-                      step={5}
-                      min={5}
-                      max={500}
-                      value={costPerHour}
-                      onChange={(e) => {
-                        const val = parseFloat(e.target.value)
-                        setCostPerHour(isNaN(val) ? 0 : val)
-                      }}
-                      className="w-full text-xs font-semibold text-[#0d212c] text-center outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <div className="flex flex-col shrink-0 ml-1">
-                      <button
-                        type="button"
-                        onClick={() => setCostPerHour((c) => Math.min(500, c + 5))}
-                        className="text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer border-0 bg-transparent p-0 leading-none"
-                      >
-                        <ChevronUp className="w-3 h-3" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setCostPerHour((c) => Math.max(5, c - 5))}
-                        className="text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer border-0 bg-transparent p-0 leading-none"
-                      >
-                        <ChevronDown className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                  <span className="text-xs text-[#64748b] font-normal w-10 text-left">
-                    USD
-                  </span>
-                </div>
+                <NumericStepperInput
+                  value={costPerHour}
+                  onChange={setCostPerHour}
+                  unit="USD"
+                  prefix="$"
+                  step={5}
+                  min={5}
+                  max={500}
+                  precision={0}
+                />
               </div>
 
-              {/* Row 3: Token price */}
-              <div className="flex items-center justify-between py-1">
+              {/* Row 3: Input Token Price */}
+              <div className="py-2.5 flex items-center justify-between gap-3">
                 <div className="flex flex-col">
                   <span className="text-xs font-semibold text-[#0d212c]">
-                    Token price
+                    Input Token Price
                   </span>
                   <span className="text-[11px] text-[#94a3b8] font-normal">
-                    (per 1M tokens)
+                    (per 1M input tokens)
                   </span>
                 </div>
+                <NumericStepperInput
+                  value={inputTokenPrice}
+                  onChange={setInputTokenPrice}
+                  unit="USD"
+                  prefix="$"
+                  step={0.05}
+                  min={0.01}
+                  max={100}
+                  precision={2}
+                />
+              </div>
 
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center border border-[#e2e8f0] rounded-lg bg-white px-2.5 py-1 w-[88px] justify-between transition focus-within:border-[#cbd5e1] focus-within:bg-[#f8fafc]">
-                    <span className="text-xs text-[#94a3b8] font-normal mr-1">$</span>
-                    <input
-                      type="number"
-                      step={0.5}
-                      min={0.5}
-                      max={50}
-                      value={tokenPrice}
-                      onChange={(e) => {
-                        const val = parseFloat(e.target.value)
-                        setTokenPrice(isNaN(val) ? 0 : val)
-                      }}
-                      className="w-full text-xs font-semibold text-[#0d212c] text-center outline-none bg-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    <div className="flex flex-col shrink-0 ml-1">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setTokenPrice((p) => Math.min(50, parseFloat((p + 0.5).toFixed(1))))
-                        }
-                        className="text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer border-0 bg-transparent p-0 leading-none"
-                      >
-                        <ChevronUp className="w-3 h-3" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setTokenPrice((p) => Math.max(0.5, parseFloat((p - 0.5).toFixed(1))))
-                        }
-                        className="text-[#94a3b8] hover:text-[#0d212c] transition cursor-pointer border-0 bg-transparent p-0 leading-none"
-                      >
-                        <ChevronDown className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                  <span className="text-xs text-[#64748b] font-normal w-10 text-left">
-                    USD
+              {/* Row 4: Output Token Price */}
+              <div className="py-2.5 flex items-center justify-between gap-3">
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-[#0d212c]">
+                    Output Token Price
+                  </span>
+                  <span className="text-[11px] text-[#94a3b8] font-normal">
+                    (per 1M output tokens)
                   </span>
                 </div>
+                <NumericStepperInput
+                  value={outputTokenPrice}
+                  onChange={setOutputTokenPrice}
+                  unit="USD"
+                  prefix="$"
+                  step={0.5}
+                  min={0.1}
+                  max={100}
+                  precision={2}
+                />
+              </div>
+
+              {/* Row 5: Input Token (Voice) */}
+              <div className="py-2.5 flex items-center justify-between gap-3">
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-[#0d212c]">
+                    Input Token (Voice)
+                  </span>
+                  <span className="text-[11px] text-[#94a3b8] font-normal">
+                    (per 1M voice tokens)
+                  </span>
+                </div>
+                <NumericStepperInput
+                  value={inputVoiceTokenPrice}
+                  onChange={setInputVoiceTokenPrice}
+                  unit="USD"
+                  prefix="$"
+                  step={1}
+                  min={0.5}
+                  max={200}
+                  precision={2}
+                />
+              </div>
+
+              {/* Row 6: Output Token (Voice) */}
+              <div className="py-2.5 flex items-center justify-between gap-3 last:pb-0">
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-[#0d212c]">
+                    Output Token (Voice)
+                  </span>
+                  <span className="text-[11px] text-[#94a3b8] font-normal">
+                    (per 1M voice tokens)
+                  </span>
+                </div>
+                <NumericStepperInput
+                  value={outputVoiceTokenPrice}
+                  onChange={setOutputVoiceTokenPrice}
+                  unit="USD"
+                  prefix="$"
+                  step={1}
+                  min={0.5}
+                  max={200}
+                  precision={2}
+                />
               </div>
             </div>
 
             {/* Bottom Row of Left Card */}
-            <div className="flex items-center justify-between pt-4 mt-2">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100 mt-2">
               <span className="text-[11px] text-[#94a3b8] font-normal">
-                AI cost excludes web search
+                {hasUnappliedChanges ? 'Unapplied changes' : 'AI cost includes text + voice tokens'}
               </span>
 
               {/* Recalculate Button */}
@@ -648,11 +819,11 @@ export const UsageInsightsScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Card: Financial Impact Metrics */}
-          <div className="bg-white rounded-2xl border border-[#e2e8f0] p-5 shadow-xs relative flex flex-col justify-between overflow-hidden min-h-[220px]">
+          {/* Right Card: Comparison Graph or Numbers View */}
+          <div className="bg-white rounded-2xl border border-[#e2e8f0] p-4 sm:p-5 shadow-xs relative flex flex-col justify-between overflow-hidden min-h-[460px] transition-all duration-300">
             {/* Recalculation Overlay (800ms) */}
             {isRecalculating && (
-              <div className="absolute inset-0 bg-white/90 backdrop-blur-[2px] rounded-2xl z-20 flex flex-col items-center justify-center gap-3 animate-in fade-in duration-150">
+              <div className="absolute inset-0 bg-white/95 backdrop-blur-[2px] rounded-2xl z-30 flex flex-col items-center justify-center gap-3 animate-in fade-in duration-150">
                 <svg
                   className="w-8 h-8 animate-spin text-[#36c0c9]"
                   viewBox="0 0 24 24"
@@ -679,102 +850,427 @@ export const UsageInsightsScreen: React.FC = () => {
               </div>
             )}
 
-            {/* Top Half (50%) */}
-            <div className="grid grid-cols-2 gap-4 pb-3">
-              {/* Manual cost */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-[#0d212c]">Manual cost</span>
-                  <div className="relative group flex items-center">
-                    <Info className="w-3.5 h-3.5 text-[#94a3b8] hover:text-[#64748b] cursor-pointer" />
-                    <div className="pointer-events-none absolute left-0 bottom-full mb-1.5 hidden group-hover:flex flex-col items-start z-30">
-                      <div className="bg-[#0d212c] text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
-                        Formula: Outputs × Manual Hours × Cost per Hour
-                      </div>
-                      <div className="w-2 h-2 bg-[#0d212c] rotate-45 -mt-1 ml-2" />
+            {/* Header: Title, Legend & View Mode Toggle */}
+            <div
+              className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 shrink-0 ${
+                roiViewMode === 'graph' ? 'border-b border-slate-100' : ''
+              }`}
+            >
+              <div className="flex flex-wrap items-center gap-4">
+                <h3 className="text-sm sm:text-base font-semibold text-[#0d212c]">
+                  Manual cost vs AI cost
+                </h3>
+                {/* Legend (Only shown in graph view) */}
+                {roiViewMode === 'graph' && (
+                  <div className="flex items-center gap-3.5 text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3.5 h-0.5 bg-[#36c0c9] rounded-full inline-block" />
+                      <span className="text-[#64748b] font-normal text-[11px]">Manual cost</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-3.5 h-0.5 bg-[#ed4d19] rounded-full inline-block" />
+                      <span className="text-[#64748b] font-normal text-[11px]">AI cost</span>
                     </div>
                   </div>
-                </div>
-                <div className="text-2xl font-semibold text-[#0d212c] tracking-tight">
-                  ${manualCost.toLocaleString()}
-                </div>
-                <div className="text-[11px] text-[#64748b] font-normal">
-                  Total hours {totalHours} | Cost per hour ${appliedCostPerHour}
-                </div>
+                )}
               </div>
 
-              {/* AI cost */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-[#0d212c]">AI cost</span>
-                  <div className="relative group flex items-center">
-                    <Info className="w-3.5 h-3.5 text-[#94a3b8] hover:text-[#64748b] cursor-pointer" />
-                    <div className="pointer-events-none absolute left-0 bottom-full mb-1.5 hidden group-hover:flex flex-col items-start z-30">
-                      <div className="bg-[#0d212c] text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
-                        Formula: Tokens (in Millions) × Token Price per 1M
-                      </div>
-                      <div className="w-2 h-2 bg-[#0d212c] rotate-45 -mt-1 ml-2" />
-                    </div>
-                  </div>
-                </div>
-                <div className="text-2xl font-semibold text-[#0d212c] tracking-tight">
-                  ${aiCost}
-                </div>
-                <div className="text-[11px] text-[#64748b] font-normal">
-                  Total tokens {currentWeek.tokensM}M | Token price $
-                  {appliedTokenPrice.toFixed(2)}
-                </div>
-              </div>
-            </div>
-
-            {/* Horizontal 50/50 Centered Divider */}
-            <div className="border-t border-[#f1f5f9] my-2" />
-
-            {/* Bottom Half (50%) */}
-            <div className="grid grid-cols-2 gap-4 pt-1">
-              {/* Estimated ROI */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-[#0d212c]">Estimated ROI</span>
-                  <div className="relative group flex items-center">
-                    <Info className="w-3.5 h-3.5 text-[#94a3b8] hover:text-[#64748b] cursor-pointer" />
-                    <div className="pointer-events-none absolute left-0 bottom-full mb-1.5 hidden group-hover:flex flex-col items-start z-30">
-                      <div className="bg-[#0d212c] text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
-                        Formula: Manual Cost ÷ AI Cost
-                      </div>
-                      <div className="w-2 h-2 bg-[#0d212c] rotate-45 -mt-1 ml-2" />
-                    </div>
-                  </div>
-                </div>
-                <div className="text-2xl font-semibold text-[#36c0c9] tracking-tight">
-                  {roiMultiplier}x
-                </div>
-              </div>
-
-              {/* Estimated savings */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-semibold text-[#0d212c]">
-                    Estimated savings
-                  </span>
-                  <div className="relative group flex items-center">
-                    <Info className="w-3.5 h-3.5 text-[#94a3b8] hover:text-[#64748b] cursor-pointer" />
-                    <div className="pointer-events-none absolute left-0 bottom-full mb-1.5 hidden group-hover:flex flex-col items-start z-30">
-                      <div className="bg-[#0d212c] text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
-                        Formula: Manual Cost − AI Cost
-                      </div>
-                      <div className="w-2 h-2 bg-[#0d212c] rotate-45 -mt-1 ml-2" />
-                    </div>
-                  </div>
-                </div>
-                <div className="text-2xl font-semibold text-[#36c0c9] tracking-tight flex items-baseline">
-                  ${estimatedSavings.toLocaleString()}
-                  <span className="text-xs font-normal text-[#64748b] ml-1.5">
-                    this week
-                  </span>
-                </div>
+              {/* Segmented Switcher Buttons */}
+              <div className="inline-flex items-center p-0.5 bg-white border border-[#e2e8f0] rounded-lg shadow-2xs shrink-0 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => setRoiViewMode('graph')}
+                  title="Graph view"
+                  className={`p-1.5 rounded-md transition-all cursor-pointer ${
+                    roiViewMode === 'graph'
+                      ? 'bg-[#36c0c9] text-white shadow-xs'
+                      : 'text-[#64748b] hover:text-[#0d212c] bg-transparent'
+                  }`}
+                >
+                  <LineChart className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRoiViewMode('data')}
+                  title="Data view"
+                  className={`p-1.5 rounded-md transition-all cursor-pointer ${
+                    roiViewMode === 'data'
+                      ? 'bg-[#36c0c9] text-white shadow-xs'
+                      : 'text-[#64748b] hover:text-[#0d212c] bg-transparent'
+                  }`}
+                >
+                  <Menu className="w-4 h-4" />
+                </button>
               </div>
             </div>
+
+            {/* Content Area: Graph View (Default) vs Data / Numbers View */}
+            {roiViewMode === 'graph' ? (
+              /* GRAPH VIEW: SVG Comparison Line Chart */
+              <div className="flex-1 flex flex-col justify-center py-2 relative select-none">
+                {(() => {
+                  const maxManual = Math.max(...comparisonData.map((d) => d.manual), 3000)
+                  const yMax = Math.ceil(maxManual / 1000) * 1000
+                  const svgWidth = 640
+                  const svgHeight = 290
+                  const padLeft = 45
+                  const padRight = 115
+                  const padTop = 30
+                  const padBottom = 38
+                  const plotWidth = svgWidth - padLeft - padRight
+                  const plotHeight = svgHeight - padTop - padBottom
+
+                  const getX = (idx: number) => padLeft + (idx / (comparisonData.length - 1)) * plotWidth
+                  const getY = (val: number) => padTop + plotHeight * (1 - Math.min(yMax, Math.max(0, val)) / yMax)
+
+                  // Path generator
+                  const manualPoints = comparisonData.map((d, i) => `${getX(i)},${getY(d.manual)}`).join(' ')
+                  const aiPoints = comparisonData.map((d, i) => `${getX(i)},${getY(d.ai)}`).join(' ')
+
+                  const step = yMax >= 8000 ? 2000 : 1000
+                  const yTicks: number[] = []
+                  for (let v = yMax; v >= 0; v -= step) {
+                    yTicks.push(v)
+                  }
+
+                  const lastIdx = comparisonData.length - 1
+                  const lastPoint = comparisonData[lastIdx]
+                  const lastX = getX(lastIdx)
+                  const lastManualY = getY(lastPoint.manual)
+                  const lastAiY = getY(lastPoint.ai)
+
+                  return (
+                    <div className="relative w-full h-full flex items-center justify-center">
+                      <svg
+                        viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+                        className="w-full h-auto max-h-[340px] overflow-visible"
+                      >
+                        {/* Y-Axis Horizontal Gridlines and Labels */}
+                        {yTicks.map((val) => {
+                          const y = getY(val)
+                          const label = val === 0 ? '$0' : `$${val / 1000}K`
+                          return (
+                            <g key={val}>
+                              <line
+                                x1={padLeft}
+                                y1={y}
+                                x2={lastX}
+                                y2={y}
+                                stroke="#f1f5f9"
+                                strokeWidth="1"
+                              />
+                              <text
+                                x={padLeft - 10}
+                                y={y + 3.5}
+                                textAnchor="end"
+                                fill="#94a3b8"
+                                fontSize="11"
+                                fontFamily="monospace"
+                              >
+                                {label}
+                              </text>
+                            </g>
+                          )
+                        })}
+
+                        {/* Manual Cost Line (Primary Light Color Line #36c0c9) */}
+                        <polyline
+                          fill="none"
+                          stroke="#36c0c9"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          points={manualPoints}
+                        />
+
+                        {/* AI Cost Line (Orange Line #ed4d19) */}
+                        <polyline
+                          fill="none"
+                          stroke="#ed4d19"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          points={aiPoints}
+                        />
+
+                        {/* Interactive Data Points & Hover Targets */}
+                        {comparisonData.map((d, i) => {
+                          const x = getX(i)
+                          const mY = getY(d.manual)
+                          const aY = getY(d.ai)
+                          const isHovered = hoveredPointIndex === i
+                          const isSelected = i === selectedWeekIndex
+
+                          return (
+                            <g
+                              key={d.id || d.date}
+                              onMouseEnter={() => setHoveredPointIndex(i)}
+                              onMouseLeave={() => setHoveredPointIndex(null)}
+                              onClick={() => setSelectedWeekIndex(i)}
+                              className="cursor-pointer"
+                            >
+                              {/* Transparent hit area */}
+                              <rect
+                                x={x - 22}
+                                y={padTop}
+                                width={44}
+                                height={plotHeight}
+                                fill="transparent"
+                              />
+
+                              {/* Subtle vertical indicator dashed line on hover or selection */}
+                              {(isHovered || isSelected) && (
+                                <line
+                                  x1={x}
+                                  y1={padTop}
+                                  x2={x}
+                                  y2={padTop + plotHeight}
+                                  stroke="#e2e8f0"
+                                  strokeWidth="1"
+                                  strokeDasharray="3 3"
+                                />
+                              )}
+
+                              {/* Manual Point Circle (#36c0c9) */}
+                              <circle
+                                cx={x}
+                                cy={mY}
+                                r={isSelected ? 5 : isHovered ? 4.5 : 3.5}
+                                fill="#36c0c9"
+                                stroke="#ffffff"
+                                strokeWidth={isSelected ? 2.5 : 1.5}
+                                className="transition-all"
+                              />
+
+                              {/* AI Point Circle (#ed4d19) */}
+                              <circle
+                                cx={x}
+                                cy={aY}
+                                r={isSelected ? 5 : isHovered ? 4.5 : 3.5}
+                                fill="#ed4d19"
+                                stroke="#ffffff"
+                                strokeWidth={isSelected ? 2.5 : 1.5}
+                                className="transition-all"
+                              />
+
+                              {/* X-Axis Date Labels (Weeks from data selector) */}
+                              <text
+                                x={x}
+                                y={svgHeight - 12}
+                                textAnchor="middle"
+                                fill={isSelected ? '#0d212c' : '#64748b'}
+                                fontSize="10.5"
+                                fontWeight={isSelected ? '600' : '400'}
+                                className="transition-colors select-none"
+                              >
+                                {d.date}
+                              </text>
+                            </g>
+                          )
+                        })}
+
+                        {/* End Labels for the lines */}
+                        <g>
+                          <text
+                            x={lastX + 12}
+                            y={lastManualY + 4}
+                            fill="#0d212c"
+                            fontSize="11.5"
+                            fontWeight="600"
+                            className="select-none"
+                          >
+                            Manual ${lastPoint.manual.toLocaleString()}
+                          </text>
+                          <text
+                            x={lastX + 12}
+                            y={Math.max(lastManualY + 18, lastAiY + 4)}
+                            fill="#0d212c"
+                            fontSize="11.5"
+                            fontWeight="600"
+                            className="select-none"
+                          >
+                            AI ${lastPoint.ai < 100 ? lastPoint.ai.toFixed(2) : Math.round(lastPoint.ai).toLocaleString()}
+                          </text>
+                        </g>
+                      </svg>
+
+                      {/* Custom Light Theme Tooltip on Hover */}
+                      {hoveredPointIndex !== null && (
+                        <div
+                          className="absolute z-40 bg-white text-[#0d212c] p-3 rounded-xl border border-[#e2e8f0] shadow-xl text-left pointer-events-none text-xs animate-in fade-in zoom-in-95 duration-100 min-w-[175px]"
+                          style={{
+                            left: `${(getX(hoveredPointIndex) / svgWidth) * 100}%`,
+                            top: '8%',
+                            transform: 'translateX(-50%)',
+                          }}
+                        >
+                          <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-1.5 mb-2">
+                            <span className="font-semibold text-[#0d212c] text-xs">
+                              {comparisonData[hoveredPointIndex].fullLabel || comparisonData[hoveredPointIndex].date}
+                            </span>
+                            {hoveredPointIndex === selectedWeekIndex && (
+                              <span className="text-[9px] font-medium bg-[#ddf7f9] text-[#009299] px-1.5 py-0.5 rounded-full shrink-0">
+                                Current
+                              </span>
+                            )}
+                          </div>
+                          <div className="space-y-1.5 text-[11px]">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-1.5 text-[#64748b]">
+                                <span className="w-2 h-2 rounded-full bg-[#36c0c9] shrink-0" />
+                                <span>Manual cost:</span>
+                              </div>
+                              <span className="font-semibold text-[#0d212c] font-mono">
+                                ${comparisonData[hoveredPointIndex].manual.toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-1.5 text-[#64748b]">
+                                <span className="w-2 h-2 rounded-full bg-[#ed4d19] shrink-0" />
+                                <span>AI cost:</span>
+                              </div>
+                              <span className="font-semibold text-[#ed4d19] font-mono">
+                                ${comparisonData[hoveredPointIndex].ai < 100 ? comparisonData[hoveredPointIndex].ai.toFixed(2) : Math.round(comparisonData[hoveredPointIndex].ai).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-3 pt-1.5 border-t border-slate-100">
+                              <span className="text-[#64748b] font-medium">Estimated savings:</span>
+                              <span className="font-semibold text-[#36c0c9] font-mono">
+                                ${(Math.max(0, comparisonData[hoveredPointIndex].manual - comparisonData[hoveredPointIndex].ai)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              </span>
+                            </div>
+                          </div>
+                          {/* Tooltip downward caret arrow */}
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-white border-r border-b border-[#e2e8f0] rotate-45" />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()}
+              </div>
+            ) : (
+              /* NUMBERS / DATA VIEW: 4 Financial blocks with adjusted spacing & divider lines matching taller card */
+              <div className="flex-1 flex flex-col justify-around divide-y divide-[#f1f5f9] py-2">
+                {/* Top Row: Manual cost vs AI cost */}
+                <div className="pb-4 pt-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-[#f1f5f9]">
+                    {/* Manual cost */}
+                    <div className="sm:pr-5 space-y-1 pb-3 sm:pb-0">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0d212c]">
+                        <span>Manual cost</span>
+                        <div className="relative group flex items-center">
+                          <button
+                            type="button"
+                            className="p-0.5 text-[#94a3b8] hover:text-[#64748b] transition-colors cursor-help"
+                            aria-label="Manual cost info"
+                          >
+                            <Info className="w-3.5 h-3.5" />
+                          </button>
+                          <div className="pointer-events-none absolute left-0 bottom-full mb-1.5 hidden group-hover:flex flex-col items-start z-30">
+                            <div className="bg-[#0d212c] text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
+                              Formula: Outputs × Manual Hours × Cost per Hour
+                            </div>
+                            <div className="w-2 h-2 bg-[#0d212c] rotate-45 -mt-1 ml-2" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-3xl font-semibold text-[#0d212c] tracking-tight">
+                        ${manualCost.toLocaleString()}
+                      </div>
+                      <div className="text-[11px] text-[#64748b] font-normal pt-0.5">
+                        Total hours {totalHours} | Cost per hour ${appliedCostPerHour}
+                      </div>
+                    </div>
+
+                    {/* AI cost (Primary light color #36c0c9) */}
+                    <div className="sm:pl-5 space-y-1 pt-3 sm:pt-0">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0d212c]">
+                        <span>AI cost</span>
+                        <div className="relative group flex items-center">
+                          <button
+                            type="button"
+                            className="p-0.5 text-[#94a3b8] hover:text-[#64748b] transition-colors cursor-help"
+                            aria-label="AI cost info"
+                          >
+                            <Info className="w-3.5 h-3.5" />
+                          </button>
+                          <div className="pointer-events-none absolute left-0 bottom-full mb-1.5 hidden group-hover:flex flex-col items-start z-30">
+                            <div className="bg-[#0d212c] text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
+                              Formula: (Input + Output + Voice Tokens) × Token Prices
+                            </div>
+                            <div className="w-2 h-2 bg-[#0d212c] rotate-45 -mt-1 ml-2" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-3xl font-semibold text-[#36c0c9] tracking-tight">
+                        ${aiCost.toLocaleString()}
+                      </div>
+                      <div className="text-[11px] text-[#64748b] font-normal pt-0.5">
+                        Total tokens {currentWeek.tokensM}M · Text &amp; Voice
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Row: Estimated ROI vs Estimated savings */}
+                <div className="pt-4 pb-1">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-[#f1f5f9]">
+                    {/* Estimated ROI */}
+                    <div className="sm:pr-5 space-y-1 pb-3 sm:pb-0">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0d212c]">
+                        <span>Estimated ROI</span>
+                        <div className="relative group flex items-center">
+                          <button
+                            type="button"
+                            className="p-0.5 text-[#94a3b8] hover:text-[#64748b] transition-colors cursor-help"
+                            aria-label="Estimated ROI info"
+                          >
+                            <Info className="w-3.5 h-3.5" />
+                          </button>
+                          <div className="pointer-events-none absolute left-0 bottom-full mb-1.5 hidden group-hover:flex flex-col items-start z-30">
+                            <div className="bg-[#0d212c] text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
+                              Formula: Manual Cost ÷ AI Cost
+                            </div>
+                            <div className="w-2 h-2 bg-[#0d212c] rotate-45 -mt-1 ml-2" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-3xl font-semibold text-[#36c0c9] tracking-tight">
+                        {roiMultiplier}x
+                      </div>
+                    </div>
+
+                    {/* Estimated savings */}
+                    <div className="sm:pl-5 space-y-1 pt-3 sm:pt-0">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-[#0d212c]">
+                        <span>Estimated savings</span>
+                        <div className="relative group flex items-center">
+                          <button
+                            type="button"
+                            className="p-0.5 text-[#94a3b8] hover:text-[#64748b] transition-colors cursor-help"
+                            aria-label="Estimated savings info"
+                          >
+                            <Info className="w-3.5 h-3.5" />
+                          </button>
+                          <div className="pointer-events-none absolute left-0 bottom-full mb-1.5 hidden group-hover:flex flex-col items-start z-30">
+                            <div className="bg-[#0d212c] text-white text-[11px] font-normal px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
+                              Formula: Manual Cost − AI Cost
+                            </div>
+                            <div className="w-2 h-2 bg-[#0d212c] rotate-45 -mt-1 ml-2" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-2xl sm:text-3xl font-semibold text-[#36c0c9] tracking-tight flex items-baseline">
+                        ${estimatedSavings.toLocaleString()}
+                        <span className="text-xs font-normal text-[#64748b] ml-1.5">
+                          this week
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

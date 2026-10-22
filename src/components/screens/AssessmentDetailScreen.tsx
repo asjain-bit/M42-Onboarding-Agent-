@@ -23,9 +23,6 @@ import {
   MessageSquare,
   Image as ImageIcon,
   Paperclip,
-  ChevronLeft,
-  ChevronRight,
-  Search,
   XCircle,
   AlertTriangle,
   X,
@@ -66,6 +63,23 @@ interface SnapshotFile {
   tag: 'Before' | 'After'
 }
 
+interface QuestionComment {
+  id: string
+  text: string
+  author: string
+  reviewer: string
+  date: string
+}
+
+const REVIEWER_NAMES = [
+  'Sarah Al Nuaimi',
+  'Dr. Tariq Al Mansoori',
+  'Marcus Vance',
+  'Fatima Al Hosani',
+  'Alex Rivera',
+  'Zaid Al Ali',
+]
+
 interface TestcaseItem {
   id: number
   code: string
@@ -88,10 +102,8 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   const [playbackSpeed, setPlaybackSpeed] = useState('1')
   const [copiedUrl, setCopiedUrl] = useState(false)
   const [expandedSnapshots, setExpandedSnapshots] = useState<Record<number, boolean>>({})
-  const [testCasePage, setTestCasePage] = useState(1)
 
-  // Testcase Search & Status Filter (All, Passed, Failed, Blocked, Scheduled for Later, Not Applicable)
-  const [testcaseSearchTerm, setTestcaseSearchTerm] = useState('')
+  // Testcase Status Filter (All, Passed, Failed, Blocked, Scheduled for Later, Not Applicable)
   const [testcaseStatusFilter, setTestcaseStatusFilter] = useState<
     'all' | 'Pass' | 'Fail' | 'Blocked' | 'Scheduled for Later' | 'Not Applicable'
   >('all')
@@ -155,6 +167,71 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   const meetingUrl = 'https://meet.m42.ae/call/facility-audit-9823'
 
   const isScheduled = currentStatus === 'scheduled'
+  const canAddComment = currentStatus !== 'scheduled' && currentStatus !== 'finalised'
+
+  const [questionComments, setQuestionComments] = useState<Record<number, QuestionComment>>(() => {
+    const initialComments: Record<number, QuestionComment> = {}
+    if (assessment.status === 'finalised') {
+      initialComments[3] = {
+        id: `comment-3-${assessment.id}`,
+        text: 'Stage 2 certification audit confirmed and ISO/IEC 27001 certificate verified.',
+        author: 'Zaid Al Ali',
+        reviewer: 'Dr. Tariq Al Mansoori',
+        date: assessment.createdDate || '15 Aug 2026, 09:10 AM',
+      }
+      initialComments[4] = {
+        id: `comment-4-${assessment.id}`,
+        text: 'Credentials provisioned and enterprise SSO integration verified with identity provider.',
+        author: 'Zaid Al Ali',
+        reviewer: 'Sarah Al Nuaimi',
+        date: assessment.createdDate || '15 Aug 2026, 09:10 AM',
+      }
+    }
+    return initialComments
+  })
+
+  const [openCommentInput, setOpenCommentInput] = useState<Record<number, boolean>>({})
+  const [commentTexts, setCommentTexts] = useState<Record<number, string>>({})
+
+  const handleAddComment = (testcaseId: number) => {
+    const text = (commentTexts[testcaseId] || '').trim()
+    if (!text || text.length > 500) return
+
+    if (questionComments[testcaseId]) return
+
+    const randomName = REVIEWER_NAMES[Math.floor(Math.random() * REVIEWER_NAMES.length)]
+    const now = new Date()
+    const formattedDate = now.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    })
+    const formattedTime = now.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    })
+    const formattedTimestamp = `${formattedDate}, ${formattedTime}`
+
+    const newComment: QuestionComment = {
+      id: `comment-${testcaseId}-${Date.now()}`,
+      text,
+      author: 'Zaid Al Ali',
+      reviewer: randomName,
+      date: formattedTimestamp,
+    }
+
+    setQuestionComments((prev) => ({
+      ...prev,
+      [testcaseId]: newComment,
+    }))
+
+    setCommentTexts((prev) => ({ ...prev, [testcaseId]: '' }))
+    setOpenCommentInput((prev) => ({ ...prev, [testcaseId]: false }))
+
+    setToastMessage(`Comment added and reviewed by ${randomName}`)
+    setTimeout(() => setToastMessage(null), 3000)
+  }
 
   // Exact Assessment Lifecycle Data (9 Steps matching user screenshots, Scoring renamed to Verdict)
   const lifecycleSteps = [
@@ -520,20 +597,12 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   ]
 
 
-  // Filter testcases based on search term and status chips
+  // Filter testcases based on status chips
   const filteredTestcases = useMemo(() => {
     return testcases.filter((q) => {
-      const matchesStatus = testcaseStatusFilter === 'all' || q.status === testcaseStatusFilter
-      const query = testcaseSearchTerm.toLowerCase().trim()
-      const matchesSearch =
-        !query ||
-        q.title.toLowerCase().includes(query) ||
-        q.category.toLowerCase().includes(query) ||
-        q.expectedBehaviour.toLowerCase().includes(query) ||
-        q.agentComment.toLowerCase().includes(query)
-      return matchesStatus && matchesSearch
+      return testcaseStatusFilter === 'all' || q.status === testcaseStatusFilter
     })
-  }, [testcases, testcaseStatusFilter, testcaseSearchTerm])
+  }, [testcases, testcaseStatusFilter])
 
   const passedCount = testcases.filter((q) => q.status === 'Pass').length
   const failedCount = testcases.filter((q) => q.status === 'Fail').length
@@ -1065,48 +1134,12 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               </div>
             </div>
 
-            {/* Section 5: Testcases (7) with Search Bar & Sorting Chips */}
+            {/* Section 5: Testcases with Sorting Chips */}
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center justify-between">
                 <h3 className="text-base font-bold text-[#0d212c]">
                   Testcases ({filteredTestcases.length})
                 </h3>
-
-                {/* Right controls: Pagination & Search */}
-                <div className="flex items-center gap-3">
-                  <div className="relative w-56">
-                    <Search className="w-3.5 h-3.5 text-[#64748b] absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      placeholder="Search testcases..."
-                      value={testcaseSearchTerm}
-                      onChange={(e) => setTestcaseSearchTerm(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-[#e2e8f0] bg-white text-xs font-normal text-[#0d212c] outline-none focus:border-[#36c0c9] shadow-2xs"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setTestCasePage((p) => Math.max(1, p - 1))}
-                      disabled={testCasePage === 1}
-                      className="w-7 h-7 rounded-lg border border-[#e2e8f0] bg-white text-[#64748b] hover:text-[#0d212c] disabled:opacity-40 cursor-pointer flex items-center justify-center transition"
-                      title="Previous testcase"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <span className="text-xs font-semibold text-[#64748b]">
-                      {testCasePage} of {filteredTestcases.length || 1}
-                    </span>
-                    <button
-                      onClick={() => setTestCasePage((p) => Math.min(filteredTestcases.length || 1, p + 1))}
-                      disabled={testCasePage >= (filteredTestcases.length || 1)}
-                      className="w-7 h-7 rounded-lg border border-[#e2e8f0] bg-white text-[#64748b] hover:text-[#0d212c] disabled:opacity-40 cursor-pointer flex items-center justify-center transition"
-                      title="Next testcase"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
               </div>
 
               {/* Sorting Chips: All, Passed, Failed, Blocked, Scheduled for Later, Not Applicable & Chips Legend */}
@@ -1185,6 +1218,9 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                     const visibleSnapshots = isExpanded ? sortedSnapshots : sortedSnapshots.slice(0, 4)
                     const hiddenCount = sortedSnapshots.length - 4
                     const formattedIndex = String(q.id).padStart(2, '0')
+                    const commentText = commentTexts[q.id] || ''
+                    const commentLength = commentText.length
+                    const isCommentLimitReached = commentLength >= 500
 
                     return (
                       <div
@@ -1340,6 +1376,136 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                               )}
                             </div>
                           </div>
+                        )}
+
+                        {/* Reviewer Comment Section */}
+                        {!isScheduled && (
+                          <>
+                            <div className="border-b border-[#e2e8f0]/60 my-0.5" />
+                            <div className="mt-1 flex flex-col gap-2">
+                              {/* If comment has already been added */}
+                              {questionComments[q.id] ? (
+                                <div className="p-3.5 rounded-xl bg-[#f8fafc] border border-[#e2e8f0] flex flex-col gap-2">
+                                  {/* Top: Name of the person who added the comment */}
+                                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-6 h-6 rounded-full bg-[#0d7280]/10 text-[#0d7280] flex items-center justify-center text-[10px] font-bold shrink-0">
+                                        {questionComments[q.id].author.charAt(0)}
+                                      </div>
+                                      <span className="text-xs font-bold text-[#0d212c]">
+                                        {questionComments[q.id].author}
+                                      </span>
+                                    </div>
+                                    <span className="text-[11px] text-[#94a3b8]">
+                                      {questionComments[q.id].date}
+                                    </span>
+                                  </div>
+
+                                  {/* Middle: Comment text */}
+                                  <p className="text-xs text-[#0d212c] pl-8 whitespace-pre-wrap leading-relaxed">
+                                    {questionComments[q.id].text}
+                                  </p>
+
+                                  {/* Bottom: Reviewed by user name */}
+                                  <div className="pt-2 pl-8 border-t border-[#e2e8f0]/60 flex items-center gap-1.5 text-xs text-[#64748b]">
+                                    <span>Reviewed by:</span>
+                                    <span className="font-semibold text-[#0d212c]">
+                                      {questionComments[q.id].reviewer}
+                                    </span>
+                                  </div>
+                                </div>
+                              ) : canAddComment ? (
+                                /* If no comment added yet, give the option to add only 1 comment */
+                                <div>
+                                  {!openCommentInput[q.id] ? (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setOpenCommentInput((prev) => ({ ...prev, [q.id]: true }))
+                                      }
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#cbd5e1] bg-white text-xs font-semibold text-[#0d212c] shadow-2xs cursor-pointer hover:border-[#94a3b8] transition"
+                                    >
+                                      <MessageSquare className="w-3.5 h-3.5" />
+                                      <span>Add comment</span>
+                                    </button>
+                                  ) : (
+                                    <div className="p-3.5 rounded-xl bg-white border border-[#cbd5e1] shadow-2xs flex flex-col gap-2.5">
+                                      <div className="flex items-center justify-between">
+                                        <label className="text-xs font-bold text-[#0d212c] flex items-center gap-1.5">
+                                          <MessageSquare className="w-3.5 h-3.5 text-[#0d7280]" />
+                                          <span>Add Comment</span>
+                                        </label>
+                                        <span className="text-[11px] text-[#64748b]">
+                                          1 comment allowed
+                                        </span>
+                                      </div>
+                                      <div className="relative">
+                                        <textarea
+                                          value={commentText}
+                                          onChange={(e) =>
+                                            setCommentTexts((prev) => ({
+                                              ...prev,
+                                              [q.id]: e.target.value.slice(0, 500),
+                                            }))
+                                          }
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && isCommentLimitReached) {
+                                              e.preventDefault()
+                                            }
+                                          }}
+                                          maxLength={500}
+                                          placeholder="Write your review comment here..."
+                                          rows={2}
+                                          className={`w-full p-2.5 pb-6 rounded-xl border text-xs text-[#0d212c] outline-none resize-none transition ${
+                                            isCommentLimitReached
+                                              ? 'border-red-400 bg-red-50/20 focus:border-red-500'
+                                              : 'border-[#e2e8f0] bg-[#f8fafc] focus:border-[#cbd5e1]'
+                                          }`}
+                                        />
+                                        <span
+                                          className={`absolute bottom-2 right-2.5 text-[11px] pointer-events-none select-none ${
+                                            isCommentLimitReached
+                                              ? 'text-red-500 font-semibold'
+                                              : 'text-[#64748b]'
+                                          }`}
+                                        >
+                                          {commentLength}/500 character
+                                        </span>
+                                      </div>
+                                      {isCommentLimitReached && (
+                                        <p className="text-[11px] text-red-500 font-medium animate-in fade-in duration-150">
+                                          Maximum limit of 500 characters reached
+                                        </p>
+                                      )}
+                                      <div className="flex items-center justify-end gap-2">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setOpenCommentInput((prev) => ({
+                                              ...prev,
+                                              [q.id]: false,
+                                            }))
+                                            setCommentTexts((prev) => ({ ...prev, [q.id]: '' }))
+                                          }}
+                                          className="px-3 py-1.5 rounded-xl text-xs font-medium text-[#64748b] hover:text-[#0d212c] cursor-pointer"
+                                        >
+                                          Cancel
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleAddComment(q.id)}
+                                          disabled={!commentText.trim() || commentLength > 500}
+                                          className="px-3.5 py-1.5 rounded-xl bg-[#0d212c] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold cursor-pointer border-0 shadow-2xs hover:bg-[#1a384b] transition"
+                                        >
+                                          Add comment
+                                        </button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ) : null}
+                            </div>
+                          </>
                         )}
                       </div>
                     )
