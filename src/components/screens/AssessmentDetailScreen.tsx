@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react'
 import {
   Send,
   Calendar,
+  CalendarX,
   Users,
   PhoneCall,
   CheckCircle2,
@@ -37,13 +38,14 @@ export interface AssessmentDetailData {
   status: 'awaiting_evidence' | 'completed' | 'scheduled' | 'finalised' | 'ready' | 'cancelled'
   score: string
   passRate?: string
+  passRateReason?: string
   createdDate: string
 }
 
 interface AssessmentDetailScreenProps {
   assessment: AssessmentDetailData
   onBack: () => void
-  onStatusChange?: (newStatus: 'ready' | 'finalised' | 'completed') => void
+  onStatusChange?: (newStatus: 'ready' | 'finalised' | 'completed' | 'scheduled' | 'cancelled') => void
 }
 
 interface AuditTrailEvent {
@@ -158,7 +160,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
   const handleConfirmCancel = () => {
     setShowCancelModal(false)
     setCurrentStatus('cancelled')
-    if (onStatusChange) onStatusChange('ready')
+    if (onStatusChange) onStatusChange('cancelled')
     setToastMessage(`Assessment for ${assessment.vendor} has been cancelled.`)
     setTimeout(() => setToastMessage(null), 3500)
   }
@@ -233,200 +235,257 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
     setTimeout(() => setToastMessage(null), 3000)
   }
 
+  const isCancelled = currentStatus === 'cancelled'
+  const isNotStarted = isScheduled || isCancelled
+
   // Exact Assessment Lifecycle Data (9 Steps matching user screenshots, Scoring renamed to Verdict)
   const lifecycleSteps = [
     {
       title: 'Call dispatched',
-      actor: 'Admin User',
-      time: '1 Sept, 10:30 AM',
+      actor: 'Sangam Pandey',
+      time: assessment.createdDate || '1 Sept, 10:30 AM',
       status: 'DONE',
     },
     {
       title: 'Meeting Scheduled',
-      actor: 'System Scheduler',
-      time: '1 Sept, 01:14 PM',
+      actor: 'System',
+      time: assessment.createdDate || '1 Sept, 01:14 PM',
       status: 'DONE',
       hasMeetingUrl: true,
     },
     {
       title: 'Participants joined',
-      actor: 'Presight AI',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:15 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
+      actor: assessment.vendor.includes('Presight') ? 'Presight AI' : assessment.vendor,
+      time: isNotStarted ? 'Pending' : '1 Sept, 01:15 PM',
+      status: isNotStarted ? 'AWAITING' : 'DONE',
     },
     {
       title: 'Assessment call',
-      actor: 'Voice Agent Sam',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:19 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
+      actor: 'Onboarding Agent',
+      time: isNotStarted ? 'Pending' : '1 Sept, 01:19 PM',
+      status: isNotStarted ? 'AWAITING' : 'DONE',
     },
     {
       title: 'Call ended',
-      actor: 'Voice Agent Sam',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:19 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
+      actor: 'Onboarding Agent',
+      time: isNotStarted ? 'Pending' : '1 Sept, 01:19 PM',
+      status: isNotStarted ? 'AWAITING' : 'DONE',
     },
     {
       title: 'Transcript composed',
       actor: 'NLP Pipeline',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:20 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
+      time: isNotStarted ? 'Pending' : '1 Sept, 01:20 PM',
+      status: isNotStarted ? 'AWAITING' : 'DONE',
     },
     {
       title: 'Verdict',
       actor: 'Evaluation Subagent',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:22 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
+      time: isNotStarted ? 'Pending' : '1 Sept, 01:22 PM',
+      status: isNotStarted ? 'AWAITING' : 'DONE',
     },
     {
       title: 'Report ready',
       actor: 'Audit Engine',
-      time: isScheduled ? 'Pending' : '1 Sept, 01:25 PM',
-      status: isScheduled ? 'AWAITING' : 'DONE',
+      time: isNotStarted ? 'Pending' : '1 Sept, 01:25 PM',
+      status: isNotStarted ? 'AWAITING' : 'DONE',
     },
     {
       title: 'Finalized',
       actor: 'Admin User',
       time:
-        !isScheduled && (currentStatus === 'completed' || currentStatus === 'finalised')
+        !isNotStarted && (currentStatus === 'completed' || currentStatus === 'finalised')
           ? '1 Sept, 02:05 PM'
           : 'Pending',
       status:
-        !isScheduled && currentStatus === 'finalised'
+        !isNotStarted && currentStatus === 'finalised'
           ? 'DONE'
           : 'AWAITING',
     },
   ]
 
   // Granular Audit Trail Event Data
-  const auditEvents: AuditTrailEvent[] = [
-    {
-      id: 'aud-14',
-      title: 'Assessment finalized & completed',
-      category: 'Admin',
-      timestamp: '1 Sept 2026, 02:05 PM',
-      actor: 'Admin User (M42 Compliance)',
-      details: 'Concluded assessment verdict and marked status as completed.',
-      icon: ShieldCheck,
-    },
-    {
-      id: 'aud-13',
-      title: 'Compliance report generated',
-      category: 'AI Agent',
-      timestamp: '1 Sept 2026, 01:25 PM',
-      actor: 'Audit Engine',
-      details: 'Audit report compiled with 5 passed and 2 failed testcases.',
-      icon: FileCheck,
-    },
-    {
-      id: 'aud-12',
-      title: 'Assessment transcript processed',
-      category: 'AI Agent',
-      timestamp: '1 Sept 2026, 01:20 PM',
-      actor: 'NLP Pipeline',
-      details: 'Call transcript processed into structured dataset. Character count: 4,820 chars.',
-      icon: MessageSquare,
-    },
-    {
-      id: 'aud-11',
-      title: 'Testcase #7 evaluated (Verdict: Pass)',
-      category: 'AI Agent',
-      timestamp: '1 Sept 2026, 01:19 PM',
-      actor: 'AI Verification Agent',
-      details: 'Verified UAE data residency lock in me-central-1 datacenter.',
-      icon: Bot,
-    },
-    {
-      id: 'aud-10',
-      title: 'Screenshot captured (uae_region_locked.png)',
-      category: 'System',
-      timestamp: '1 Sept 2026, 01:18 PM',
-      actor: 'AI Test Runner',
-      details: 'Captured snapshot for Testcase #7 (ID: TC-042).',
-      icon: ImageIcon,
-    },
-    {
-      id: 'aud-9',
-      title: 'Testcase #3 evaluated (Verdict: Fail)',
-      category: 'AI Agent',
-      timestamp: '1 Sept 2026, 01:17 PM',
-      actor: 'AI Verification Agent',
-      details: 'Flagged missing Stage 2 ISO 27001 certificate verification.',
-      icon: Bot,
-    },
-    {
-      id: 'aud-8',
-      title: 'Screenshot captured (iso_stage2_pending.png)',
-      category: 'System',
-      timestamp: '1 Sept 2026, 01:16 PM',
-      actor: 'AI Test Runner',
-      details: 'Captured snapshot for Testcase #3 (ID: TC-039).',
-      icon: ImageIcon,
-    },
-    {
-      id: 'aud-7',
-      title: 'Testcase #1 evaluated (Verdict: Pass)',
-      category: 'AI Agent',
-      timestamp: '1 Sept 2026, 01:16 PM',
-      actor: 'AI Verification Agent',
-      details: 'Confirmed public registry match for Abu Dhabi HQ and ticker PRESIGHT.',
-      icon: Bot,
-    },
-    {
-      id: 'aud-6',
-      title: 'Screenshot captured (adx_registry_verified.png)',
-      category: 'System',
-      timestamp: '1 Sept 2026, 01:15 PM',
-      actor: 'AI Test Runner',
-      details: 'Captured snapshot for Testcase #1 (ID: TC-035).',
-      icon: ImageIcon,
-    },
-    {
-      id: 'aud-5',
-      title: 'Testcases execution started by Facilities Admin',
-      category: 'Facility',
-      timestamp: '1 Sept 2026, 01:15 PM',
-      actor: 'Facilities Admin',
-      details: 'Facilities team initiated live testcases run in call room session.',
-      icon: User,
-    },
-    {
-      id: 'aud-4',
-      title: 'Participants joined call room',
-      category: 'System',
-      timestamp: '1 Sept 2026, 01:15 PM',
-      actor: 'Facilities Admin & Agent Sam',
-      details: 'Facilities representative and AI Agent Sam connected to call room.',
-      icon: Users,
-    },
-    {
-      id: 'aud-3',
-      title: 'Call room session started (#9823)',
-      category: 'System',
-      timestamp: '1 Sept 2026, 01:14 PM',
-      actor: 'M42 System Scheduler',
-      details: 'Meeting URL created (https://meet.m42.ae/call/facility-audit-9823).',
-      icon: Calendar,
-    },
-    {
-      id: 'aud-2',
-      title: 'Call dispatched to facility admin',
-      category: 'System',
-      timestamp: '1 Sept 2026, 10:30 AM',
-      actor: 'M42 Dispatcher',
-      details: 'Sent automated call invitation email to facility admin.',
-      icon: Mail,
-    },
-    {
-      id: 'aud-[#01]',
-      title: 'Dataset selected & assessment initialized',
-      category: 'Admin',
-      timestamp: '1 Sept 2026, 10:25 AM',
-      actor: 'Admin User (M42 Compliance)',
-      details: 'Admin selected Clinical EHR Dataset and initialized assessment setup.',
-      icon: Send,
-    },
-  ]
+  const auditEvents: AuditTrailEvent[] = useMemo(() => {
+    const scheduledLogs: AuditTrailEvent[] = [
+      {
+        id: 'aud-3',
+        title: 'Meeting scheduled & call room session created',
+        category: 'System',
+        timestamp: assessment.createdDate || '1 Sept 2026, 01:14 PM',
+        actor: 'M42 System Scheduler',
+        details: `Meeting room session generated with secure token. Meeting URL created (${meetingUrl}).`,
+        icon: Calendar,
+      },
+      {
+        id: 'aud-2',
+        title: 'Call dispatched to facility admin',
+        category: 'System',
+        timestamp: assessment.createdDate || '1 Sept 2026, 10:30 AM',
+        actor: 'M42 Dispatcher',
+        details: `Sent automated call invitation email to ${assessment.vendor} facility admin.`,
+        icon: Mail,
+      },
+      {
+        id: 'aud-1',
+        title: 'Dataset selected & assessment initialized',
+        category: 'Admin',
+        timestamp: assessment.createdDate || '1 Sept 2026, 10:25 AM',
+        actor: 'Admin User (M42 Compliance)',
+        details: `Admin selected ${assessment.questionnaire || 'Dataset'} and initialized assessment setup.`,
+        icon: Send,
+      },
+    ]
+
+    if (currentStatus === 'cancelled') {
+      return [
+        {
+          id: 'aud-cancel',
+          title: 'Assessment meeting cancelled',
+          category: 'Admin',
+          timestamp: assessment.createdDate || '1 Sept 2026, 01:20 PM',
+          actor: 'Admin User (M42 Compliance)',
+          details:
+            assessment.passRateReason && assessment.passRateReason !== '-'
+              ? assessment.passRateReason
+              : 'This meeting was cancelled and cannot be restarted. Dispatch a new call to run the assessment.',
+          icon: CalendarX,
+        },
+        ...scheduledLogs,
+      ]
+    }
+
+    if (currentStatus === 'scheduled') {
+      return scheduledLogs
+    }
+
+    return [
+      {
+        id: 'aud-14',
+        title: 'Assessment finalized & completed',
+        category: 'Admin',
+        timestamp: '1 Sept 2026, 02:05 PM',
+        actor: 'Admin User (M42 Compliance)',
+        details: 'Concluded assessment verdict and marked status as completed.',
+        icon: ShieldCheck,
+      },
+      {
+        id: 'aud-13',
+        title: 'Compliance report generated',
+        category: 'AI Agent',
+        timestamp: '1 Sept 2026, 01:25 PM',
+        actor: 'Audit Engine',
+        details: 'Audit report compiled with 5 passed and 2 failed testcases.',
+        icon: FileCheck,
+      },
+      {
+        id: 'aud-12',
+        title: 'Assessment transcript processed',
+        category: 'AI Agent',
+        timestamp: '1 Sept 2026, 01:20 PM',
+        actor: 'NLP Pipeline',
+        details: 'Call transcript processed into structured dataset. Character count: 4,820 chars.',
+        icon: MessageSquare,
+      },
+      {
+        id: 'aud-11',
+        title: 'Testcase #7 evaluated (Verdict: Pass)',
+        category: 'AI Agent',
+        timestamp: '1 Sept 2026, 01:19 PM',
+        actor: 'AI Verification Agent',
+        details: 'Verified UAE data residency lock in me-central-1 datacenter.',
+        icon: Bot,
+      },
+      {
+        id: 'aud-10',
+        title: 'Screenshot captured (uae_region_locked.png)',
+        category: 'System',
+        timestamp: '1 Sept 2026, 01:18 PM',
+        actor: 'AI Test Runner',
+        details: 'Captured snapshot for Testcase #7 (ID: TC-042).',
+        icon: ImageIcon,
+      },
+      {
+        id: 'aud-9',
+        title: 'Testcase #3 evaluated (Verdict: Fail)',
+        category: 'AI Agent',
+        timestamp: '1 Sept 2026, 01:17 PM',
+        actor: 'AI Verification Agent',
+        details: 'Flagged missing Stage 2 ISO 27001 certificate verification.',
+        icon: Bot,
+      },
+      {
+        id: 'aud-8',
+        title: 'Screenshot captured (iso_stage2_pending.png)',
+        category: 'System',
+        timestamp: '1 Sept 2026, 01:16 PM',
+        actor: 'AI Test Runner',
+        details: 'Captured snapshot for Testcase #3 (ID: TC-039).',
+        icon: ImageIcon,
+      },
+      {
+        id: 'aud-7',
+        title: 'Testcase #1 evaluated (Verdict: Pass)',
+        category: 'AI Agent',
+        timestamp: '1 Sept 2026, 01:16 PM',
+        actor: 'AI Verification Agent',
+        details: 'Confirmed public registry match for Abu Dhabi HQ and ticker PRESIGHT.',
+        icon: Bot,
+      },
+      {
+        id: 'aud-6',
+        title: 'Screenshot captured (adx_registry_verified.png)',
+        category: 'System',
+        timestamp: '1 Sept 2026, 01:15 PM',
+        actor: 'AI Test Runner',
+        details: 'Captured snapshot for Testcase #1 (ID: TC-035).',
+        icon: ImageIcon,
+      },
+      {
+        id: 'aud-5',
+        title: 'Testcases execution started by Facilities Admin',
+        category: 'Facility',
+        timestamp: '1 Sept 2026, 01:15 PM',
+        actor: 'Facilities Admin',
+        details: 'Facilities team initiated live testcases run in call room session.',
+        icon: User,
+      },
+      {
+        id: 'aud-4',
+        title: 'Participants joined call room',
+        category: 'System',
+        timestamp: '1 Sept 2026, 01:15 PM',
+        actor: 'Facilities Admin & Agent Sam',
+        details: 'Facilities representative and AI Agent Sam connected to call room.',
+        icon: Users,
+      },
+      {
+        id: 'aud-3',
+        title: 'Call room session started (#9823)',
+        category: 'System',
+        timestamp: '1 Sept 2026, 01:14 PM',
+        actor: 'M42 System Scheduler',
+        details: 'Meeting URL created (https://meet.m42.ae/call/facility-audit-9823).',
+        icon: Calendar,
+      },
+      {
+        id: 'aud-2',
+        title: 'Call dispatched to facility admin',
+        category: 'System',
+        timestamp: '1 Sept 2026, 10:30 AM',
+        actor: 'M42 Dispatcher',
+        details: 'Sent automated call invitation email to facility admin.',
+        icon: Mail,
+      },
+      {
+        id: 'aud-[#01]',
+        title: 'Dataset selected & assessment initialized',
+        category: 'Admin',
+        timestamp: '1 Sept 2026, 10:25 AM',
+        actor: 'Admin User (M42 Compliance)',
+        details: 'Admin selected Clinical EHR Dataset and initialized assessment setup.',
+        icon: Send,
+      },
+    ]
+  }, [currentStatus, assessment, meetingUrl])
 
   const handleCopyMeetingUrl = () => {
     navigator.clipboard.writeText(meetingUrl)
@@ -611,7 +670,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
       {/* Breadcrumb Menu */}
       <div className="w-full px-6 pt-4 pb-1 text-xs font-normal flex items-center gap-1.5 text-[#64748b]">
         <button onClick={onBack} className="hover:text-[#0d7280] cursor-pointer">
-          M42 admin
+          M42 Evaluator
         </button>
         <span>/</span>
         <button onClick={onBack} className="hover:text-[#0d7280] cursor-pointer">
@@ -672,7 +731,7 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
             <span className="text-[#cbd5e1] font-light">|</span>
 
             {/* Pass percentage Chip */}
-            {currentStatus === 'scheduled' ? (
+            {currentStatus === 'scheduled' || currentStatus === 'cancelled' ? (
               <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-[#64748b]">
                 Pass rate: -
               </span>
@@ -764,85 +823,72 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
 
         {/* Audit Trail Tab View */}
         {activeTab === 'audit_trail' ? (
-          currentStatus === 'scheduled' ? (
-            <div className="bg-white p-8 sm:p-12 rounded-2xl border border-[#e2e8f0] shadow-xs flex flex-col items-center justify-center text-center gap-3 min-h-[260px]">
-              <div className="w-12 h-12 rounded-2xl bg-[#ddf7f9] flex items-center justify-center text-[#36c0c9]">
-                <Clock className="w-6 h-6" />
-              </div>
-              <div className="flex flex-col gap-1 max-w-md">
-                <h4 className="font-bold text-sm text-[#0d212c]">Audit log scheduled</h4>
-                <p className="text-xs text-[#64748b] leading-relaxed">
-                  The audit trail and call transcript will be generated automatically after the
-                  assessment meeting is completed.
-                </p>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-[#0d212c]">Audit Trail</h3>
               </div>
             </div>
-          ) : (
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-[#0d212c]">
-                    Audit Trail
-                  </h3>
-                </div>
-              </div>
 
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#e2e8f0] shadow-xs">
-                <div className="relative pl-2 flex flex-col gap-7">
-                  {auditEvents.map((event, idx) => {
-                    const EventIcon = event.icon
-                    const isLast = idx === auditEvents.length - 1
-                    return (
-                      <div key={event.id} className="relative pl-8 flex flex-col gap-1">
-                        {!isLast && (
-                          <div className="absolute left-[13px] top-7 bottom-0 w-0.5 bg-[#e2e8f0] translate-y-1" />
-                        )}
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#e2e8f0] shadow-xs">
+              <div className="relative pl-2 flex flex-col gap-7">
+                {auditEvents.map((event, idx) => {
+                  const EventIcon = event.icon
+                  const isLast = idx === auditEvents.length - 1
+                  return (
+                    <div key={event.id} className="relative pl-8 flex flex-col gap-1">
+                      {!isLast && (
+                        <div className="absolute left-[13px] top-7 bottom-0 w-0.5 bg-[#e2e8f0] translate-y-1" />
+                      )}
 
-                        <div className="absolute left-0 top-0.5 w-7 h-7 rounded-full bg-[#36c0c9] flex items-center justify-center text-white shadow-2xs z-10">
-                          <EventIcon className="w-3.5 h-3.5 text-white" />
-                        </div>
-
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center gap-2.5">
-                            <h4 className="font-bold text-sm text-[#0d212c]">{event.title}</h4>
-                            <span
-                              className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                                event.category === 'Admin'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : event.category === 'AI Agent'
-                                    ? 'bg-[#ddf7f9] text-[#0f766e]'
-                                    : event.category === 'Facility'
-                                      ? 'bg-blue-100 text-blue-800'
-                                      : 'bg-slate-100 text-slate-700'
-                              }`}
-                            >
-                              {event.category}
-                            </span>
-                          </div>
-                          <span className="text-xs font-normal text-[#64748b] flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-slate-400" />
-                            {event.timestamp}
-                          </span>
-                        </div>
-
-                        <p className="text-xs text-[#0d212c] leading-relaxed mt-0.5">
-                          {event.details}
-                        </p>
-
-                        <div className="text-[11px] text-[#64748b] font-normal flex items-center gap-1.5 mt-0.5">
-                          <User className="w-3 h-3 text-slate-400" />
-                          <span>
-                            Actor:{' '}
-                            <strong className="text-[#0d212c] font-semibold">{event.actor}</strong>
-                          </span>
-                        </div>
+                      <div
+                        className={`absolute left-0 top-0.5 w-7 h-7 rounded-full flex items-center justify-center text-white shadow-2xs z-10 ${
+                          event.id === 'aud-cancel' ? 'bg-rose-500' : 'bg-[#36c0c9]'
+                        }`}
+                      >
+                        <EventIcon className="w-3.5 h-3.5 text-white" />
                       </div>
-                    )
-                  })}
-                </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <h4 className="font-bold text-sm text-[#0d212c]">{event.title}</h4>
+                          <span
+                            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                              event.category === 'Admin'
+                                ? 'bg-purple-100 text-purple-800'
+                                : event.category === 'AI Agent'
+                                  ? 'bg-[#ddf7f9] text-[#0f766e]'
+                                  : event.category === 'Facility'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : 'bg-slate-100 text-slate-700'
+                            }`}
+                          >
+                            {event.category}
+                          </span>
+                        </div>
+                        <span className="text-xs font-normal text-[#64748b] flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
+                          {event.timestamp}
+                        </span>
+                      </div>
+
+                      <p className="text-xs text-[#0d212c] leading-relaxed mt-0.5">
+                        {event.details}
+                      </p>
+
+                      <div className="text-[11px] text-[#64748b] font-normal flex items-center gap-1.5 mt-0.5">
+                        <User className="w-3 h-3 text-slate-400" />
+                        <span>
+                          Actor:{' '}
+                          <strong className="text-[#0d212c] font-semibold">{event.actor}</strong>
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
-          )
+          </div>
         ) : (
           <>
             {/* Meeting summary section for Scheduled Assessments */}
@@ -947,7 +993,29 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
               </div>
             </div>
 
-            {/* Section 2 & 3: Agent Verdict and Assessment audio STACKED FULL WIDTH */}
+            {/* Meeting Cancelled Notification Card matching attached screenshot */}
+            {currentStatus === 'cancelled' && (
+              <div className="w-full bg-white rounded-3xl border border-[#e2e8f0] p-6 sm:p-7 shadow-xs flex items-center gap-4">
+                <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
+                  <CalendarX className="w-5 h-5 text-slate-600" />
+                </div>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-2.5">
+                    <h3 className="text-base sm:text-lg font-bold text-[#0d212c]">Meeting cancelled</h3>
+                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-[#64748b] border border-slate-200">
+                      Cancelled
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#64748b] leading-relaxed">
+                    This meeting was cancelled and cannot be restarted. Dispatch a new call to run the assessment.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {currentStatus !== 'cancelled' && (
+              <>
+                {/* Section 2 & 3: Agent Verdict and Assessment audio STACKED FULL WIDTH */}
             <div className="flex flex-col gap-6 w-full">
               {/* Agent Verdict card */}
               <div className="flex flex-col gap-2 w-full">
@@ -1501,6 +1569,8 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                 )}
               </div>
             </div>
+          </>
+        )}
           </>
         )}
       </div>

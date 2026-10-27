@@ -234,7 +234,10 @@ export const DashboardScreen: React.FC = () => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
   const paginatedAssessments = filteredAssessments.slice(startIndex, startIndex + ITEMS_PER_PAGE)
 
-  const handleUpdateStatus = (id: string, newStatus: 'ready' | 'finalised' | 'completed') => {
+  const handleUpdateStatus = (
+    id: string,
+    newStatus: 'ready' | 'finalised' | 'completed' | 'scheduled' | 'cancelled'
+  ) => {
     setAssessments((prev) => prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a)))
     if (selectedAssessment && selectedAssessment.id === id) {
       setSelectedAssessment((prev) => (prev ? { ...prev, status: newStatus } : null))
@@ -471,17 +474,13 @@ export const DashboardScreen: React.FC = () => {
                   <tr
                     key={row.id}
                     onClick={() => {
-                      if (row.status !== 'cancelled') {
-                        setSelectedAssessment({
-                          ...row,
-                          score:
-                            row.score === 'High' ? '94.0' : row.score === 'Medium' ? '72.0' : '0.0',
-                        })
-                      }
+                      setSelectedAssessment({
+                        ...row,
+                        score:
+                          row.score === 'High' ? '94.0' : row.score === 'Medium' ? '72.0' : '0.0',
+                      })
                     }}
-                    className={`transition cursor-pointer group ${
-                      row.status === 'cancelled' ? 'bg-slate-50/50 hover:bg-slate-100/50' : 'hover:bg-[#f8fafc]'
-                    }`}
+                    className="transition cursor-pointer group hover:bg-[#f8fafc]"
                   >
                     <td
                       className="py-3.5 px-4 font-semibold text-xs text-[#0d212c] group-hover:text-[#36c0c9] truncate"
