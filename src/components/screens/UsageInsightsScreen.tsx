@@ -26,6 +26,12 @@ export interface WeekOption {
   isCurrent?: boolean
   outputCalls: number
   tokensM: number
+  tokenBreakdown?: {
+    input: string
+    output: string
+    voiceInput: string
+    voiceOutput: string
+  }
   assessments: {
     completed: { id: string; name: string; round: string }[]
     scheduled: { id: string; name: string; round: string }[]
@@ -43,6 +49,12 @@ const WEEKS_DATA: WeekOption[] = [
     isCurrent: false,
     outputCalls: 14,
     tokensM: 12.8,
+    tokenBreakdown: {
+      input: '5.6M',
+      output: '4.4M',
+      voiceInput: '1.8M',
+      voiceOutput: '1.0M',
+    },
     assessments: {
       completed: [
         { id: 'c1', name: 'Cleveland Clinic Abu Dhabi | Clinical EHR & Patient Records Dataset', round: 'Round 1' },
@@ -74,6 +86,12 @@ const WEEKS_DATA: WeekOption[] = [
     isCurrent: false,
     outputCalls: 17,
     tokensM: 15.4,
+    tokenBreakdown: {
+      input: '6.8M',
+      output: '5.3M',
+      voiceInput: '2.1M',
+      voiceOutput: '1.2M',
+    },
     assessments: {
       completed: [
         { id: 'c1', name: 'Cleveland Clinic Abu Dhabi | Clinical EHR & Patient Records Dataset', round: 'Round 1' },
@@ -108,6 +126,12 @@ const WEEKS_DATA: WeekOption[] = [
     isCurrent: true,
     outputCalls: 20,
     tokensM: 18.6,
+    tokenBreakdown: {
+      input: '8.2M',
+      output: '6.4M',
+      voiceInput: '2.5M',
+      voiceOutput: '1.5M',
+    },
     assessments: {
       completed: [
         { id: 'c1', name: 'Cleveland Clinic Abu Dhabi | Clinical EHR & Patient Records Dataset', round: 'Round 1' },
@@ -144,6 +168,12 @@ const WEEKS_DATA: WeekOption[] = [
     isCurrent: false,
     outputCalls: 22,
     tokensM: 20.2,
+    tokenBreakdown: {
+      input: '8.9M',
+      output: '7.0M',
+      voiceInput: '2.7M',
+      voiceOutput: '1.6M',
+    },
     assessments: {
       completed: [
         { id: 'c1', name: 'Cleveland Clinic Abu Dhabi | Clinical EHR & Patient Records Dataset', round: 'Round 1' },
@@ -175,6 +205,12 @@ const WEEKS_DATA: WeekOption[] = [
     isCurrent: false,
     outputCalls: 19,
     tokensM: 17.5,
+    tokenBreakdown: {
+      input: '7.7M',
+      output: '6.0M',
+      voiceInput: '2.4M',
+      voiceOutput: '1.4M',
+    },
     assessments: {
       completed: [
         { id: 'c1', name: 'Cleveland Clinic Abu Dhabi | Clinical EHR & Patient Records Dataset', round: 'Round 1' },
@@ -628,10 +664,34 @@ export const UsageInsightsScreen: React.FC = () => {
                 {currentWeek.tokensM}M
               </span>
             </div>
-            <div className="border-t border-[#e2e8f0] pt-2">
-              <span className="text-[11px] text-[#64748b] font-normal">
-                week of {currentWeek.shortRange}
-              </span>
+            <div className="border-t border-[#e2e8f0] pt-2 flex items-center justify-between">
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="text-[11px] text-[#64748b] font-normal">Input</span>
+                <span className="text-[11px] font-bold text-[#0d212c]">
+                  {currentWeek.tokenBreakdown?.input ?? '8.2M'}
+                </span>
+              </div>
+              <div className="h-3 w-px bg-[#e2e8f0] shrink-0" />
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="text-[11px] text-[#64748b] font-normal">Output</span>
+                <span className="text-[11px] font-bold text-[#0d212c]">
+                  {currentWeek.tokenBreakdown?.output ?? '6.4M'}
+                </span>
+              </div>
+              <div className="h-3 w-px bg-[#e2e8f0] shrink-0" />
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="text-[11px] text-[#64748b] font-normal">Voice Input</span>
+                <span className="text-[11px] font-bold text-[#0d212c]">
+                  {currentWeek.tokenBreakdown?.voiceInput ?? '2.5M'}
+                </span>
+              </div>
+              <div className="h-3 w-px bg-[#e2e8f0] shrink-0" />
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="text-[11px] text-[#64748b] font-normal">Voice Output</span>
+                <span className="text-[11px] font-bold text-[#0d212c]">
+                  {currentWeek.tokenBreakdown?.voiceOutput ?? '1.5M'}
+                </span>
+              </div>
             </div>
           </div>
 

@@ -77,7 +77,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'Low',
       passRate: '30%',
-      passRateReason: 'Low pass rate: 6 out of 20 testcases passed during imaging integration audit.',
+      passRateReason: 'Low pass rate: 6 out of 20 testcases passed during assessment evaluation.',
       createdDate: '28 Aug 2026, 02:15 PM',
     },
     {
@@ -88,7 +88,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'High',
       passRate: '92%',
-      passRateReason: 'High pass rate: 18 out of 20 testcases passed telemetry data validations.',
+      passRateReason: 'High pass rate: 18 out of 20 testcases passed during assessment evaluation.',
       createdDate: '24 Aug 2026, 11:45 AM',
     },
     {
@@ -110,7 +110,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'finalised',
       score: 'Low',
       passRate: '20%',
-      passRateReason: 'Low pass rate: 4 out of 20 testcases passed during security controls audit.',
+      passRateReason: 'Low pass rate: 4 out of 20 testcases passed during assessment evaluation.',
       createdDate: '15 Aug 2026, 09:10 AM',
     },
     {
@@ -121,7 +121,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'Medium',
       passRate: '57%',
-      passRateReason: 'Medium pass rate: 11 out of 20 testcases passed data compliance verification.',
+      passRateReason: 'Medium pass rate: 11 out of 20 testcases passed during assessment evaluation.',
       createdDate: '12 Aug 2026, 03:45 PM',
     },
     {
@@ -132,7 +132,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'High',
       passRate: '80%',
-      passRateReason: 'High pass rate: 16 out of 20 testcases passed API integration checks.',
+      passRateReason: 'High pass rate: 16 out of 20 testcases passed during assessment evaluation.',
       createdDate: '10 Aug 2026, 01:25 PM',
     },
     {
@@ -143,7 +143,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'Low',
       passRate: '35%',
-      passRateReason: 'Low pass rate: 7 out of 20 testcases passed ISMS requirements.',
+      passRateReason: 'Low pass rate: 7 out of 20 testcases passed during assessment evaluation.',
       createdDate: '08 Aug 2026, 11:10 AM',
     },
     {
@@ -154,7 +154,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'finalised',
       score: 'High',
       passRate: '86%',
-      passRateReason: 'High pass rate: 17 out of 20 testcases passed infrastructure security audit.',
+      passRateReason: 'High pass rate: 17 out of 20 testcases passed during assessment evaluation.',
       createdDate: '05 Aug 2026, 05:50 PM',
     },
     {
@@ -165,7 +165,7 @@ export const DashboardScreen: React.FC = () => {
       status: 'completed',
       score: 'Low',
       passRate: '25%',
-      passRateReason: 'Low pass rate: 5 out of 20 testcases passed safety & ethics criteria.',
+      passRateReason: 'Low pass rate: 5 out of 20 testcases passed during assessment evaluation.',
       createdDate: '01 Aug 2026, 09:30 AM',
     },
     {
@@ -534,8 +534,10 @@ export const DashboardScreen: React.FC = () => {
                               : val >= 60
                                 ? 'text-[#b45309]'
                                 : 'text-[#c5221f]'
-                          const tooltipReason =
-                            row.passRateReason || `${row.passRate} pass rate based on assessment execution.`
+                          const level = val >= 80 ? 'High' : val >= 60 ? 'Medium' : 'Low'
+                          const passedCount = Math.round((val / 100) * 20)
+                          const defaultReason = `${level} pass rate: ${passedCount} out of 20 testcases passed during assessment evaluation.`
+                          const tooltipReason = row.passRateReason || defaultReason
 
                           return (
                             <span className={`font-bold text-xs ${colorClass}`} title={tooltipReason}>
