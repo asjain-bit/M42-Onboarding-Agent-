@@ -747,9 +747,18 @@ export const AssessmentDetailScreen: React.FC<AssessmentDetailScreenProps> = ({
                     : passVal >= 60
                       ? 'bg-[#fef3c7] text-[#92400e]'
                       : 'bg-[#fce8e6] text-[#c5221f]'
+                const level = passVal >= 80 ? 'High' : passVal >= 60 ? 'Medium' : 'Low'
+                const passedCountNum = passedCount || Math.round((passVal / 100) * (testcases.length || 20))
+                const defaultReason = `${level} pass rate: ${passedCountNum} out of ${testcases.length || 20} testcases passed.`
+                const tooltipReason = assessment.passRateReason
+                  ? assessment.passRateReason.replace(/\s*during\s+(the\s+)?assessment(\s+evaluation)?\.?/i, '.')
+                  : defaultReason
 
                 return (
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${confStyle}`}>
+                  <span
+                    className={`text-xs font-semibold px-3 py-1 rounded-full ${confStyle}`}
+                    title={tooltipReason}
+                  >
                     Pass rate: {passVal}%
                   </span>
                 )

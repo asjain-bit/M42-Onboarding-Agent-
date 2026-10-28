@@ -633,8 +633,8 @@ export const UsageInsightsScreen: React.FC = () => {
           </div>
         </div>
 
-        {/* ── 2. TOP 3 KPI CARDS (Exactly 110px height, Title increased by 2px to 14px) ─────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* ── 2. TOP 3 KPI CARDS (Reduced gap, increased card width, 22px value font size) ─────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 w-full">
           {/* Card 1: Output Generated */}
           <div className="h-[110px] bg-white rounded-2xl border border-[#e2e8f0] p-4 flex flex-col justify-between shadow-xs">
             <div className="flex items-center justify-between">
@@ -642,7 +642,7 @@ export const UsageInsightsScreen: React.FC = () => {
                 <PhoneCall className="w-4 h-4 text-[#0d212c]" />
                 <span className="text-[14px] font-semibold text-[#0d212c]">Output Generated</span>
               </div>
-              <span className="text-[24px] font-semibold text-[#36c0c9] leading-none">
+              <span className="text-[22px] font-semibold text-[#36c0c9] leading-none">
                 {currentWeek.outputCalls}
               </span>
             </div>
@@ -660,7 +660,7 @@ export const UsageInsightsScreen: React.FC = () => {
                 <BarChart2 className="w-4 h-4 text-[#0d212c]" />
                 <span className="text-[14px] font-semibold text-[#0d212c]">Tokens Consumed</span>
               </div>
-              <span className="text-[24px] font-semibold text-[#36c0c9] leading-none">
+              <span className="text-[22px] font-semibold text-[#36c0c9] leading-none">
                 {currentWeek.tokensM}M
               </span>
             </div>
@@ -702,7 +702,7 @@ export const UsageInsightsScreen: React.FC = () => {
                 <DollarSign className="w-4 h-4 text-[#0d212c]" />
                 <span className="text-[14px] font-semibold text-[#0d212c]">Estimated AI Cost</span>
               </div>
-              <span className="text-[24px] font-semibold text-[#36c0c9] leading-none">
+              <span className="text-[22px] font-semibold text-[#36c0c9] leading-none">
                 ${aiCost}
               </span>
             </div>
